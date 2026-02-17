@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D'BARRIO SOCIO | Mi Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --yellow: #F9A825; --yellow-bright: #FFD700; --bg: #000; --card: #1A1A1A; --border: #2A2A2A; --text: #E0E0E0; --concrete: #404040; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Roboto Condensed', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 80px; overflow-x: hidden; position: relative; }
+        body::before { content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(45deg, transparent 48%, rgba(42, 42, 42, 0.3) 49%, rgba(42, 42, 42, 0.3) 51%, transparent 52%), linear-gradient(-45deg, transparent 48%, rgba(42, 42, 42, 0.3) 49%, rgba(42, 42, 42, 0.3) 51%, transparent 52%); background-size: 40px 40px; opacity: 0.12; z-index: 0; pointer-events: none; }
+        .header { background: var(--card); padding: 15px 20px; border-bottom: 3px solid var(--yellow); position: sticky; top: 0; z-index: 1000; }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.2rem; font-weight: 900; letter-spacing: -1px; color: var(--yellow); text-transform: uppercase; text-shadow: 2px 2px 0 rgba(0,0,0,0.5); }
+        .btn-back { background: rgba(249, 168, 37, 0.15); border: 2px solid var(--yellow); color: var(--yellow); padding: 8px 14px; border-radius: 2px; font-size: 0.8rem; font-weight: 900; text-decoration: none; text-transform: uppercase; }
+        .btn-back:active { transform: scale(0.95); background: rgba(249, 168, 37, 0.25); }
+        .nav-tabs { background: var(--card); display: flex; justify-content: space-around; position: sticky; top: 54px; z-index: 999; border-bottom: 3px solid var(--border); overflow-x: auto; }
+        .nav-tab { padding: 14px 10px; cursor: pointer; border-bottom: 3px solid transparent; font-size: 0.7rem; font-weight: 900; white-space: nowrap; flex: 1; text-align: center; text-transform: uppercase; color: var(--concrete); }
+        .nav-tab.active { border-bottom-color: var(--yellow); color: var(--yellow); }
+        .content { padding: 20px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 1; }
+        .section { display: none; }
+        .section.active { display: block; }
+        h2 { margin-bottom: 20px; color: var(--yellow); font-size: 1.4rem; font-weight: 900; text-transform: uppercase; border-bottom: 3px solid var(--yellow); padding-bottom: 10px; }
+        .stats-card { background: linear-gradient(135deg, #0d0d0d 0%, var(--card) 100%); padding: 20px; margin-bottom: 20px; border: 3px solid var(--yellow); box-shadow: 0 0 30px rgba(249, 168, 37, 0.2); }
+        .stats-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; padding-bottom: 15px; border-bottom: 2px solid var(--border); }
+        .stats-row:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .toggle-disponibilidad { display: flex; align-items: center; gap: 12px; background: #050505; padding: 14px; border: 3px solid var(--border); cursor: pointer; }
+        .toggle-disponibilidad:active { transform: scale(0.98); }
+        .toggle-switch { position: relative; width: 54px; height: 28px; background: #333; border-radius: 4px; flex-shrink: 0; }
+        .toggle-switch.active { background: var(--yellow); }
+        .toggle-switch::after { content: ''; position: absolute; width: 22px; height: 22px; background: #000; top: 3px; left: 3px; border: 2px solid #555; }
+        .toggle-switch.active::after { left: 29px; border-color: var(--yellow-bright); }
+        .toggle-label { font-weight: 900; font-size: 0.85rem; flex: 1; text-transform: uppercase; }
+        .toggle-status { font-size: 0.7rem; font-weight: 900; padding: 5px 10px; }
+        .toggle-status.disponible { background: rgba(0, 216, 86, 0.2); color: #00D856; }
+        .toggle-status.ocupado { background: rgba(255, 59, 48, 0.2); color: #FF3B30; }
+        .card { background: var(--card); border: 3px solid var(--border); margin-bottom: 12px; box-shadow: 0 4px 0 var(--border), 0 8px 20px rgba(0,0,0,0.5); }
+        .card-header { padding: 16px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .card-header:active { background: #0d0d0d; }
+        .card-title { font-weight: 900; font-size: 0.95rem; text-transform: uppercase; }
+        .card-subtitle { font-size: 0.7rem; color: var(--concrete); margin-top: 3px; font-weight: 500; }
+        .card-badge { background: #FF9500; color: #000; padding: 4px 12px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; }
+        .card-badge.completado { background: #00D856; }
+        .card-body { padding: 0 16px; max-height: 0; overflow: hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .card.open .card-body { padding: 16px; max-height: 3000px; }
+        .card-arrow { transition: transform 0.3s; font-size: 16px; color: var(--yellow); }
+        .card.open .card-arrow { transform: rotate(180deg); }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; margin-bottom: 6px; font-size: 0.65rem; color: var(--concrete); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+        input { width: 100%; padding: 12px; background: #050505; border: 2px solid var(--border); color: #fff; font-size: 0.9rem; font-weight: 700; }
+        input:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(249, 168, 37, 0.2); }
+        .btn { padding: 12px 20px; border: none; font-weight: 900; cursor: pointer; font-size: 0.85rem; width: 100%; margin-top: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .btn-yellow { background: var(--yellow); color: #000; box-shadow: 0 4px 0 #C17900, 0 8px 20px rgba(249, 168, 37, 0.5); }
+        .btn-yellow:active { transform: translateY(4px); box-shadow: 0 0 0 #C17900, 0 4px 10px rgba(249, 168, 37, 0.5); }
+        .btn-green { background: transparent; border: 3px solid #00D856; color: #00D856; box-shadow: 0 4px 0 var(--border); }
+        .btn-blue { background: transparent; border: 3px solid #0088FF; color: #0088FF; box-shadow: 0 4px 0 var(--border); }
+        .info-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: var(--concrete); font-size: 0.8rem; font-weight: 600; }
+        .info-value { font-weight: 700; font-size: 0.85rem; }
+        .money { color: var(--yellow); font-weight: 900; font-size: 1.1rem; }
+        .alert { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #050505; border: 3px solid var(--yellow); padding: 25px; z-index: 10000; display: none; text-align: center; min-width: 280px; max-width: 90%; box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        .alert.show { display: block; }
+        .overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.9); z-index: 9999; display: none; }
+        .overlay.show { display: block; }
+        .error-msg { text-align: center; padding: 60px 20px; color: #999; }
+    </style>
+</head>
+<body>
+    <div class="overlay" id="overlay"></div>
+    <div class="alert" id="alert"><p id="alertMessage"></p><button class="btn btn-yellow" onclick="closeAlert()">OK</button></div>
+    
+    <div class="header">
+        <div class="header-content">
+            <a href="index.html" class="btn-back">← VOLVER</a>
+            <div class="logo" id="nombreSocio">D'BARRIO</div>
+            <div style="width: 70px;"></div>
+        </div>
+    </div>
+    
+    <div class="nav-tabs">
+        <div class="nav-tab active" onclick="showSection('activas')">📋 ACTIVAS</div>
+        <div class="nav-tab" onclick="showSection('historial')">📊 HISTORIAL</div>
+        <div class="nav-tab" onclick="showSection('stats')">⭐ STATS</div>
+    </div>
+    
+    <div class="content">
+        <div class="stats-card">
+            <div class="stats-row"><span class="info-label">TU CALIFICACIÓN:</span><span class="money" id="rating">⭐ 0</span></div>
+            <div class="stats-row"><span class="info-label">TRABAJOS:</span><span class="info-value" id="trabajosTotal">0</span></div>
+            <div class="stats-row"><span class="info-label">TU DEUDA:</span><span class="money" id="deudaActual">$0.00</span></div>
+            <div class="stats-row"><span class="info-label">ZONA:</span><span class="info-value" id="zonaActual">-</span></div>
+            <div class="stats-row" style="border: none; padding: 0; margin: 0;">
+                <div class="toggle-disponibilidad" id="toggleDisponibilidad" onclick="cambiarDisponibilidad()">
+                    <div class="toggle-switch" id="toggleSwitch"></div>
+                    <div class="toggle-label">DISPONIBILIDAD</div>
+                    <div class="toggle-status ocupado" id="toggleStatus">OCUPADO</div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="activas" class="section active">
+            <h2>📋 ÓRDENES ACTIVAS</h2>
+            <div id="listaOrdenes"></div>
+        </div>
+        
+        <div id="historial" class="section">
+            <h2>📊 HISTORIAL</h2>
+            <div id="listaHistorial"></div>
+        </div>
+        
+        <div id="stats" class="section">
+            <h2>⭐ ESTADÍSTICAS</h2>
+            <div id="statsDetalle"></div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+        firebase.initializeApp({apiKey:"AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",authDomain:"delbarrioapp-27247.firebaseapp.com",databaseURL:"https://delbarrioapp-27247-default-rtdb.firebaseio.com",projectId:"delbarrioapp-27247",storageBucket:"delbarrioapp-27247.firebasestorage.app",messagingSenderId:"57798249354",appId:"1:57798249354:web:18bd75ac7b8469feb35673"});
+        const db = firebase.database();
+        let socioActualId = null, disponibilidadActual = false, comisionActual = 15;
+        function limpiarTelefono(tel) { return tel.replace(/[\s\-\(\)]/g, '').replace(/^\+/, ''); }
+        function obtenerSocioId() { const p = new URLSearchParams(window.location.search); return p.get('id'); }
+        socioActualId = obtenerSocioId();
+        if (!socioActualId) { document.querySelector('.content').innerHTML = '<div class="error-msg"><h2 style="color: var(--yellow);">⚠️ ACCESO NO VÁLIDO</h2><p>Debes acceder con tu ID de socio.</p><a href="index.html" class="btn btn-yellow" style="max-width: 300px; margin: 20px auto; display: block;">VOLVER</a></div>'; } else { cargarComision(); cargarDatosSocio(); cargarOrdenes(); }
+        function cargarComision() { db.ref('config').on('value', (s) => { const c = s.val(); if (c && c.comision) comisionActual = c.comision; }); }
+        function cargarDatosSocio() { const sRef = db.ref('socios/' + socioActualId); sRef.on('value', (s) => { const so = s.val(); if (so) { document.getElementById('nombreSocio').innerHTML = "D'" + so.usuario.split(' ')[0].toUpperCase(); document.getElementById('deudaActual').textContent = '$' + (so.deuda || 0).toFixed(2); document.getElementById('zonaActual').textContent = so.zona; document.getElementById('rating').textContent = '⭐ ' + (so.rating || 0).toFixed(1); document.getElementById('trabajosTotal').textContent = so.trabajos || 0; disponibilidadActual = so.disponible !== undefined ? so.disponible : true; actualizarUIDisponibilidad(); } }); }
+        function actualizarUIDisponibilidad() { const sw = document.getElementById('toggleSwitch'), st = document.getElementById('toggleStatus'); if (disponibilidadActual) { sw.classList.add('active'); st.textContent = '🟢 DISPONIBLE'; st.className = 'toggle-status disponible'; } else { sw.classList.remove('active'); st.textContent = '🔴 OCUPADO'; st.className = 'toggle-status ocupado'; } }
+        function cambiarDisponibilidad() { disponibilidadActual = !disponibilidadActual; const sRef = db.ref('socios/' + socioActualId); sRef.update({ disponible: disponibilidadActual }).then(() => { actualizarUIDisponibilidad(); showAlert(disponibilidadActual ? '✅ DISPONIBLE' : '⚠️ OCUPADO'); }).catch((e) => { console.error('Error:', e); showAlert('⚠️ Error'); }); }
+        function showSection(id) { document.querySelectorAll('.section').forEach(s => s.classList.remove('active')); document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active')); document.getElementById(id).classList.add('active'); event.target.classList.add('active'); if (id === 'historial') cargarHistorial(); if (id === 'stats') cargarStats(); }
+        function toggleCard(id) { const c = document.getElementById(id); document.querySelectorAll('.card').forEach(x => { if (x.id !== id) x.classList.remove('open'); }); c.classList.toggle('open'); }
+        function showAlert(msg) { document.getElementById('alertMessage').textContent = msg; document.getElementById('alert').classList.add('show'); document.getElementById('overlay').classList.add('show'); }
+        function closeAlert() { document.getElementById('alert').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+        function cargarOrdenes() { const solRef = db.ref('solicitudes'); solRef.on('value', (s) => { const c = document.getElementById('listaOrdenes'); c.innerHTML = ''; const sol = s.val(); if (!sol) { c.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Sin órdenes</p>'; return; } let hay = false; Object.keys(sol).forEach(id => { const o = sol[id]; if (o.tecnico === socioActualId && o.estado === 'pendiente') { hay = true; const telC = limpiarTelefono(o.telefono); c.innerHTML += `<div class="card" id="orden-${id}"><div class="card-header" onclick="toggleCard('orden-${id}')"><div><div class="card-title">${o.cliente}</div><div class="card-subtitle">${o.categoria || 'General'} - ${o.fecha_inicio}</div></div><div style="display: flex; gap: 8px; align-items: center;"><span class="card-badge">PENDIENTE</span><span class="card-arrow">▼</span></div></div><div class="card-body"><div class="info-row"><span class="info-label">Dirección:</span><span class="info-value">${o.direccion}</span></div><div class="info-row"><span class="info-label">Problema:</span><span class="info-value">${o.problema}</span></div><div class="info-row"><span class="info-label">Tel:</span><span class="info-value">${o.telefono}</span></div><button class="btn btn-green" onclick="window.open('https://wa.me/${telC}', '_blank')">💬 WHATSAPP</button><button class="btn btn-blue" onclick="window.open('tel:+${telC}', '_blank')">📞 LLAMAR</button><div class="form-group" style="margin-top: 20px;"><label>Monto Cobrado ($)</label><input type="number" id="monto-${id}" step="0.01" min="0" placeholder="0.00" required></div><button class="btn btn-yellow" onclick="finalizarTrabajo('${id}')">✅ TERMINADO</button></div></div>`; } }); if (!hay) c.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Sin órdenes pendientes</p>'; }); }
+        function finalizarTrabajo(oId) { const mIn = document.getElementById('monto-' + oId), m = parseFloat(mIn.value); if (!m || m <= 0) { showAlert('⚠️ Ingresa monto'); return; } if (!confirm('¿Terminado por $' + m.toFixed(2) + '?')) return; const cod = 'DB-' + Math.floor(1000 + Math.random() * 9000), com = m * (comisionActual / 100); const sRef = db.ref('socios/' + socioActualId); sRef.once('value', (s) => { const so = s.val(), nD = (so.deuda || 0) + com, nT = (so.trabajos || 0) + 1; const oRef = db.ref('solicitudes/' + oId); oRef.update({ estado: 'finalizado_pendiente_recibo', monto: m, codigo_garantia: cod, fecha_fin: new Date().toISOString().split('T')[0] }); sRef.update({ deuda: nD, trabajos: nT }); showAlert('✅ Reportado\n\nComisión ' + comisionActual + '%: $' + com.toFixed(2)); }); }
+        function cargarHistorial() { const solRef = db.ref('solicitudes'); solRef.once('value', (s) => { const c = document.getElementById('listaHistorial'); c.innerHTML = ''; const sol = s.val(); if (!sol) { c.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Sin historial</p>'; return; } let hay = false; Object.keys(sol).reverse().forEach(id => { const o = sol[id]; if (o.tecnico === socioActualId && o.estado !== 'pendiente') { hay = true; const st = o.valoracion ? '⭐'.repeat(o.valoracion) : '⭐⭐⭐⭐⭐'; c.innerHTML += `<div class="card" id="hist-${id}"><div class="card-header" onclick="toggleCard('hist-${id}')"><div><div class="card-title">${o.cliente}</div><div class="card-subtitle">${o.categoria || 'General'} - $${o.monto ? o.monto.toFixed(2) : '0.00'}</div></div><div style="display: flex; gap: 8px; align-items: center;"><span class="card-badge completado">COMPLETADO</span><span class="card-arrow">▼</span></div></div><div class="card-body"><div class="info-row"><span class="info-label">Fecha:</span><span class="info-value">${o.fecha_inicio}</span></div><div class="info-row"><span class="info-label">Monto:</span><span class="money">$${o.monto ? o.monto.toFixed(2) : '0.00'}</span></div><div class="info-row"><span class="info-label">Comisión:</span><span class="info-value">$${o.monto ? (o.monto * (comisionActual / 100)).toFixed(2) : '0.00'}</span></div><div class="info-row"><span class="info-label">Rating:</span><span class="info-value">${st}</span></div></div></div>`; } }); if (!hay) c.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">Sin trabajos completados</p>'; }); }
+        function cargarStats() { const solRef = db.ref('solicitudes'); solRef.once('value', (s) => { const c = document.getElementById('statsDetalle'), sol = s.val(); let tI = 0, tC = 0, tComp = 0, pM = 0; if (sol) { Object.values(sol).forEach(o => { if (o.tecnico === socioActualId && o.monto) { tI += o.monto; tC += o.monto * (comisionActual / 100); tComp++; } }); pM = tComp > 0 ? tI / tComp : 0; } c.innerHTML = `<div class="card"><div class="card-header"><div class="card-title">📊 RESUMEN</div></div><div class="card-body" style="max-height: none; padding: 16px;"><div class="info-row"><span class="info-label">Total Facturado:</span><span class="money">$${tI.toFixed(2)}</span></div><div class="info-row"><span class="info-label">Comisiones:</span><span class="info-value">$${tC.toFixed(2)}</span></div><div class="info-row"><span class="info-label">Ganancia Neta:</span><span class="money">$${(tI - tC).toFixed(2)}</span></div><div class="info-row"><span class="info-label">Monto Promedio:</span><span class="info-value">$${pM.toFixed(2)}</span></div></div></div>`; }); }
+    </script>
+</body>
+</html>
