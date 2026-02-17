@@ -101,7 +101,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 </div>
 
 <div class="content">
-  <!-- STATS PLEGABLE (visible en todas las secciones) -->
   <div>
     <div class="stats-toggle" id="stats-toggle" onclick="toggleStats()">
       <span>⭐ MIS DATOS</span>
@@ -121,19 +120,16 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
     </div>
   </div>
 
-  <!-- ACTIVAS -->
   <div id="sec-activas" class="sec on">
     <h2>📋 Órdenes Activas</h2>
     <div id="listaActivas"><p style="color:var(--sub);text-align:center;padding:30px">Cargando...</p></div>
   </div>
 
-  <!-- HISTORIAL -->
   <div id="sec-historial" class="sec">
     <h2>📊 Historial</h2>
     <div id="listaHistorial"></div>
   </div>
 
-  <!-- FINANZAS -->
   <div id="sec-stats" class="sec">
     <h2>💰 Mis Finanzas</h2>
     <div class="fin-grid">
@@ -158,7 +154,7 @@ const socioId=params.get('id')||localStorage.getItem('db_socio_id');
 let socioData={};
 let comisionSocio=15;
 
-if(!socioId){mostrarBloqueado('ID no válido. Pide tu enlace al admin.');return}
+if(!socioId){mostrarBloqueado('ID no válido. Pide tu enlace al admin.');}
 
 function mostrarBloqueado(msg){
   document.body.innerHTML=`<div class="blocked"><h2>⛔ ACCESO DENEGADO</h2><p>${msg}</p><a href="index.html" style="background:var(--y);color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase">VOLVER</a></div>`;
@@ -228,7 +224,8 @@ function renderActivas(){
   const c=document.getElementById('listaActivas');
   db.ref('solicitudes').on('value',snap=>{
     const sol=snap.val()||{};
-    const mias=Object.entries(sol).filter(([,o])=>o.tecnico===socioId&&o.estado==='pendiente');
+    // CAMBIO VITAL: o.tecnico -> o.id_tecnico
+    const mias=Object.entries(sol).filter(([,o])=>o.id_tecnico===socioId&&o.estado==='pendiente');
     if(!mias.length){c.innerHTML='<p style="color:var(--sub);text-align:center;padding:30px">Sin órdenes activas 🎉</p>';return}
     c.innerHTML=mias.map(([id,o])=>{
       const tc=cleanTel(o.telefono||'');
@@ -293,7 +290,8 @@ function renderHistorial(){
   const c=document.getElementById('listaHistorial');
   db.ref('solicitudes').once('value',snap=>{
     const sol=snap.val()||{};
-    const mias=Object.entries(sol).filter(([,o])=>o.tecnico===socioId&&o.estado!=='pendiente').reverse();
+    // CAMBIO VITAL: o.tecnico -> o.id_tecnico
+    const mias=Object.entries(sol).filter(([,o])=>o.id_tecnico===socioId&&o.estado!=='pendiente').reverse();
     if(!mias.length){c.innerHTML='<p style="color:var(--sub);text-align:center;padding:30px">Sin trabajos completados aún</p>';return}
     c.innerHTML=mias.map(([id,o])=>{
       const st=o.valoracion?'⭐'.repeat(o.valoracion):'—';
@@ -322,7 +320,8 @@ function renderHistorial(){
 function renderFinanzas(){
   db.ref('solicitudes').once('value',snap=>{
     const sol=snap.val()||{};
-    const mias=Object.values(sol).filter(o=>o.tecnico===socioId&&o.monto);
+    // CAMBIO VITAL: o.tecnico -> o.id_tecnico
+    const mias=Object.values(sol).filter(o=>o.id_tecnico===socioId&&o.monto);
     const ahora=new Date();
     const mesActual=ahora.getMonth();
     const añoActual=ahora.getFullYear();
@@ -332,7 +331,7 @@ function renderFinanzas(){
       const com=o.monto*(comisionSocio/100);
       neto+=o.monto-com;
       count++;
-      // Ganancias del mes
+      // Ganancias del mes (MANTENIDA TU LÓGICA ORIGINAL)
       if(o.fecha_fin){
         const p=o.fecha_fin.split('/');
         if(p.length===3){
