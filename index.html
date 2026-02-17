@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>D'BARRIO | Servicios Profesionales</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#F9A825">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="D'BARRIO">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--y:#F9A825;--yb:#FFD700;--bg:#000;--card:#111;--border:#222;--text:#fff;--sub:#aaa}
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto Condensed',sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;padding-bottom:40px}
+/* Textura industrial */
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(255,255,255,.015) 18px,rgba(255,255,255,.015) 20px);pointer-events:none;z-index:0}
+header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;width:100%}
+.logo-mark{display:inline-block;background:var(--y);padding:8px 20px 4px;margin-bottom:16px}
+.logo-mark svg{width:180px;height:auto;display:block}
+h1{font-size:3.8rem;font-weight:900;letter-spacing:-3px;line-height:.9;text-transform:uppercase;color:#fff;text-shadow:4px 4px 0 var(--y)}
+h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
+.tagline{display:inline-block;font-size:.65rem;font-weight:900;letter-spacing:6px;text-transform:uppercase;color:#fff;background:#000;border-top:3px solid var(--y);border-bottom:3px solid var(--y);padding:8px 16px;margin-top:16px}
+.menu{width:92%;max-width:440px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
+.btn{background:var(--card);border:3px solid var(--border);color:#fff;padding:22px 20px;font-size:1rem;font-weight:900;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:1px;box-shadow:0 5px 0 #000,0 8px 20px rgba(0,0,0,.6);position:relative;transition:transform .1s,box-shadow .1s;width:100%;text-align:left}
+.btn::before{content:"";position:absolute;inset:5px;border:1px solid rgba(255,255,255,.07);pointer-events:none}
+.btn:active{transform:translateY(5px);box-shadow:0 0 0 #000}
+.btn .icon{font-size:1.4rem;color:var(--y)}
+.btn-primary{background:var(--y);color:#000;border-color:var(--yb);box-shadow:0 5px 0 #c17900,0 8px 20px rgba(249,168,37,.4)}
+.btn-primary:active{box-shadow:0 0 0 #c17900}
+.btn-primary .icon{color:#000}
+.btn-ghost{border-style:dashed;opacity:.55}
+/* MODALES */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:1000;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.modal.open{display:block}
+.modal-box{background:var(--card);border:3px solid var(--y);width:94%;max-width:440px;margin:6vh auto 4vh;box-shadow:0 0 0 6px var(--border),0 20px 60px rgba(249,168,37,.25)}
+.modal-top{background:var(--y);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
+.modal-top h2{font-size:1.2rem;font-weight:900;color:#000;text-transform:uppercase;letter-spacing:1px}
+.btn-close{background:#000;border:none;color:var(--y);font-size:1.4rem;font-weight:900;cursor:pointer;padding:4px 12px;line-height:1}
+.modal-body{padding:24px}
+.modal-body p{color:var(--sub);font-size:.95rem;line-height:1.6;margin-bottom:16px}
+.quote{color:var(--y);font-size:1.1rem;font-weight:900;font-style:italic;border-left:4px solid var(--y);padding-left:14px;margin-bottom:16px}
+.form-field{margin-bottom:14px}
+.form-field label{display:block;font-size:.65rem;font-weight:900;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.form-field input,.form-field select,.form-field textarea{width:100%;background:#000;border:2px solid var(--border);color:#fff;padding:14px;font-family:'Roboto Condensed',sans-serif;font-size:.95rem;font-weight:700}
+.form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:none;border-color:var(--y);box-shadow:0 0 0 3px rgba(249,168,37,.2)}
+.form-field select option{background:#111;color:#fff}
+.submit-btn{width:100%;padding:16px;background:var(--y);color:#000;border:none;font-family:'Roboto Condensed',sans-serif;font-weight:900;font-size:1rem;text-transform:uppercase;letter-spacing:1px;cursor:pointer;box-shadow:0 4px 0 #c17900;margin-top:8px}
+.submit-btn:active{transform:translateY(4px);box-shadow:none}
+#loginError{color:#ff4444;font-size:.85rem;text-align:center;margin-top:8px;display:none;font-weight:700}
+@media(min-width:768px){h1{font-size:5rem}header{padding:60px 20px 40px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo-mark">
+    <svg viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg">
+      <text x="90" y="50" text-anchor="middle" font-family="Roboto Condensed,Impact" font-weight="900" font-size="52" fill="#000" letter-spacing="-2">D'BARRIO</text>
+    </svg>
+  </div>
+  <div class="tagline">Servicios Profesionales con Garantía</div>
+</header>
+
+<div class="menu">
+  <button class="btn" onclick="openModal('m-filosofia')"><span>NUESTRA FILOSOFÍA</span><span class="icon">⚙️</span></button>
+  <button class="btn btn-primary" onclick="openModal('m-servicio')"><span>SOLICITAR TÉCNICO</span><span class="icon">🔧</span></button>
+  <button class="btn" onclick="openModal('m-garantia')"><span>GARANTÍA 30 DÍAS</span><span class="icon">🛡️</span></button>
+  <button class="btn" onclick="openModal('m-unirse')"><span>ÚNETE AL EQUIPO</span><span class="icon">⚡</span></button>
+  <button class="btn btn-ghost" onclick="openModal('m-login')"><span>ACCESO PRIVADO</span><span class="icon">🔐</span></button>
+</div>
+
+<!-- MODAL FILOSOFIA -->
+<div id="m-filosofia" class="modal">
+  <div class="modal-box">
+    <div class="modal-top"><h2>⚙️ Nuestra Filosofía</h2><button class="btn-close" onclick="closeModal('m-filosofia')">✕</button></div>
+    <div class="modal-body">
+      <div class="quote">"Reparamos bien. A la primera."</div>
+      <p>D'Barrio conecta técnicos certificados del barrio con clientes que necesitan soluciones reales. Sin intermediarios innecesarios. Sin excusas.</p>
+      <p>Cada trabajo viene con <strong style="color:var(--y)">garantía de 30 días</strong>. Si falla, volvemos sin costo adicional.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SERVICIO -->
+<div id="m-servicio" class="modal">
+  <div class="modal-box">
+    <div class="modal-top"><h2>🔧 Nueva Solicitud</h2><button class="btn-close" onclick="closeModal('m-servicio')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom" placeholder="Nombre completo"></div>
+      <div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53 55..."></div>
+      <div class="form-field"><label>Dirección</label><input type="text" id="s-dir" placeholder="Calle, número, municipio"></div>
+      <div class="form-field"><label>Tipo de Servicio</label>
+        <select id="s-cat">
+          <option value="">Seleccionar...</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option>
+          <option>🔨 Carpintería</option><option>🧱 Albañilería</option>
+          <option>🎨 Pintura</option><option>❄️ Refrigeración</option>
+          <option>🔑 Cerrajería</option><option>💻 Tecnología</option>
+          <option>🔧 Otro</option>
+        </select>
+      </div>
+      <div class="form-field"><label>Describe el problema</label><textarea id="s-pro" rows="3" placeholder="¿Qué necesitas reparar?"></textarea></div>
+      <button class="submit-btn" onclick="enviarSolicitud()">📤 ENVIAR SOLICITUD</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL GARANTIA -->
+<div id="m-garantia" class="modal">
+  <div class="modal-box">
+    <div class="modal-top"><h2>🛡️ Activar Garantía</h2><button class="btn-close" onclick="closeModal('m-garantia')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-field"><label>Código de Garantía</label><input type="text" id="g-cod" placeholder="DB-XXXX" style="text-align:center;letter-spacing:4px;font-size:1.2rem"></div>
+      <div class="form-field"><label>Tu WhatsApp</label><input type="tel" id="g-tel" placeholder="+53 55..."></div>
+      <div class="form-field"><label>Describe el problema</label><textarea id="g-pro" rows="3" placeholder="¿Qué falló?"></textarea></div>
+      <button class="submit-btn" onclick="enviarGarantia()">🛡️ ACTIVAR GARANTÍA</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL UNIRSE -->
+<div id="m-unirse" class="modal">
+  <div class="modal-box">
+    <div class="modal-top"><h2>⚡ Únete al Equipo</h2><button class="btn-close" onclick="closeModal('m-unirse')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-field"><label>Tu Nombre</label><input type="text" id="p-nom" placeholder="Nombre completo"></div>
+      <div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel" placeholder="+53 55..."></div>
+      <div class="form-field"><label>Tu Especialidad</label>
+        <select id="p-esp">
+          <option value="">Seleccionar...</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option>
+          <option>🔨 Carpintería</option><option>🧱 Albañilería</option>
+          <option>🎨 Pintura</option><option>❄️ Refrigeración</option>
+          <option>🔑 Cerrajería</option><option>💻 Tecnología</option>
+          <option>🔧 Multiservicios</option>
+        </select>
+      </div>
+      <div class="form-field"><label>Zona de Trabajo</label><input type="text" id="p-zon" placeholder="Municipio o barrio"></div>
+      <button class="submit-btn" onclick="enviarPostulacion()">📤 ENVIAR PERFIL</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGIN -->
+<div id="m-login" class="modal">
+  <div class="modal-box">
+    <div class="modal-top"><h2>🔐 Acceso Privado</h2><button class="btn-close" onclick="closeModal('m-login')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-field"><label>Usuario</label><input type="text" id="l-user" placeholder="Admin o tu nombre"></div>
+      <div class="form-field"><label>PIN</label><input type="password" id="l-pin" placeholder="••••" maxlength="6" inputmode="numeric"></div>
+      <button class="submit-btn" id="btn-login" onclick="login()">INGRESAR</button>
+      <div id="loginError">⚠️ Usuario o PIN incorrecto</div>
+    </div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script>
+firebase.initializeApp({apiKey:"AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",authDomain:"delbarrioapp-27247.firebaseapp.com",databaseURL:"https://delbarrioapp-27247-default-rtdb.firebaseio.com",projectId:"delbarrioapp-27247",storageBucket:"delbarrioapp-27247.appspot.com",messagingSenderId:"57798249354",appId:"1:57798249354:web:18bd75ac7b8469feb35673"});
+const db=firebase.database();
+
+function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden'}
+function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow=''}
+
+function cleanTel(t){return t.replace(/[\s\-\(\)\+]/g,'').replace(/^0/,'')}
+
+function toast(msg,ok=true){
+  const d=document.createElement('div');
+  d.style.cssText=`position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:${ok?'#F9A825':'#ff4444'};color:#000;padding:14px 24px;font-weight:900;font-size:.95rem;z-index:9999;text-align:center;min-width:260px;box-shadow:0 4px 20px rgba(0,0,0,.5)`;
+  d.textContent=msg;document.body.appendChild(d);
+  setTimeout(()=>d.remove(),3000);
+}
+
+function enviarSolicitud(){
+  const nom=document.getElementById('s-nom').value.trim();
+  const tel=document.getElementById('s-tel').value.trim();
+  const cat=document.getElementById('s-cat').value;
+  const dir=document.getElementById('s-dir').value.trim();
+  if(!nom||!tel||!cat||!dir){toast('⚠️ Completa todos los campos',false);return}
+  db.ref('solicitudes').push({
+    cliente:nom,telefono:tel,direccion:dir,categoria:cat,
+    problema:document.getElementById('s-pro').value,
+    estado:'pendiente',fecha_inicio:new Date().toLocaleDateString('es-CU'),
+    monto:0,valoracion:0,codigo_garantia:null
+  }).then(()=>{toast('✅ Solicitud recibida. Te contactamos pronto.');closeModal('m-servicio');document.getElementById('m-servicio').querySelectorAll('input,select,textarea').forEach(e=>e.value='')})
+  .catch(()=>toast('⚠️ Error de conexión',false));
+}
+
+function enviarGarantia(){
+  const cod=document.getElementById('g-cod').value.trim();
+  const tel=document.getElementById('g-tel').value.trim();
+  if(!cod||!tel){toast('⚠️ Completa los campos',false);return}
+  db.ref('garantias').push({recibo:cod,telefono:tel,falla:document.getElementById('g-pro').value,fecha:new Date().toLocaleString('es-CU')})
+  .then(()=>{toast('✅ Garantía activada. Te revisamos.');closeModal('m-garantia')})
+  .catch(()=>toast('⚠️ Error de conexión',false));
+}
+
+function enviarPostulacion(){
+  const nom=document.getElementById('p-nom').value.trim();
+  const tel=document.getElementById('p-tel').value.trim();
+  const esp=document.getElementById('p-esp').value;
+  if(!nom||!tel||!esp){toast('⚠️ Completa todos los campos',false);return}
+  db.ref('postulantes').push({nombre:nom,telefono:tel,oficio:esp,zona:document.getElementById('p-zon').value,fecha:new Date().toLocaleString('es-CU')})
+  .then(()=>{toast('✅ Perfil enviado. Te contactamos.');closeModal('m-unirse')})
+  .catch(()=>toast('⚠️ Error de conexión',false));
+}
+
+function login(){
+  const user=document.getElementById('l-user').value.trim();
+  const pin=document.getElementById('l-pin').value.trim();
+  const err=document.getElementById('loginError');
+  const btn=document.getElementById('btn-login');
+  if(!user||!pin){err.style.display='block';err.textContent='⚠️ Ingresa usuario y PIN';return}
+  btn.textContent='VERIFICANDO...';
+  err.style.display='none';
+  if(user==='Admin'&&pin==='9202'){localStorage.setItem('db_admin','1');window.location.href='admin.html';return}
+  db.ref('socios').once('value').then(snap=>{
+    const socios=snap.val();let ok=false;
+    if(socios){for(const[id,s] of Object.entries(socios)){
+      if((s.usuario===user||s.nombre===user)&&s.pin===pin&&s.admitido===true){
+        localStorage.setItem('db_socio_id',id);
+        window.location.href='socio.html?id='+id;ok=true;break;
+      }
+    }}
+    if(!ok){err.style.display='block';err.textContent='⚠️ Acceso denegado o no admitido';btn.textContent='INGRESAR'}
+  }).catch(()=>{err.style.display='block';err.textContent='⚠️ Error de conexión';btn.textContent='INGRESAR'});
+}
+
+document.getElementById('l-pin').addEventListener('keypress',e=>{if(e.key==='Enter')login()});
+
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>
