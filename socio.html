@@ -11,7 +11,7 @@
 <style>
 :root{--y:#F9A825;--yb:#FFD700;--bg:#000;--card:#111;--card2:#1a1a1a;--border:#2a2a2a;--text:#fff;--sub:#aaa;--red:#ff4444;--green:#00d856}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto Condensed',sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:80px}
+body{background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px}
 .hdr{background:var(--card);border-bottom:3px solid var(--y);padding:14px 18px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
 .hdr-logo{font-size:1.2rem;font-weight:900;color:var(--y);text-transform:uppercase;letter-spacing:-1px}
 .hdr-back{background:rgba(249,168,37,.15);border:2px solid var(--y);color:var(--y);padding:7px 14px;font-size:.75rem;font-weight:900;text-decoration:none;text-transform:uppercase}
@@ -21,7 +21,6 @@ body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;p
 .content{padding:18px;max-width:900px;margin:0 auto}
 .sec{display:none}.sec.on{display:block}
 h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;border-bottom:3px solid var(--y);padding-bottom:8px;margin-bottom:18px}
-/* Stats plegable */
 .stats-toggle{background:var(--y);color:#000;padding:13px 18px;display:flex;justify-content:space-between;align-items:center;cursor:pointer;font-weight:900;font-size:.9rem;text-transform:uppercase;margin-bottom:0}
 .stats-toggle .sarrow{font-size:.85rem;transition:transform .3s}
 .stats-toggle.open .sarrow{transform:rotate(180deg)}
@@ -32,7 +31,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .ilbl{color:var(--sub);font-size:.78rem;font-weight:700;flex-shrink:0}
 .ival{color:#fff;font-weight:900;font-size:.85rem;text-align:right}
 .money{color:var(--y);font-weight:900;font-size:1.05rem}
-/* Toggle disponibilidad */
 .toggle-row{display:flex;align-items:center;gap:14px;background:#000;border:2px solid var(--border);padding:14px;cursor:pointer;margin-top:12px}
 .toggle-row:active{opacity:.8}
 .tswitch{width:52px;height:26px;background:#333;border-radius:3px;position:relative;flex-shrink:0;transition:background .2s}
@@ -43,7 +41,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .tstatus{font-size:.7rem;font-weight:900;padding:5px 10px}
 .tstatus.disp{background:rgba(0,216,86,.2);color:var(--green)}
 .tstatus.ocup{background:rgba(255,68,68,.2);color:var(--red)}
-/* Cards */
 .card{background:var(--card);border:3px solid var(--border);margin-bottom:12px;box-shadow:0 4px 0 #000}
 .card.hl{border-color:var(--y);box-shadow:0 4px 0 #c17900}
 .card-hdr{padding:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -59,26 +56,21 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .badge-g{background:var(--green);color:#000}
 .badge-o{background:#ff9500;color:#000}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
-/* Botones */
 .btn{padding:12px 18px;border:none;font-family:'Roboto Condensed',sans-serif;font-weight:900;font-size:.85rem;cursor:pointer;text-transform:uppercase;display:block;width:100%;margin:6px 0}
 .btn-y{background:var(--y);color:#000;box-shadow:0 4px 0 #c17900}
 .btn-y:active{transform:translateY(4px);box-shadow:none}
 .btn-g{background:transparent;border:2px solid var(--green);color:var(--green)}
 .btn-b{background:transparent;border:2px solid #0088ff;color:#0088ff}
-/* Formulario */
 .fld{margin-bottom:12px}
 .fld label{display:block;font-size:.62rem;font-weight:900;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
 .fld input{width:100%;background:#000;border:2px solid var(--border);color:#fff;padding:12px;font-family:'Roboto Condensed',sans-serif;font-size:.9rem;font-weight:700}
 .fld input:focus{outline:none;border-color:var(--y)}
-/* Stats financieros */
 .fin-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
 .fin-box{background:var(--card2);border:3px solid var(--border);padding:16px;text-align:center}
 .fin-val{font-size:1.5rem;font-weight:900;color:var(--y);line-height:1}
 .fin-lbl{font-size:.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:5px;font-weight:700}
-/* Toast */
 .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--y);color:#000;padding:13px 22px;font-weight:900;font-size:.9rem;z-index:9999;text-align:center;min-width:240px;pointer-events:none;display:none}
 .toast.err{background:var(--red);color:#fff}
-/* Bloqueado */
 .blocked{position:fixed;inset:0;background:#000;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px;text-align:center}
 .blocked h2{color:var(--y);font-size:1.5rem;margin-bottom:16px}
 .blocked p{color:var(--sub);margin-bottom:24px;line-height:1.6}
@@ -101,7 +93,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 </div>
 
 <div class="content">
-  <!-- STATS PLEGABLE (visible en todas las secciones) -->
   <div>
     <div class="stats-toggle" id="stats-toggle" onclick="toggleStats()">
       <span>⭐ MIS DATOS</span>
@@ -121,19 +112,16 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
     </div>
   </div>
 
-  <!-- ACTIVAS -->
   <div id="sec-activas" class="sec on">
     <h2>📋 Órdenes Activas</h2>
     <div id="listaActivas"><p style="color:var(--sub);text-align:center;padding:30px">Cargando...</p></div>
   </div>
 
-  <!-- HISTORIAL -->
   <div id="sec-historial" class="sec">
     <h2>📊 Historial</h2>
     <div id="listaHistorial"></div>
   </div>
 
-  <!-- FINANZAS -->
   <div id="sec-stats" class="sec">
     <h2>💰 Mis Finanzas</h2>
     <div class="fin-grid">
@@ -152,7 +140,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 firebase.initializeApp({apiKey:"AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",authDomain:"delbarrioapp-27247.firebaseapp.com",databaseURL:"https://delbarrioapp-27247-default-rtdb.firebaseio.com",projectId:"delbarrioapp-27247",storageBucket:"delbarrioapp-27247.appspot.com",messagingSenderId:"57798249354",appId:"1:57798249354:web:18bd75ac7b8469feb35673"});
 const db=firebase.database();
 
-// ─── INIT ───────────────────────────────────────────────
 const params=new URLSearchParams(window.location.search);
 const socioId=params.get('id')||localStorage.getItem('db_socio_id');
 let socioData={};
@@ -164,7 +151,6 @@ function mostrarBloqueado(msg){
   document.body.innerHTML=`<div class="blocked"><h2>⛔ ACCESO DENEGADO</h2><p>${msg}</p><a href="index.html" style="background:var(--y);color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase">VOLVER</a></div>`;
 }
 
-// Cargar datos socio
 db.ref('socios/'+socioId).on('value',snap=>{
   const s=snap.val();
   if(!s)return mostrarBloqueado('Socio no encontrado.');
@@ -181,13 +167,11 @@ db.ref('socios/'+socioId).on('value',snap=>{
   actualizarToggle(s.disponible!==false);
 });
 
-// ─── HELPERS ────────────────────────────────────────────
 function cleanTel(t){return t.replace(/[\s\-\(\)\+]/g,'')}
 function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' err':'');t.style.display='block';setTimeout(()=>t.style.display='none',2800)}
 function money(n){return'$'+(n||0).toFixed(2)}
 function stars(n){return'⭐'.repeat(Math.round(n||0))||'—'}
 
-// ─── TABS ───────────────────────────────────────────────
 function showTab(id,el){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -198,7 +182,6 @@ function showTab(id,el){
   if(id==='stats')renderFinanzas();
 }
 
-// ─── STATS PLEGABLE ─────────────────────────────────────
 function toggleStats(){
   const t=document.getElementById('stats-toggle');
   const b=document.getElementById('stats-body');
@@ -206,7 +189,6 @@ function toggleStats(){
   b.classList.toggle('open');
 }
 
-// ─── DISPONIBILIDAD ─────────────────────────────────────
 function actualizarToggle(disp){
   const sw=document.getElementById('tswitch');
   const st=document.getElementById('tstatus');
@@ -223,7 +205,6 @@ function cambiarDisponibilidad(){
   });
 }
 
-// ─── ACTIVAS ────────────────────────────────────────────
 function renderActivas(){
   const c=document.getElementById('listaActivas');
   db.ref('solicitudes').on('value',snap=>{
@@ -288,7 +269,6 @@ function finalizarTrabajo(oid,cliente,cat){
   });
 }
 
-// ─── HISTORIAL ──────────────────────────────────────────
 function renderHistorial(){
   const c=document.getElementById('listaHistorial');
   db.ref('solicitudes').once('value',snap=>{
@@ -299,7 +279,7 @@ function renderHistorial(){
       const st=o.valoracion?'⭐'.repeat(o.valoracion):'—';
       return`<div class="card" id="his-${id}">
         <div class="card-hdr" onclick="toggleCard('his-${id}')">
-          <div><div class="card-title">${o.cliente}</div>
+          <div><div class="card-title">${o.cliente||'—'}</div>
           <div class="card-sub">${o.categoria||'—'} · ${money(o.monto)}</div></div>
           <div style="display:flex;align-items:center;gap:8px">
             <span class="badge badge-g">COMPLETADO</span><span class="arrow">▼</span>
@@ -318,7 +298,6 @@ function renderHistorial(){
   });
 }
 
-// ─── FINANZAS ───────────────────────────────────────────
 function renderFinanzas(){
   db.ref('solicitudes').once('value',snap=>{
     const sol=snap.val()||{};
@@ -332,7 +311,6 @@ function renderFinanzas(){
       const com=o.monto*(comisionSocio/100);
       neto+=o.monto-com;
       count++;
-      // Ganancias del mes
       if(o.fecha_fin){
         const p=o.fecha_fin.split('/');
         if(p.length===3){
@@ -361,7 +339,6 @@ function renderFinanzas(){
   });
 }
 
-// ─── INIT ACTIVAS ────────────────────────────────────────
 renderActivas();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
