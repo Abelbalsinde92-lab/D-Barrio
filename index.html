@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>D'BARRIO | Servicios Profesionales</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root { 
+            --yellow: #F9A825; 
+            --yellow-bright: #FFD700;
+            --bg: #000000; 
+            --card: #1A1A1A; 
+            --border: #2A2A2A; 
+            --text: #E0E0E0;
+            --concrete: #404040;
+        }
+        
+        * { 
+            box-sizing: border-box; 
+            font-family: 'Roboto Condensed', 'Impact', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        body { 
+            background: var(--bg); 
+            color: var(--text); 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            position: relative;
+        }
+        
+        body::before { 
+            content: ""; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: 
+                linear-gradient(45deg, transparent 48%, rgba(42, 42, 42, 0.3) 49%, rgba(42, 42, 42, 0.3) 51%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(42, 42, 42, 0.3) 49%, rgba(42, 42, 42, 0.3) 51%, transparent 52%);
+            background-size: 40px 40px;
+            opacity: 0.15;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        header { 
+            text-align: center; 
+            margin: 45px 0 30px 0; 
+            position: relative;
+            z-index: 1;
+        }
+        
+        header h1 { 
+            font-size: 3.2rem; 
+            font-weight: 900; 
+            letter-spacing: -2px; 
+            margin: 0; 
+            line-height: 0.9; 
+            text-transform: uppercase;
+            color: var(--text);
+            text-shadow: 
+                3px 3px 0 var(--yellow),
+                6px 6px 0 rgba(0,0,0,0.5);
+        }
+        
+        header h1 span { 
+            color: var(--yellow); 
+            text-shadow: 
+                3px 3px 0 rgba(0,0,0,0.8);
+        }
+        
+        header p { 
+            color: var(--concrete); 
+            text-transform: uppercase; 
+            font-size: 0.6rem; 
+            letter-spacing: 6px; 
+            font-weight: 900; 
+            margin-top: 15px;
+            border-top: 3px solid var(--yellow);
+            border-bottom: 3px solid var(--yellow);
+            padding: 8px 0;
+            display: inline-block;
+        }
+        
+        .menu-container { 
+            width: 90%; 
+            max-width: 420px; 
+            display: flex; 
+            flex-direction: column; 
+            gap: 14px; 
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .btn-industrial { 
+            background: var(--card); 
+            border: 3px solid var(--border); 
+            color: #fff; 
+            padding: 22px 25px; 
+            border-radius: 4px; 
+            font-size: 1rem; 
+            font-weight: 900; 
+            cursor: pointer; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            transition: 0.2s; 
+            box-shadow: 
+                0 4px 0 var(--border),
+                0 8px 20px rgba(0,0,0,0.7);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+        
+        .btn-industrial::before {
+            content: "";
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            right: 6px;
+            bottom: 6px;
+            border: 1px solid rgba(255,255,255,0.1);
+            pointer-events: none;
+        }
+        
+        .btn-industrial:active { 
+            transform: translateY(4px);
+            box-shadow: 
+                0 0 0 var(--border),
+                0 4px 10px rgba(0,0,0,0.7);
+        }
+        
+        .btn-industrial span { 
+            font-size: 1.3rem; 
+            color: var(--yellow); 
+        }
+        
+        .yellow-main { 
+            background: var(--yellow); 
+            color: #000; 
+            border: 3px solid var(--yellow-bright);
+            box-shadow: 
+                0 4px 0 #C17900,
+                0 8px 20px rgba(249, 168, 37, 0.5);
+        }
+        
+        .yellow-main:active {
+            box-shadow: 
+                0 0 0 #C17900,
+                0 4px 10px rgba(249, 168, 37, 0.5);
+        }
+        
+        .yellow-main span { 
+            color: #000; 
+        }
+        
+        .modal { 
+            display: none; 
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.95); 
+            z-index: 1000; 
+            overflow-y: auto; 
+        }
+        
+        .modal-content { 
+            background: var(--card); 
+            padding: 35px 30px; 
+            border-radius: 0; 
+            border: 3px solid var(--yellow); 
+            width: 92%; 
+            max-width: 420px; 
+            margin: 8vh auto 4vh; 
+            position: relative;
+            box-shadow: 
+                0 0 0 6px var(--border),
+                0 10px 40px rgba(249, 168, 37, 0.3);
+        }
+        
+        .modal-back { 
+            background: var(--yellow); 
+            border: none; 
+            color: #000; 
+            font-size: 1.5rem; 
+            cursor: pointer; 
+            position: absolute; 
+            top: 12px; 
+            left: 12px; 
+            padding: 8px 16px; 
+            z-index: 10; 
+            line-height: 1;
+            font-weight: 900;
+            border-radius: 0;
+            box-shadow: 3px 3px 0 rgba(0,0,0,0.5);
+        }
+        
+        .modal-back:active {
+            transform: translate(2px, 2px);
+            box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+        }
+
+        h2 { 
+            color: var(--yellow); 
+            font-size: 1.8rem; 
+            font-weight: 900; 
+            margin-top: 15px; 
+            letter-spacing: -1px;
+            text-transform: uppercase;
+            border-bottom: 3px solid var(--yellow);
+            padding-bottom: 10px;
+        }
+        
+        h2 span { 
+            color: var(--text); 
+        }
+        
+        p.moto { 
+            font-size: 0.9rem; 
+            color: var(--concrete); 
+            line-height: 1.6; 
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        input, textarea, select { 
+            width: 100%; 
+            padding: 16px; 
+            margin-bottom: 12px; 
+            background: #0A0A0A; 
+            border: 2px solid var(--border); 
+            color: #fff; 
+            border-radius: 0; 
+            font-size: 0.95rem;
+            font-family: 'Roboto Condensed', sans-serif;
+            font-weight: 700;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(249, 168, 37, 0.2);
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        header { animation: slideDown 0.6s ease; }
+
+        @media (min-width: 768px) {
+            header h1 { font-size: 4rem; }
+            header { margin: 55px 0 35px 0; }
+            .btn-industrial { padding: 24px 28px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>D'<span>BARRIO</span></h1>
+        <p>SERVICIOS PROFESIONALES</p>
+    </header>
+
+    <div class="menu-container">
+        <button class="btn-industrial" onclick="abrir('m-manifiesto')">NUESTRA FILOSOFÍA <span>⚙️</span></button>
+        <button class="btn-industrial yellow-main" onclick="abrir('m-servicio')">SOLICITAR TÉCNICO <span>🔧</span></button>
+        <button class="btn-industrial" onclick="abrir('m-garantia')">GARANTÍA 30 DÍAS <span>🛡️</span></button>
+        <button class="btn-industrial" onclick="abrir('m-socio')">ÚNETE AL EQUIPO <span>⚡</span></button>
+        <button class="btn-industrial" style="margin-top:30px; border-style: dashed; opacity: 0.5;" onclick="abrir('m-login')">ACCESO PRIVADO <span>🔐</span></button>
+    </div>
+
+    <div id="m-manifiesto" class="modal"><div class="modal-content">
+        <button class="modal-back" onclick="cerrar('m-manifiesto')">←</button>
+        <h2>TRABAJO <span>GARANTIZADO</span></h2>
+        <p class="moto" style="color:var(--yellow);">"Reparamos bien. A la primera."</p>
+        <p class="moto">D'Barrio conecta técnicos certificados con clientes que necesitan soluciones reales. Cada trabajo incluye garantía de 30 días. Sin excusas.</p>
+    </div></div>
+
+    <div id="m-servicio" class="modal"><div class="modal-content">
+        <button class="modal-back" onclick="cerrar('m-servicio')">←</button>
+        <h2>NUEVA <span>ORDEN</span></h2>
+        <input type="text" id="s-nom" placeholder="NOMBRE COMPLETO">
+        <input type="tel" id="s-tel" placeholder="TELÉFONO">
+        <input type="text" id="s-dir" placeholder="DIRECCIÓN EXACTA">
+        <select id="s-cat">
+            <option value="">TIPO DE SERVICIO...</option>
+            <option value="Plomería">🚰 PLOMERÍA</option>
+            <option value="Electricidad">⚡ ELECTRICIDAD</option>
+            <option value="Carpintería">🔨 CARPINTERÍA</option>
+            <option value="Albañilería">🧱 ALBAÑILERÍA</option>
+            <option value="Pintura">🎨 PINTURA</option>
+            <option value="Refrigeración">❄️ REFRIGERACIÓN</option>
+            <option value="Cerrajería">🔑 CERRAJERÍA</option>
+            <option value="Tecnología">💻 TECNOLOGÍA</option>
+            <option value="Otro">🔧 OTRO</option>
+        </select>
+        <textarea id="s-pro" rows="3" placeholder="¿QUÉ NECESITAS REPARAR?"></textarea>
+        <button class="btn-industrial yellow-main" style="width:100%" onclick="enviarSolicitud()">ENVIAR SOLICITUD</button>
+    </div></div>
+
+    <div id="m-garantia" class="modal"><div class="modal-content">
+        <button class="modal-back" onclick="cerrar('m-garantia')">←</button>
+        <h2>GARANTÍA <span>30 DÍAS</span></h2>
+        <input type="text" id="g-cod" placeholder="CÓDIGO DB-XXXX" style="text-align:center; letter-spacing:3px">
+        <input type="tel" id="g-tel" placeholder="TELÉFONO REGISTRADO">
+        <textarea id="g-pro" rows="3" placeholder="DESCRIBE EL PROBLEMA"></textarea>
+        <button class="btn-industrial yellow-main" style="width:100%" onclick="enviarGarantia()">ACTIVAR GARANTÍA</button>
+    </div></div>
+
+    <div id="m-socio" class="modal"><div class="modal-content">
+        <button class="modal-back" onclick="cerrar('m-socio')">←</button>
+        <h2>ÚNETE AL <span>EQUIPO</span></h2>
+        <input type="text" id="p-nom" placeholder="NOMBRE COMPLETO">
+        <select id="p-cat">
+            <option value="">TU ESPECIALIDAD...</option>
+            <option value="Plomería">🚰 PLOMERÍA</option>
+            <option value="Electricidad">⚡ ELECTRICIDAD</option>
+            <option value="Carpintería">🔨 CARPINTERÍA</option>
+            <option value="Albañilería">🧱 ALBAÑILERÍA</option>
+            <option value="Pintura">🎨 PINTURA</option>
+            <option value="Refrigeración">❄️ REFRIGERACIÓN</option>
+            <option value="Cerrajería">🔑 CERRAJERÍA</option>
+            <option value="Tecnología">💻 TECNOLOGÍA</option>
+            <option value="Multiservicios">🔧 MULTISERVICIOS</option>
+        </select>
+        <input type="tel" id="p-tel" placeholder="TELÉFONO">
+        <input type="text" id="p-zon" placeholder="ZONA DE TRABAJO">
+        <button class="btn-industrial yellow-main" style="width:100%" onclick="enviarPostulacion()">ENVIAR PERFIL</button>
+    </div></div>
+
+    <div id="m-login" class="modal"><div class="modal-content">
+        <button class="modal-back" onclick="cerrar('m-login')">←</button>
+        <h2>ACCESO <span>PRIVADO</span></h2>
+        <input type="text" id="l-user" placeholder="USUARIO">
+        <input type="password" id="l-pass" placeholder="PIN">
+        <button class="btn-industrial yellow-main" id="btn-login" style="width:100%" onclick="login()">INGRESAR</button>
+    </div></div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",
+            authDomain: "delbarrioapp-27247.firebaseapp.com",
+            databaseURL: "https://delbarrioapp-27247-default-rtdb.firebaseio.com",
+            projectId: "delbarrioapp-27247",
+            storageBucket: "delbarrioapp-27247.firebasestorage.app",
+            messagingSenderId: "57798249354",
+            appId: "1:57798249354:web:18bd75ac7b8469feb35673"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        const abrir = id => document.getElementById(id).style.display = 'block';
+        const cerrar = id => document.getElementById(id).style.display = 'none';
+
+        function login() {
+            const u = document.getElementById('l-user').value.trim();
+            const p = document.getElementById('l-pass').value.trim();
+            const btn = document.getElementById('btn-login');
+            
+            if(!u || !p) return;
+            btn.innerText = "VERIFICANDO...";
+
+            if(u === "Admin" && p === "9202") { 
+                window.location.href = "admin.html"; 
+                return; 
+            }
+
+            db.ref('socios').once('value')
+            .then((snapshot) => {
+                const socios = snapshot.val();
+                let encontrado = false;
+                
+                if (socios) {
+                    for(let key in socios) {
+                        if(socios[key].usuario === u && socios[key].pin === p) {
+                            window.location.href = "socio.html?id=" + key;
+                            encontrado = true; 
+                            break;
+                        }
+                    }
+                }
+                
+                if(!encontrado) { 
+                    alert("⚠️ Usuario o PIN incorrecto"); 
+                    btn.innerText = "INGRESAR"; 
+                }
+            })
+            .catch((error) => {
+                alert("Error de conexión: " + error.message);
+                btn.innerText = "INGRESAR";
+            });
+        }
+
+        function enviarSolicitud() {
+            const nom = document.getElementById('s-nom').value;
+            const tel = document.getElementById('s-tel').value;
+            const cat = document.getElementById('s-cat').value;
+            
+            if(!nom || !tel || !cat) return alert("Complete todos los campos");
+
+            const data = { 
+                cliente: nom, 
+                telefono: tel, 
+                direccion: document.getElementById('s-dir').value, 
+                categoria: cat,
+                problema: document.getElementById('s-pro').value, 
+                fecha_inicio: new Date().toLocaleDateString(), 
+                estado: 'pendiente',
+                valoracion: 0
+            };
+
+            db.ref('solicitudes').push(data)
+            .then(() => {
+                alert("✓ Solicitud recibida. Un técnico te contactará pronto."); 
+                location.reload();
+            })
+            .catch(() => alert("Error al enviar. Revisa tu conexión."));
+        }
+
+        function enviarGarantia() {
+            const data = { 
+                recibo: document.getElementById('g-cod').value, 
+                telefono: document.getElementById('g-tel').value, 
+                falla: document.getElementById('g-pro').value, 
+                fecha: new Date().toLocaleString() 
+            };
+            db.ref('garantias').push(data).then(() => {
+                alert("✓ Garantía activada. Revisaremos tu caso."); 
+                location.reload();
+            });
+        }
+
+        function enviarPostulacion() {
+            const data = { 
+                nombre: document.getElementById('p-nom').value, 
+                oficio: document.getElementById('p-cat').value, 
+                telefono: document.getElementById('p-tel').value, 
+                zona: document.getElementById('p-zon').value, 
+                fecha: new Date().toLocaleString() 
+            };
+            db.ref('postulantes').push(data).then(() => {
+                alert("✓ Perfil enviado. Te contactaremos pronto."); 
+                location.reload();
+            });
+        }
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((reg) => console.log('SW OK:', reg))
+                    .catch((err) => console.log('SW Error:', err));
+            });
+        }
+    </script>
+</body>
+</html>
