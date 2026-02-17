@@ -94,7 +94,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 
 <div class="toast" id="toast"></div>
 
-<!-- Overlay PIN reset -->
 <div class="overlay" id="overlay-pin">
   <div class="pin-box">
     <h3>🔐 PIN de Seguridad</h3>
@@ -104,7 +103,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
   </div>
 </div>
 
-<!-- Modal convertir candidato a socio -->
 <div class="modal-overlay" id="modal-candidato">
   <div class="modal-box">
     <div class="modal-top">
@@ -135,14 +133,12 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
   </div>
 </div>
 
-<!-- HEADER -->
 <div class="hdr">
   <button class="hdr-back" onclick="logout()">← SALIR</button>
   <div class="hdr-logo">D'BARRIO <span>ADMIN</span></div>
   <div style="width:72px"></div>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
   <div class="tab on" id="tab-dashboard" onclick="showTab('dashboard')">📊 DASH</div>
   <div class="tab" id="tab-candidatos" onclick="showTab('candidatos')">👷 CAND<span class="badge-count" id="cnt-cand" style="display:none">0</span></div>
@@ -155,7 +151,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 
 <div class="content">
 
-  <!-- DASHBOARD -->
   <div id="sec-dashboard" class="sec on">
     <h2>📊 Dashboard</h2>
     <div class="stats">
@@ -168,39 +163,33 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
     <div id="topSocios"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- CANDIDATOS -->
   <div id="sec-candidatos" class="sec">
     <h2>👷 Candidatos a Socio</h2>
     <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px;line-height:1.5">Personas que se registraron desde el formulario "Únete al Equipo". Toca <strong style="color:var(--y)">DAR DE ALTA</strong> para convertirlos en socios con acceso al sistema.</p>
     <div id="listaCandidatos"><p class="empty">Cargando candidatos...</p></div>
   </div>
 
-  <!-- ÓRDENES PENDIENTES -->
   <div id="sec-ordenes" class="sec">
     <h2>📋 Órdenes Pendientes</h2>
     <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px;line-height:1.5">⚠️ El socio <strong style="color:var(--y)">SOLO VE la orden cuando la asignas aquí.</strong> Sin asignar, no llega a nadie.</p>
     <div id="listaOrdenes"><p class="empty">Cargando órdenes...</p></div>
   </div>
 
-  <!-- ARCHIVO -->
   <div id="sec-archivo" class="sec">
     <h2>📦 Recibos Pendientes</h2>
     <div id="listaArchivo"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- DEUDAS -->
   <div id="sec-deudas" class="sec">
     <h2>💰 Deudas de Socios</h2>
     <div id="listaDeudas"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- SOCIOS -->
   <div id="sec-socios" class="sec">
     <h2>👥 Lista de Socios</h2>
     <div id="listaSocios"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- CONFIG -->
   <div id="sec-config" class="sec">
     <h2>⚙️ Configuración</h2>
     <div class="cfg-box">
@@ -310,7 +299,7 @@ function showTab(id){
 // ══════════════════════════════════════════════════════════
 function initContadores(){
   // Candidatos
-  db.ref('postulantes').on('value', snap=>{
+  db.ref('postulantes').on('value', snap => {
     const n = snap.val() ? Object.keys(snap.val()).length : 0;
     const el=document.getElementById('cnt-cand');
     el.textContent=n; el.style.display=n>0?'flex':'none';
@@ -473,13 +462,13 @@ function renderOrdenes(){
 
       c.innerHTML = pend.map(([id,o])=>{
         const tc=ct(o.telefono||'');
-        const tecAsig = o.tecnico && sociosCache[o.tecnico]
-          ? (sociosCache[o.tecnico].usuario||sociosCache[o.tecnico].nombre)
+        const tecAsig = o.id_tecnico && sociosCache[o.id_tecnico]
+          ? (sociosCache[o.id_tecnico].usuario||sociosCache[o.id_tecnico].nombre)
           : null;
 
         const opcionesSocios = Object.entries(sociosCache)
           .filter(([,s])=>s.admitido)
-          .map(([sid,s])=>`<option value="${sid}" data-tel="${s.telefono||''}" data-nom="${s.usuario||s.nombre||''}" ${o.tecnico===sid?'selected':''}>
+          .map(([sid,s])=>`<option value="${sid}" data-tel="${s.telefono||''}" data-nom="${s.usuario||s.nombre||''}" ${o.id_tecnico===sid?'selected':''}>
             ${s.disponible?'🟢':'🔴'} ${s.usuario||s.nombre} — ${s.especialidad||''}
           </option>`).join('');
 
@@ -535,8 +524,8 @@ function asignarTecnico(oid, cliente, categoria, problema, telCliente){
   const telTec=ct(opt.dataset.tel||'');
   const nomTec=opt.dataset.nom||'Técnico';
 
-  // Actualizar en Firebase
-  db.ref('solicitudes/'+oid).update({ tecnico:tid });
+  // Actualizar en Firebase con el campo correcto
+  db.ref('solicitudes/'+oid).update({ id_tecnico:tid });
 
   // Mensaje al técnico
   const msgTec=`🔧 NUEVA ORDEN D'BARRIO\n\n👤 Cliente: ${cliente}\n📞 Tel: ${telCliente}\n🏷️ ${categoria}\n⚙️ ${problema}\n\n✅ Asignado a ti. Contáctalo cuando puedas.`;
