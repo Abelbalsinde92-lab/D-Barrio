@@ -12,8 +12,7 @@
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto Condensed',sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:80px}
 .hdr{background:var(--card);border-bottom:3px solid var(--y);padding:14px 18px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
-.hdr-logo{font-size:1.2rem;font-weight:900;color:var(--y);letter-spacing:-1px;text-transform:uppercase}
-.hdr-logo span{color:#fff}
+.hdr-logo{font-size:1.2rem;font-weight:900;color:var(--y);text-transform:uppercase}
 .hdr-back{background:rgba(249,168,37,.15);border:2px solid var(--y);color:var(--y);padding:7px 14px;font-size:.75rem;font-weight:900;cursor:pointer;text-transform:uppercase;text-decoration:none}
 .tabs{background:var(--card);border-bottom:3px solid var(--border);display:flex;overflow-x:auto;position:sticky;top:55px;z-index:99;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
@@ -36,7 +35,7 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .card-title{font-weight:900;font-size:.95rem;text-transform:uppercase;color:#fff}
 .card-sub{font-size:.7rem;color:var(--sub);margin-top:3px}
 .card-body{padding:0 15px;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
-.card.open .card-body{padding:15px;max-height:4000px}
+.card.open .card-body{padding:15px;max-height:5000px}
 .arrow{color:var(--y);font-size:.9rem;transition:transform .3s;flex-shrink:0}
 .card.open .arrow{transform:rotate(180deg)}
 .badge{padding:4px 10px;font-size:.62rem;font-weight:900;text-transform:uppercase;flex-shrink:0}
@@ -61,6 +60,7 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .btn-b{background:transparent;border:2px solid #0088ff;color:#0088ff}
 .btn-r{background:rgba(255,68,68,.15);border:2px solid var(--red);color:var(--red)}
 .btn-blue-solid{background:#0088ff;color:#fff;border:none}
+.btn-orange{background:#ff9500;color:#000;border:none}
 .irow{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);gap:10px}
 .irow:last-child{border:none}
 .ilbl{color:var(--sub);font-size:.78rem;font-weight:700;flex-shrink:0}
@@ -80,7 +80,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .pin-box input{width:100%;background:#000;border:2px solid var(--border);color:#fff;padding:14px;font-size:1.5rem;letter-spacing:6px;text-align:center;margin-bottom:14px}
 .empty{color:var(--sub);text-align:center;padding:35px 20px;font-size:.9rem}
 .rank{background:var(--y);color:#000;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;flex-shrink:0}
-/* Modal convertir candidato */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:600;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px}
 .modal-overlay.open{display:flex}
 .modal-box{background:var(--card);border:3px solid var(--y);width:100%;max-width:440px;margin:auto}
@@ -97,40 +96,77 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 <!-- Overlay PIN reset -->
 <div class="overlay" id="overlay-pin">
   <div class="pin-box">
-    <h3>🔐 PIN de Seguridad</h3>
+    <h3>🔐 PIN</h3>
     <input type="password" id="reset-pin" maxlength="6" placeholder="••••••" inputmode="numeric">
     <button class="btn btn-y" onclick="confirmarReset()">CONFIRMAR</button>
     <button class="btn btn-r" onclick="closeOverlay('overlay-pin')">CANCELAR</button>
   </div>
 </div>
 
-<!-- Modal convertir candidato a socio -->
+<!-- Modal candidato a socio -->
 <div class="modal-overlay" id="modal-candidato">
   <div class="modal-box">
-    <div class="modal-top">
-      <h3>👷 DAR DE ALTA COMO SOCIO</h3>
-      <button class="btn-close" onclick="closeOverlay('modal-candidato')">✕</button>
-    </div>
+    <div class="modal-top"><h3>👷 DAR DE ALTA</h3><button class="btn-close" onclick="closeOverlay('modal-candidato')">✕</button></div>
     <div class="modal-body">
-      <p style="color:var(--sub);font-size:.85rem;margin-bottom:16px">Revisa los datos y asigna un PIN para que pueda entrar al sistema.</p>
       <div class="fld"><label>Nombre</label><input type="text" id="m-nom"></div>
       <div class="fld"><label>WhatsApp</label><input type="tel" id="m-tel"></div>
       <div class="fld"><label>Zona</label><input type="text" id="m-zon"></div>
       <div class="fld"><label>Especialidad</label>
         <select id="m-esp">
           <option value="">Seleccionar...</option>
-          <option>🚰 Plomería</option><option>⚡ Electricidad</option>
-          <option>🔨 Carpintería</option><option>🧱 Albañilería</option>
-          <option>🎨 Pintura</option><option>❄️ Refrigeración</option>
-          <option>🔑 Cerrajería</option><option>💻 Tecnología</option>
-          <option>🔧 Multiservicios</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
         </select>
       </div>
-      <div class="fld"><label>PIN (4 dígitos)</label><input type="password" id="m-pin" maxlength="4" pattern="[0-9]{4}" inputmode="numeric" placeholder="Ej: 1234"></div>
+      <div class="fld"><label>PIN (4 dígitos)</label><input type="password" id="m-pin" maxlength="4" pattern="[0-9]{4}" inputmode="numeric"></div>
       <div class="fld"><label>Comisión (%)</label><input type="number" id="m-com" min="0" max="100" value="15"></div>
       <input type="hidden" id="m-candidato-id">
-      <button class="btn btn-y" onclick="convertirEnSocio()">✅ REGISTRAR Y ENVIAR ACCESO POR WA</button>
+      <button class="btn btn-y" onclick="convertirEnSocio()">✅ REGISTRAR Y ENVIAR</button>
       <button class="btn btn-r" onclick="closeOverlay('modal-candidato')">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal orden manual -->
+<div class="modal-overlay" id="modal-orden">
+  <div class="modal-box">
+    <div class="modal-top"><h3>📝 ORDEN MANUAL</h3><button class="btn-close" onclick="closeOverlay('modal-orden')">✕</button></div>
+    <div class="modal-body">
+      <p style="color:var(--sub);font-size:.85rem;margin-bottom:16px">Crea una orden manualmente (teléfono, visita, etc.)</p>
+      <div class="fld"><label>Cliente</label><input type="text" id="o-nom"></div>
+      <div class="fld"><label>WhatsApp</label><input type="tel" id="o-tel" placeholder="+53..."></div>
+      <div class="fld"><label>Dirección</label><input type="text" id="o-dir"></div>
+      <div class="fld"><label>Categoría</label>
+        <select id="o-cat">
+          <option value="">Seleccionar...</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option>
+        </select>
+      </div>
+      <div class="fld"><label>Problema</label><textarea id="o-pro" rows="3"></textarea></div>
+      <button class="btn btn-y" onclick="crearOrdenManual()">💾 CREAR ORDEN</button>
+      <button class="btn btn-r" onclick="closeOverlay('modal-orden')">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal editar socio -->
+<div class="modal-overlay" id="modal-edit-socio">
+  <div class="modal-box">
+    <div class="modal-top"><h3>✏️ EDITAR SOCIO</h3><button class="btn-close" onclick="closeOverlay('modal-edit-socio')">✕</button></div>
+    <div class="modal-body">
+      <div class="fld"><label>Nombre</label><input type="text" id="e-nom"></div>
+      <div class="fld"><label>WhatsApp</label><input type="tel" id="e-tel"></div>
+      <div class="fld"><label>Zona</label><input type="text" id="e-zon"></div>
+      <div class="fld"><label>Especialidad</label>
+        <select id="e-esp">
+          <option value="">Seleccionar...</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
+        </select>
+      </div>
+      <div class="fld"><label>PIN</label><input type="password" id="e-pin" maxlength="4" pattern="[0-9]{4}" inputmode="numeric"></div>
+      <div class="fld"><label>Comisión (%)</label><input type="number" id="e-com" min="0" max="100"></div>
+      <input type="hidden" id="e-socio-id">
+      <button class="btn btn-y" onclick="guardarEdicionSocio()">💾 GUARDAR CAMBIOS</button>
+      <button class="btn btn-r" onclick="closeOverlay('modal-edit-socio')">CANCELAR</button>
     </div>
   </div>
 </div>
@@ -138,7 +174,7 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 <!-- HEADER -->
 <div class="hdr">
   <button class="hdr-back" onclick="logout()">← SALIR</button>
-  <div class="hdr-logo">D'BARRIO <span>ADMIN</span></div>
+  <div class="hdr-logo">D'BARRIO ADMIN</div>
   <div style="width:72px"></div>
 </div>
 
@@ -170,16 +206,17 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 
   <!-- CANDIDATOS -->
   <div id="sec-candidatos" class="sec">
-    <h2>👷 Candidatos a Socio</h2>
-    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px;line-height:1.5">Personas que se registraron desde el formulario "Únete al Equipo". Toca <strong style="color:var(--y)">DAR DE ALTA</strong> para convertirlos en socios con acceso al sistema.</p>
-    <div id="listaCandidatos"><p class="empty">Cargando candidatos...</p></div>
+    <h2>👷 Candidatos</h2>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Personas del formulario "Únete". Toca <strong style="color:var(--y)">DAR DE ALTA</strong> para convertirlos en socios.</p>
+    <div id="listaCandidatos"><p class="empty">Cargando...</p></div>
   </div>
 
   <!-- ÓRDENES PENDIENTES -->
   <div id="sec-ordenes" class="sec">
     <h2>📋 Órdenes Pendientes</h2>
-    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px;line-height:1.5">⚠️ El socio <strong style="color:var(--y)">SOLO VE la orden cuando la asignas aquí.</strong> Sin asignar, no llega a nadie.</p>
-    <div id="listaOrdenes"><p class="empty">Cargando órdenes...</p></div>
+    <button class="btn btn-orange" style="margin-bottom:16px" onclick="openModal('modal-orden')">➕ CREAR ORDEN MANUAL</button>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">⚠️ El socio SOLO VE la orden cuando la asignas. Toca las tarjetas para expandir.</p>
+    <div id="listaOrdenes"><p class="empty">Cargando...</p></div>
   </div>
 
   <!-- ARCHIVO -->
@@ -190,13 +227,13 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 
   <!-- DEUDAS -->
   <div id="sec-deudas" class="sec">
-    <h2>💰 Deudas de Socios</h2>
+    <h2>💰 Deudas</h2>
     <div id="listaDeudas"><p class="empty">Cargando...</p></div>
   </div>
 
   <!-- SOCIOS -->
   <div id="sec-socios" class="sec">
-    <h2>👥 Lista de Socios</h2>
+    <h2>👥 Socios</h2>
     <div id="listaSocios"><p class="empty">Cargando...</p></div>
   </div>
 
@@ -205,20 +242,17 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
     <h2>⚙️ Configuración</h2>
     <div class="cfg-box">
       <h3>💰 Comisión Global</h3>
-      <p style="color:var(--sub);font-size:.85rem;margin-bottom:12px">Para socios sin comisión individual asignada.</p>
       <div class="fld"><label>Porcentaje (%)</label><input type="number" id="cfg-com" min="0" max="100" value="15"></div>
-      <button class="btn btn-y" onclick="guardarComision()">💾 GUARDAR COMISIÓN</button>
+      <button class="btn btn-y" onclick="guardarComision()">💾 GUARDAR</button>
     </div>
     <div class="cfg-box">
-      <h3>📱 Números de Notificación</h3>
-      <p style="color:var(--sub);font-size:.85rem;margin-bottom:12px">Reciben aviso cuando llega una nueva orden.</p>
-      <div class="fld"><label>Dueño (tu WhatsApp)</label><input type="tel" id="cfg-owner" placeholder="+53..."></div>
-      <div class="fld"><label>Ayudante (Caramelo)</label><input type="tel" id="cfg-helper" value="+5355165641"></div>
-      <button class="btn btn-y" onclick="guardarNotif()">💾 GUARDAR NÚMEROS</button>
+      <h3>📱 Notificaciones</h3>
+      <div class="fld"><label>Dueño (WhatsApp)</label><input type="tel" id="cfg-owner" placeholder="+53..."></div>
+      <div class="fld"><label>Caramelo</label><input type="tel" id="cfg-helper" value="+5355165641"></div>
+      <button class="btn btn-y" onclick="guardarNotif()">💾 GUARDAR</button>
     </div>
     <div class="cfg-box danger">
-      <h3>⚠️ Zona de Peligro</h3>
-      <p style="color:var(--sub);font-size:.85rem;margin-bottom:12px">Borra historial de órdenes completadas. Requiere PIN.</p>
+      <h3>⚠️ Zona Peligro</h3>
       <button class="btn btn-r" onclick="pedirPinReset()">🗑️ RESETEAR HISTORIAL</button>
     </div>
   </div>
@@ -228,180 +262,70 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
 <script>
-// ══════════════════════════════════════════════════════════
-// FIREBASE
-// ══════════════════════════════════════════════════════════
-firebase.initializeApp({
-  apiKey:"AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",
-  authDomain:"delbarrioapp-27247.firebaseapp.com",
-  databaseURL:"https://delbarrioapp-27247-default-rtdb.firebaseio.com",
-  projectId:"delbarrioapp-27247",
-  storageBucket:"delbarrioapp-27247.appspot.com",
-  messagingSenderId:"57798249354",
-  appId:"1:57798249354:web:18bd75ac7b8469feb35673"
-});
-const db = firebase.database();
+firebase.initializeApp({apiKey:"AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",authDomain:"delbarrioapp-27247.firebaseapp.com",databaseURL:"https://delbarrioapp-27247-default-rtdb.firebaseio.com",projectId:"delbarrioapp-27247",storageBucket:"delbarrioapp-27247.appspot.com",messagingSenderId:"57798249354",appId:"1:57798249354:web:18bd75ac7b8469feb35673"});
+const db=firebase.database();
+if(!localStorage.getItem('db_admin'))window.location.href='index.html';
 
-// ══════════════════════════════════════════════════════════
-// GUARD — si no está logueado, fuera
-// ══════════════════════════════════════════════════════════
-if(!localStorage.getItem('db_admin')) window.location.href='index.html';
+let comisionGlobal=15,notifConfig={owner:'',helper:'+5355165641'},sociosCache={},tabActual='dashboard',listeners={};
 
-// ══════════════════════════════════════════════════════════
-// ESTADO GLOBAL
-// ══════════════════════════════════════════════════════════
-let comisionGlobal = 15;
-let notifConfig = { owner:'', helper:'+5355165641' };
-let sociosCache = {};  // cache de socios para uso en órdenes
-let tabActual = 'dashboard';
-let listeners = {}; // guardamos referencias a listeners para no duplicar
+function ct(t){return(t||'').replace(/[\s\-\(\)\+]/g,'')}
+function money(n){return'$'+(parseFloat(n)||0).toFixed(2)}
+function stars(n){return'⭐'.repeat(Math.round(n||0))||'—'}
+function fdate(d){return d||'—'}
+function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' err':'');t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000)}
+function toggleCard(id){const c=document.getElementById(id);if(!c)return;const wasOpen=c.classList.contains('open');document.querySelectorAll('.card.open').forEach(x=>{if(x.id!==id)x.classList.remove('open')});c.classList.toggle('open',!wasOpen)}
+function closeOverlay(id){document.getElementById(id).classList.remove('open')}
+function openModal(id){document.getElementById(id).classList.add('open')}
 
-// ══════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════
-function ct(t){ return (t||'').replace(/[\s\-\(\)\+]/g,'') }
-function money(n){ return '$'+(parseFloat(n)||0).toFixed(2) }
-function stars(n){ return '⭐'.repeat(Math.round(n||0))||'—' }
-function fdate(d){ return d||'—' }
-
-function toast(msg, err=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast'+(err?' err':'');
-  t.style.display='block';
-  clearTimeout(t._t); t._t=setTimeout(()=>t.style.display='none',3000);
-}
-
-function toggleCard(id){
-  const c=document.getElementById(id);
-  if(!c) return;
-  const wasOpen=c.classList.contains('open');
-  document.querySelectorAll('.card.open').forEach(x=>{ if(x.id!==id) x.classList.remove('open'); });
-  c.classList.toggle('open',!wasOpen);
-}
-
-function closeOverlay(id){ document.getElementById(id).classList.remove('open') }
-
-// ══════════════════════════════════════════════════════════
-// TABS — un solo listener por sección, se destruye al cambiar
-// ══════════════════════════════════════════════════════════
 function showTab(id){
-  // Apagar listener anterior si existe
-  if(listeners[tabActual]){
-    listeners[tabActual].ref.off('value', listeners[tabActual].fn);
-    delete listeners[tabActual];
-  }
-  tabActual = id;
+  if(listeners[tabActual]){listeners[tabActual].ref.off('value',listeners[tabActual].fn);delete listeners[tabActual]}
+  tabActual=id;
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.getElementById('sec-'+id).classList.add('on');
   document.getElementById('tab-'+id).classList.add('on');
-
-  if(id==='dashboard') renderDash();
-  if(id==='candidatos') renderCandidatos();
-  if(id==='ordenes') renderOrdenes();
-  if(id==='archivo') renderArchivo();
-  if(id==='deudas') renderDeudas();
-  if(id==='socios') renderSocios();
-  if(id==='config') cargarConfig();
+  if(id==='dashboard')renderDash();
+  if(id==='candidatos')renderCandidatos();
+  if(id==='ordenes')renderOrdenes();
+  if(id==='archivo')renderArchivo();
+  if(id==='deudas')renderDeudas();
+  if(id==='socios')renderSocios();
+  if(id==='config')cargarConfig();
 }
 
-// ══════════════════════════════════════════════════════════
-// CONTADORES EN PESTAÑAS (tiempo real)
-// ══════════════════════════════════════════════════════════
 function initContadores(){
-  // Candidatos
-  db.ref('postulantes').on('value', snap=>{
-    const n = snap.val() ? Object.keys(snap.val()).length : 0;
-    const el=document.getElementById('cnt-cand');
-    el.textContent=n; el.style.display=n>0?'flex':'none';
-  });
-  // Órdenes pendientes
-  db.ref('solicitudes').on('value', snap=>{
-    const sol=snap.val()||{};
-    const n=Object.values(sol).filter(o=>o.estado==='pendiente').length;
-    const el=document.getElementById('cnt-ord');
-    el.textContent=n; el.style.display=n>0?'flex':'none';
-  });
+  db.ref('postulantes').on('value',snap=>{const n=snap.val()?Object.keys(snap.val()).length:0;const el=document.getElementById('cnt-cand');el.textContent=n;el.style.display=n>0?'flex':'none'});
+  db.ref('solicitudes').on('value',snap=>{const sol=snap.val()||{};const n=Object.values(sol).filter(o=>o.estado==='pendiente').length;const el=document.getElementById('cnt-ord');el.textContent=n;el.style.display=n>0?'flex':'none'});
 }
 
-// ══════════════════════════════════════════════════════════
-// DASHBOARD
-// ══════════════════════════════════════════════════════════
 function renderDash(){
-  db.ref('solicitudes').once('value', snap=>{
+  db.ref('solicitudes').once('value',snap=>{
     const sol=snap.val()||{};
-    const total=Object.keys(sol).length;
-    const pend=Object.values(sol).filter(o=>o.estado==='pendiente').length;
-    let ing=0;
-    Object.values(sol).forEach(o=>{ if(o.monto) ing+=o.monto*(comisionGlobal/100) });
-    document.getElementById('d-total').textContent=total;
-    document.getElementById('d-pend').textContent=pend;
+    document.getElementById('d-total').textContent=Object.keys(sol).length;
+    document.getElementById('d-pend').textContent=Object.values(sol).filter(o=>o.estado==='pendiente').length;
+    let ing=0;Object.values(sol).forEach(o=>{if(o.monto)ing+=o.monto*(comisionGlobal/100)});
     document.getElementById('d-ing').textContent=money(ing);
   });
-  db.ref('socios').once('value', snap=>{
+  db.ref('socios').once('value',snap=>{
     const soc=snap.val()||{};
     document.getElementById('d-socios').textContent=Object.keys(soc).length;
-    const top=Object.entries(soc)
-      .map(([id,s])=>({id,...s}))
-      .sort((a,b)=>(b.rating||0)-(a.rating||0))
-      .slice(0,5);
-    document.getElementById('topSocios').innerHTML = top.length
-      ? top.map((s,i)=>`
-        <div class="card">
-          <div class="card-hdr" style="cursor:default">
-            <div style="display:flex;align-items:center;gap:12px">
-              <span class="rank">${i+1}</span>
-              <div><div class="card-title">${s.usuario||s.nombre||'—'}</div>
-              <div class="card-sub">${s.especialidad||'—'} · ${s.trabajos||0} trabajos</div></div>
-            </div>
-            <span style="color:var(--y)">${stars(s.rating)}</span>
-          </div>
-        </div>`).join('')
-      : '<p class="empty">Sin socios aún</p>';
+    const top=Object.entries(soc).map(([id,s])=>({id,...s})).sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,5);
+    document.getElementById('topSocios').innerHTML=top.length?top.map((s,i)=>`<div class="card"><div class="card-hdr" style="cursor:default"><div style="display:flex;align-items:center;gap:12px"><span class="rank">${i+1}</span><div><div class="card-title">${s.usuario||s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'} · ${s.trabajos||0} trabajos</div></div></div><span style="color:var(--y)">${stars(s.rating)}</span></div></div>`).join(''):'<p class="empty">Sin socios</p>';
   });
 }
 
-// ══════════════════════════════════════════════════════════
-// CANDIDATOS (postulantes/)
-// ══════════════════════════════════════════════════════════
 function renderCandidatos(){
   const c=document.getElementById('listaCandidatos');
-  c.innerHTML='<p class="empty">Cargando...</p>';
-
-  const fn = snap=>{
+  const fn=snap=>{
     const data=snap.val()||{};
     const arr=Object.entries(data);
-    if(!arr.length){ c.innerHTML='<p class="empty">Sin candidatos nuevos 🎉</p>'; return; }
-    c.innerHTML = arr.reverse().map(([id,p])=>`
-      <div class="card cand" id="cand-${id}">
-        <div class="card-hdr" onclick="toggleCard('cand-${id}')">
-          <div>
-            <div class="card-title">${p.nombre||'Sin nombre'}</div>
-            <div class="card-sub">${p.oficio||'—'} · ${p.fecha||'—'}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="badge badge-b">NUEVO</span>
-            <span class="arrow" style="color:#0088ff">▼</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${p.telefono||'—'}</span></div>
-          <div class="irow"><span class="ilbl">Especialidad</span><span class="ival">${p.oficio||'—'}</span></div>
-          <div class="irow"><span class="ilbl">Zona</span><span class="ival">${p.zona||'—'}</span></div>
-          <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${p.fecha||'—'}</span></div>
-          <button class="btn btn-blue-solid" onclick="abrirModalCandidato('${id}','${(p.nombre||'').replace(/'/g,"\\'")}','${(p.telefono||'').replace(/'/g,"\\'")}','${(p.zona||'').replace(/'/g,"\\'")}','${(p.oficio||'').replace(/'/g,"\\'")}')">⬆️ DAR DE ALTA COMO SOCIO</button>
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${ct(p.telefono||'')}','_blank')">💬 WhatsApp</button>
-          <button class="btn btn-r" onclick="eliminarCandidato('${id}')">🗑️ RECHAZAR Y BORRAR</button>
-        </div>
-      </div>`).join('');
+    if(!arr.length){c.innerHTML='<p class="empty">Sin candidatos 🎉</p>';return}
+    c.innerHTML=arr.reverse().map(([id,p])=>`<div class="card cand" id="cand-${id}"><div class="card-hdr" onclick="toggleCard('cand-${id}')"><div><div class="card-title">${p.nombre||'—'}</div><div class="card-sub">${p.oficio||'—'} · ${p.fecha||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-b">NUEVO</span><span class="arrow" style="color:#0088ff">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${p.telefono||'—'}</span></div><div class="irow"><span class="ilbl">Especialidad</span><span class="ival">${p.oficio||'—'}</span></div><div class="irow"><span class="ilbl">Zona</span><span class="ival">${p.zona||'—'}</span></div><button class="btn btn-blue-solid" onclick="abrirModalCandidato('${id}','${(p.nombre||'').replace(/'/g,"\\'")}','${(p.telefono||'').replace(/'/g,"\\'")}','${(p.zona||'').replace(/'/g,"\\'")}','${(p.oficio||'').replace(/'/g,"\\'")}')">⬆️ DAR DE ALTA</button><button class="btn btn-g" onclick="window.open('https://wa.me/${ct(p.telefono||'')}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarCandidato('${id}')">🗑️ RECHAZAR</button></div></div>`).join('');
   };
-
-  const ref=db.ref('postulantes');
-  ref.on('value', fn);
-  listeners['candidatos']={ ref, fn };
+  const ref=db.ref('postulantes');ref.on('value',fn);listeners['candidatos']={ref,fn};
 }
 
-function abrirModalCandidato(id, nom, tel, zon, esp){
+function abrirModalCandidato(id,nom,tel,zon,esp){
   document.getElementById('m-candidato-id').value=id;
   document.getElementById('m-nom').value=nom;
   document.getElementById('m-tel').value=tel;
@@ -409,7 +333,7 @@ function abrirModalCandidato(id, nom, tel, zon, esp){
   document.getElementById('m-esp').value=esp;
   document.getElementById('m-pin').value='';
   document.getElementById('m-com').value=comisionGlobal;
-  document.getElementById('modal-candidato').classList.add('open');
+  openModal('modal-candidato');
 }
 
 function convertirEnSocio(){
@@ -420,365 +344,193 @@ function convertirEnSocio(){
   const esp=document.getElementById('m-esp').value;
   const pin=document.getElementById('m-pin').value.trim();
   const com=parseInt(document.getElementById('m-com').value)||15;
-
-  if(!nom||!tel||!pin||pin.length<4){ toast('⚠️ Completa todos los campos y el PIN (4 dígitos)',true); return; }
-
-  // Crear socio en Firebase
-  const newRef=db.ref('socios').push({
-    usuario:nom, nombre:nom, telefono:tel, zona:zon,
-    especialidad:esp, pin:pin, comision:com,
-    deuda:0, disponible:true, admitido:true,
-    rating:0, trabajos:0
-  });
-
-  // Borrar de postulantes
+  if(!nom||!tel||!pin||pin.length<4){toast('⚠️ Completa todos',true);return}
+  const newRef=db.ref('socios').push({usuario:nom,nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com,deuda:0,disponible:true,admitido:true,rating:0,trabajos:0});
   db.ref('postulantes/'+cid).remove();
-
-  // Enviar acceso por WhatsApp
   const link=`https://abelbalsinde92-lab.github.io/D-Barrio/socio.html?id=${newRef.key}`;
-  const msg=`🎉 Bienvenido al equipo D'BARRIO, ${nom}!\n\n✅ Tu acceso personal:\n${link}\n\n🔐 Tu usuario: ${nom}\n🔑 Tu PIN: ${pin}\n\n📱 Guarda este mensaje.\nCualquier duda llama al admin.`;
+  const msg=`🎉 Bienvenido D'BARRIO, ${nom}!\n\n✅ Acceso:\n${link}\n\n🔐 Usuario: ${nom}\n🔑 PIN: ${pin}\n\n📱 Guarda esto.`;
   window.open(`https://wa.me/${ct(tel)}?text=${encodeURIComponent(msg)}`,'_blank');
-
   closeOverlay('modal-candidato');
-  toast(`✅ ${nom} registrado como socio`);
+  toast(`✅ ${nom} registrado`);
 }
 
-function eliminarCandidato(id){
-  if(!confirm('¿Rechazar y eliminar este candidato?')) return;
-  db.ref('postulantes/'+id).remove();
-  toast('🗑️ Candidato eliminado');
+function eliminarCandidato(id){if(!confirm('¿Rechazar?'))return;db.ref('postulantes/'+id).remove();toast('🗑️ Eliminado')}
+
+function crearOrdenManual(){
+  const nom=document.getElementById('o-nom').value.trim();
+  const tel=document.getElementById('o-tel').value.trim();
+  const dir=document.getElementById('o-dir').value.trim();
+  const cat=document.getElementById('o-cat').value;
+  const pro=document.getElementById('o-pro').value.trim();
+  if(!nom||!tel||!dir||!cat){toast('⚠️ Completa campos',true);return}
+  db.ref('solicitudes').push({cliente:nom,telefono:tel,direccion:dir,categoria:cat,problema:pro,estado:'pendiente',fecha_inicio:new Date().toLocaleDateString('es-CU'),monto:0,valoracion:0})
+  .then(()=>{
+    toast('✅ Orden creada');
+    closeOverlay('modal-orden');
+    document.getElementById('o-nom').value='';
+    document.getElementById('o-tel').value='';
+    document.getElementById('o-dir').value='';
+    document.getElementById('o-cat').value='';
+    document.getElementById('o-pro').value='';
+  });
 }
 
-// ══════════════════════════════════════════════════════════
-// ÓRDENES PENDIENTES
-// ══════════════════════════════════════════════════════════
 function renderOrdenes(){
   const c=document.getElementById('listaOrdenes');
-  c.innerHTML='<p class="empty">Cargando...</p>';
-
-  // Primero cargamos socios para el select
-  db.ref('socios').once('value', sSnap=>{
+  db.ref('socios').once('value',sSnap=>{
     sociosCache=sSnap.val()||{};
-
-    const fn = snap=>{
+    const fn=snap=>{
       const sol=snap.val()||{};
-      const pend=Object.entries(sol)
-        .filter(([,o])=>o.estado==='pendiente')
-        .sort((a,b)=>{ return (b[1].fecha_ts||0)-(a[1].fecha_ts||0) });
-
-      if(!pend.length){
-        c.innerHTML='<p class="empty">Sin órdenes pendientes 🎉<br><span style="font-size:.8rem;color:#666">Las nuevas órdenes del formulario aparecen aquí automáticamente.</span></p>';
-        return;
-      }
-
-      c.innerHTML = pend.map(([id,o])=>{
+      const pend=Object.entries(sol).filter(([,o])=>o.estado==='pendiente').sort((a,b)=>(b[1].fecha_ts||0)-(a[1].fecha_ts||0));
+      if(!pend.length){c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';return}
+      c.innerHTML=pend.map(([id,o])=>{
         const tc=ct(o.telefono||'');
-        const tecAsig = o.tecnico && sociosCache[o.tecnico]
-          ? (sociosCache[o.tecnico].usuario||sociosCache[o.tecnico].nombre)
-          : null;
-
-        const opcionesSocios = Object.entries(sociosCache)
-          .filter(([,s])=>s.admitido)
-          .map(([sid,s])=>`<option value="${sid}" data-tel="${s.telefono||''}" data-nom="${s.usuario||s.nombre||''}" ${o.tecnico===sid?'selected':''}>
-            ${s.disponible?'🟢':'🔴'} ${s.usuario||s.nombre} — ${s.especialidad||''}
-          </option>`).join('');
-
-        return`<div class="card hl" id="ord-${id}">
-          <div class="card-hdr" onclick="toggleCard('ord-${id}')">
-            <div>
-              <div class="card-title">${o.cliente||'Sin nombre'}</div>
-              <div class="card-sub">${o.categoria||'General'} · ${fdate(o.fecha_inicio)}</div>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px">
-              <span class="badge badge-r pulse">PENDIENTE</span>
-              <span class="arrow">▼</span>
-            </div>
-          </div>
-          <div class="card-body">
-            <div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div>
-            <div class="irow"><span class="ilbl">Problema</span><span class="ival">${o.problema||'—'}</span></div>
-            <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div>
-            <div class="irow"><span class="ilbl">Técnico asignado</span>
-              <span class="ival" style="color:${tecAsig?'var(--green)':'var(--red)'}">
-                ${tecAsig?'✅ '+tecAsig:'❌ Sin asignar'}
-              </span>
-            </div>
-            <hr class="sep">
-            <div class="fld"><label>Asignar Técnico</label>
-              <select id="sel-${id}">
-                <option value="">— Seleccionar técnico —</option>
-                ${opcionesSocios}
-              </select>
-            </div>
-            <button class="btn btn-y" onclick="asignarTecnico('${id}','${(o.cliente||'').replace(/'/g,"\\'")}','${(o.categoria||'').replace(/'/g,"\\'")}','${(o.problema||'').replace(/'/g,"\\'")}','${o.telefono||''}')">
-              📤 ASIGNAR Y NOTIFICAR POR WA
-            </button>
-            <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp Cliente</button>
-            <button class="btn btn-b" onclick="window.open('tel:+${tc}','_blank')">📞 Llamar Cliente</button>
-          </div>
-        </div>`;
+        const tecAsig=o.tecnico&&sociosCache[o.tecnico]?(sociosCache[o.tecnico].usuario||sociosCache[o.tecnico].nombre):null;
+        const opcs=Object.entries(sociosCache).filter(([,s])=>s.admitido).map(([sid,s])=>`<option value="${sid}" data-tel="${s.telefono||''}" data-nom="${s.usuario||s.nombre||''}" ${o.tecnico===sid?'selected':''}>${s.disponible?'🟢':'🔴'} ${s.usuario||s.nombre} — ${s.especialidad||''}</option>`).join('');
+        return`<div class="card hl" id="ord-${id}"><div class="card-hdr" onclick="toggleCard('ord-${id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.categoria||'—'} · ${fdate(o.fecha_inicio)}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-r pulse">PEND</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div><div class="irow"><span class="ilbl">Problema</span><span class="ival">${o.problema||'—'}</span></div><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div><div class="irow"><span class="ilbl">Técnico</span><span class="ival" style="color:${tecAsig?'var(--green)':'var(--red)'}">$${tecAsig?'✅ '+tecAsig:'❌ Sin asignar'}</span></div><hr class="sep"><div class="fld"><label>Asignar</label><select id="sel-${id}"><option value="">— Seleccionar —</option>${opcs}</select></div><button class="btn btn-y" onclick="asignarTecnico('${id}','${(o.cliente||'').replace(/'/g,"\\'")}','${(o.categoria||'').replace(/'/g,"\\'")}','${(o.problema||'').replace(/'/g,"\\'")}','${o.telefono||''}')">📤 ASIGNAR Y NOTIFICAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Cliente</button><button class="btn btn-b" onclick="window.open('tel:+${tc}','_blank')">📞 Llamar</button></div></div>`;
       }).join('');
     };
-
-    const ref=db.ref('solicitudes');
-    ref.on('value', fn);
-    listeners['ordenes']={ ref, fn };
+    const ref=db.ref('solicitudes');ref.on('value',fn);listeners['ordenes']={ref,fn};
   });
 }
 
-function asignarTecnico(oid, cliente, categoria, problema, telCliente){
+function asignarTecnico(oid,cliente,cat,prob,telCli){
   const sel=document.getElementById('sel-'+oid);
-  if(!sel){ toast('⚠️ Error al leer el selector',true); return; }
+  if(!sel){toast('⚠️ Error selector',true);return}
   const tid=sel.value;
-  if(!tid){ toast('⚠️ Selecciona un técnico primero',true); return; }
+  if(!tid){toast('⚠️ Selecciona técnico',true);return}
   const opt=sel.options[sel.selectedIndex];
   const telTec=ct(opt.dataset.tel||'');
   const nomTec=opt.dataset.nom||'Técnico';
-
-  // Actualizar en Firebase
-  db.ref('solicitudes/'+oid).update({ tecnico:tid });
-
-  // Mensaje al técnico
-  const msgTec=`🔧 NUEVA ORDEN D'BARRIO\n\n👤 Cliente: ${cliente}\n📞 Tel: ${telCliente}\n🏷️ ${categoria}\n⚙️ ${problema}\n\n✅ Asignado a ti. Contáctalo cuando puedas.`;
+  db.ref('solicitudes/'+oid).update({tecnico:tid});
+  const msgTec=`🔧 NUEVA ORDEN D'BARRIO\n\n👤 ${cliente}\n📞 ${telCli}\n🏷️ ${cat}\n⚙️ ${prob}\n\n✅ Asignado a ti.`;
   window.open(`https://wa.me/${telTec}?text=${encodeURIComponent(msgTec)}`,'_blank');
-
-  // Notificar admin/ayudante
   setTimeout(()=>{
-    [notifConfig.owner, notifConfig.helper].filter(Boolean).forEach(num=>{
+    [notifConfig.owner,notifConfig.helper].filter(Boolean).forEach(num=>{
       const n=ct(num);
-      if(n){
-        const m=`📋 Orden asignada a ${nomTec}\nCliente: ${cliente} · ${categoria}`;
-        window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank');
-      }
+      if(n){const m=`📋 Orden asignada a ${nomTec}\n${cliente} · ${cat}`;window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank')}
     });
   },1200);
-
-  toast(`✅ Asignado a ${nomTec} y notificado`);
+  toast(`✅ Asignado a ${nomTec}`);
 }
 
-// ══════════════════════════════════════════════════════════
-// ARCHIVO (recibos listos para enviar)
-// ══════════════════════════════════════════════════════════
 function renderArchivo(){
   const c=document.getElementById('listaArchivo');
-  c.innerHTML='<p class="empty">Cargando...</p>';
-
-  const fn = snap=>{
+  const fn=snap=>{
     const sol=snap.val()||{};
     const listos=Object.entries(sol).filter(([,o])=>o.estado==='finalizado_pendiente_recibo');
-    if(!listos.length){ c.innerHTML='<p class="empty">Sin recibos pendientes ✅</p>'; return; }
+    if(!listos.length){c.innerHTML='<p class="empty">Sin recibos ✅</p>';return}
     c.innerHTML=listos.map(([id,o])=>{
       const tc=ct(o.telefono||'');
       const fI=new Date(o.fecha_inicio||Date.now());
-      const fV=new Date(fI); fV.setDate(fV.getDate()+30);
+      const fV=new Date(fI);fV.setDate(fV.getDate()+30);
       const vStr=fV.toLocaleDateString('es-CU');
-      const recibo=`🛡️ RECIBO D'BARRIO\n\nCódigo: ${o.codigo_garantia||'—'}\nServicio: ${o.categoria||'—'}\nTotal: ${money(o.monto)}\nGarantía hasta: ${vStr}\n\n✅ Servicio garantizado 30 días\n📞 Soporte: wa.me/5355165641`;
-      return`<div class="card hl" id="arc-${id}">
-        <div class="card-hdr" onclick="toggleCard('arc-${id}')">
-          <div><div class="card-title">${o.cliente||'—'}</div>
-          <div class="card-sub">${money(o.monto)} · ${o.categoria||'—'}</div></div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="badge badge-o">RECIBO</span><span class="arrow">▼</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="irow"><span class="ilbl">Código</span><span class="ival">${o.codigo_garantia||'—'}</span></div>
-          <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
-          <div class="irow"><span class="ilbl">Garantía vence</span><span class="ival">${vStr}</span></div>
-          <button class="btn btn-y" onclick="enviarRecibo('${id}','${tc}',\`${recibo}\`)">📤 ENVIAR RECIBO Y COMPLETAR</button>
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp Cliente</button>
-        </div>
-      </div>`;
+      const recibo=`🛡️ RECIBO D'BARRIO\n\nCódigo: ${o.codigo_garantia||'—'}\nServicio: ${o.categoria||'—'}\nTotal: ${money(o.monto)}\nGarantía: ${vStr}\n\n✅ 30 días\n📞 wa.me/5355165641`;
+      return`<div class="card hl" id="arc-${id}"><div class="card-hdr" onclick="toggleCard('arc-${id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${money(o.monto)} · ${o.categoria||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-o">RECIBO</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Código</span><span class="ival">${o.codigo_garantia||'—'}</span></div><div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div><div class="irow"><span class="ilbl">Vence</span><span class="ival">${vStr}</span></div><button class="btn btn-y" onclick="enviarRecibo('${id}','${tc}',\`${recibo}\`)">📤 ENVIAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`;
     }).join('');
   };
-
-  const ref=db.ref('solicitudes');
-  ref.on('value', fn);
-  listeners['archivo']={ ref, fn };
+  const ref=db.ref('solicitudes');ref.on('value',fn);listeners['archivo']={ref,fn};
 }
 
-function enviarRecibo(oid, tel, msg){
-  db.ref('solicitudes/'+oid).update({ estado:'completado', fecha_fin:new Date().toLocaleDateString('es-CU') });
+function enviarRecibo(oid,tel,msg){
+  db.ref('solicitudes/'+oid).update({estado:'completado',fecha_fin:new Date().toLocaleDateString('es-CU')});
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
-  toast('✅ Recibo enviado y orden completada');
+  toast('✅ Recibo enviado');
 }
 
-// ══════════════════════════════════════════════════════════
-// DEUDAS
-// ══════════════════════════════════════════════════════════
 function renderDeudas(){
   const c=document.getElementById('listaDeudas');
-  c.innerHTML='<p class="empty">Cargando...</p>';
-
-  const fn = snap=>{
+  const fn=snap=>{
     const soc=snap.val()||{};
     const arr=Object.entries(soc).filter(([,s])=>s.admitido);
-    if(!arr.length){ c.innerHTML='<p class="empty">Sin socios admitidos</p>'; return; }
+    if(!arr.length){c.innerHTML='<p class="empty">Sin socios</p>';return}
     c.innerHTML=arr.map(([id,s])=>{
       const tc=ct(s.telefono||'');
-      return`<div class="card" id="deu-${id}">
-        <div class="card-hdr" onclick="toggleCard('deu-${id}')">
-          <div><div class="card-title">${s.usuario||s.nombre||'—'} ${stars(s.rating)}</div>
-          <div class="card-sub">${s.especialidad||'—'} · ${s.trabajos||0} trabajos</div></div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="irow"><span class="ilbl">Zona</span><span class="ival">${s.zona||'—'}</span></div>
-          <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div>
-          <div class="irow"><span class="ilbl">Deuda acumulada</span><span class="money">${money(s.deuda)}</span></div>
-          <button class="btn btn-y" onclick="liquidar('${id}')">💰 MARCAR LIQUIDADO</button>
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button>
-        </div>
-      </div>`;
+      return`<div class="card" id="deu-${id}"><div class="card-hdr" onclick="toggleCard('deu-${id}')"><div><div class="card-title">${s.usuario||s.nombre||'—'} ${stars(s.rating)}</div><div class="card-sub">${s.especialidad||'—'} · ${s.trabajos||0} trabajos</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Zona</span><span class="ival">${s.zona||'—'}</span></div><div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-y" onclick="liquidar('${id}')">💰 LIQUIDADO</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`;
     }).join('');
   };
-
-  const ref=db.ref('socios');
-  ref.on('value', fn);
-  listeners['deudas']={ ref, fn };
+  const ref=db.ref('socios');ref.on('value',fn);listeners['deudas']={ref,fn};
 }
 
-function liquidar(sid){
-  if(!confirm('¿Marcar deuda como liquidada?')) return;
-  db.ref('socios/'+sid).update({ deuda:0 });
-  toast('✅ Deuda liquidada');
-}
+function liquidar(sid){if(!confirm('¿Marcar liquidado?'))return;db.ref('socios/'+sid).update({deuda:0});toast('✅ Liquidado')}
 
-// ══════════════════════════════════════════════════════════
-// SOCIOS
-// ══════════════════════════════════════════════════════════
 function renderSocios(){
   const c=document.getElementById('listaSocios');
-  c.innerHTML='<p class="empty">Cargando...</p>';
-
-  const fn = snap=>{
+  const fn=snap=>{
     const soc=snap.val()||{};
     const arr=Object.entries(soc);
-    if(!arr.length){ c.innerHTML='<p class="empty">Sin socios registrados</p>'; return; }
+    if(!arr.length){c.innerHTML='<p class="empty">Sin socios</p>';return}
     c.innerHTML=arr.map(([id,s])=>{
       const admitido=s.admitido===true;
       const disp=s.disponible!==false;
       const tc=ct(s.telefono||'');
-      return`<div class="card" id="soc-${id}">
-        <div class="card-hdr" onclick="toggleCard('soc-${id}')">
-          <div style="display:flex;align-items:center;gap:10px">
-            <span class="dot ${disp?'dot-g':'dot-r'}"></span>
-            <div><div class="card-title">${s.usuario||s.nombre||'—'}</div>
-            <div class="card-sub">${s.especialidad||'—'} · ${s.zona||'—'}</div></div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="badge ${admitido?'badge-g':'badge-r'}">${admitido?'ADMITIDO':'PENDIENTE'}</span>
-            <span class="arrow">▼</span>
-          </div>
-        </div>
-        <div class="card-body">
-          <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono||'—'}</span></div>
-          <div class="irow"><span class="ilbl">PIN</span><span class="ival">${s.pin||'—'}</span></div>
-          <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div>
-          <div class="irow"><span class="ilbl">Rating</span><span class="ival">${stars(s.rating)} (${(s.rating||0).toFixed(1)})</span></div>
-          <div class="irow"><span class="ilbl">Trabajos</span><span class="ival">${s.trabajos||0}</span></div>
-          <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
-          ${admitido
-            ?`<button class="btn btn-r" onclick="toggleAdmitido('${id}',false)">🚫 REVOCAR ACCESO</button>`
-            :`<button class="btn btn-g" onclick="toggleAdmitido('${id}',true)">✅ ADMITIR AL SISTEMA</button>`}
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button>
-          <button class="btn btn-r" style="margin-top:4px" onclick="eliminarSocio('${id}')">🗑️ ELIMINAR SOCIO</button>
-        </div>
-      </div>`;
+      return`<div class="card" id="soc-${id}"><div class="card-hdr" onclick="toggleCard('soc-${id}')"><div style="display:flex;align-items:center;gap:10px"><span class="dot ${disp?'dot-g':'dot-r'}"></span><div><div class="card-title">${s.usuario||s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'} · ${s.zona||'—'}</div></div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge ${admitido?'badge-g':'badge-r'}">${admitido?'ADM':'PEND'}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono||'—'}</span></div><div class="irow"><span class="ilbl">PIN</span><span class="ival">${s.pin||'—'}</span></div><div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div><div class="irow"><span class="ilbl">Rating</span><span class="ival">${stars(s.rating)} (${(s.rating||0).toFixed(1)})</span></div><div class="irow"><span class="ilbl">Trabajos</span><span class="ival">${s.trabajos||0}</span></div><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-orange" onclick="abrirEditarSocio('${id}','${(s.nombre||s.usuario||'').replace(/'/g,"\\'")}','${(s.telefono||'').replace(/'/g,"\\'")}','${(s.zona||'').replace(/'/g,"\\'")}','${(s.especialidad||'').replace(/'/g,"\\'")}','${s.pin||''}',${s.comision||15})">✏️ EDITAR</button>${admitido?`<button class="btn btn-r" onclick="toggleAdmitido('${id}',false)">🚫 REVOCAR</button>`:`<button class="btn btn-g" onclick="toggleAdmitido('${id}',true)">✅ ADMITIR</button>`}<button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarSocio('${id}')">🗑️ ELIMINAR</button></div></div>`;
     }).join('');
   };
-
-  const ref=db.ref('socios');
-  ref.on('value', fn);
-  listeners['socios']={ ref, fn };
+  const ref=db.ref('socios');ref.on('value',fn);listeners['socios']={ref,fn};
 }
 
-function toggleAdmitido(id,val){
-  db.ref('socios/'+id).update({ admitido:val });
-  toast(val?'✅ Socio admitido':'⚠️ Acceso revocado');
+function abrirEditarSocio(id,nom,tel,zon,esp,pin,com){
+  document.getElementById('e-socio-id').value=id;
+  document.getElementById('e-nom').value=nom;
+  document.getElementById('e-tel').value=tel;
+  document.getElementById('e-zon').value=zon;
+  document.getElementById('e-esp').value=esp;
+  document.getElementById('e-pin').value=pin;
+  document.getElementById('e-com').value=com;
+  openModal('modal-edit-socio');
 }
 
-function eliminarSocio(id){
-  if(!confirm('¿Eliminar este socio definitivamente?')) return;
-  db.ref('socios/'+id).remove();
-  toast('🗑️ Socio eliminado');
+function guardarEdicionSocio(){
+  const id=document.getElementById('e-socio-id').value;
+  const nom=document.getElementById('e-nom').value.trim();
+  const tel=document.getElementById('e-tel').value.trim();
+  const zon=document.getElementById('e-zon').value.trim();
+  const esp=document.getElementById('e-esp').value;
+  const pin=document.getElementById('e-pin').value.trim();
+  const com=parseInt(document.getElementById('e-com').value)||15;
+  if(!nom||!tel||!esp||!pin){toast('⚠️ Completa campos',true);return}
+  db.ref('socios/'+id).update({usuario:nom,nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com});
+  closeOverlay('modal-edit-socio');
+  toast('✅ Socio actualizado');
 }
 
-// ══════════════════════════════════════════════════════════
-// CONFIG
-// ══════════════════════════════════════════════════════════
+function toggleAdmitido(id,val){db.ref('socios/'+id).update({admitido:val});toast(val?'✅ Admitido':'⚠️ Revocado')}
+function eliminarSocio(id){if(!confirm('¿Eliminar?'))return;db.ref('socios/'+id).remove();toast('🗑️ Eliminado')}
+
 function cargarConfig(){
-  db.ref('config').once('value', snap=>{
+  db.ref('config').once('value',snap=>{
     const c=snap.val()||{};
     document.getElementById('cfg-com').value=c.comision||15;
     document.getElementById('cfg-owner').value=c.owner||'';
     document.getElementById('cfg-helper').value=c.helper||'+5355165641';
     comisionGlobal=c.comision||15;
-    notifConfig={ owner:c.owner||'', helper:c.helper||'+5355165641' };
+    notifConfig={owner:c.owner||'',helper:c.helper||'+5355165641'};
   });
 }
 
-function guardarComision(){
-  const n=parseInt(document.getElementById('cfg-com').value)||15;
-  comisionGlobal=n;
-  db.ref('config').update({ comision:n });
-  toast('✅ Comisión guardada: '+n+'%');
-}
+function guardarComision(){const n=parseInt(document.getElementById('cfg-com').value)||15;comisionGlobal=n;db.ref('config').update({comision:n});toast('✅ Comisión: '+n+'%')}
+function guardarNotif(){const o=document.getElementById('cfg-owner').value.trim();const h=document.getElementById('cfg-helper').value.trim();notifConfig={owner:o,helper:h};db.ref('config').update({owner:o,helper:h});toast('✅ Números guardados')}
 
-function guardarNotif(){
-  const o=document.getElementById('cfg-owner').value.trim();
-  const h=document.getElementById('cfg-helper').value.trim();
-  notifConfig={ owner:o, helper:h };
-  db.ref('config').update({ owner:o, helper:h });
-  toast('✅ Números guardados');
-}
-
-// ══════════════════════════════════════════════════════════
-// RESET SISTEMA
-// ══════════════════════════════════════════════════════════
-function pedirPinReset(){
-  document.getElementById('reset-pin').value='';
-  document.getElementById('overlay-pin').classList.add('open');
-}
-
+function pedirPinReset(){document.getElementById('reset-pin').value='';openModal('overlay-pin')}
 function confirmarReset(){
   const pin=document.getElementById('reset-pin').value;
-  if(pin!=='9202'){ toast('⚠️ PIN incorrecto',true); return; }
-  db.ref('solicitudes').once('value', snap=>{
+  if(pin!=='9202'){toast('⚠️ PIN incorrecto',true);return}
+  db.ref('solicitudes').once('value',snap=>{
     const sol=snap.val()||{};
     const updates={};
-    Object.entries(sol).forEach(([id,o])=>{ if(o.estado==='completado') updates[id]=null; });
-    if(!Object.keys(updates).length){ toast('Sin historial que borrar'); closeOverlay('overlay-pin'); return; }
-    db.ref('solicitudes').update(updates).then(()=>{
-      toast('✅ Historial limpiado');
-      closeOverlay('overlay-pin');
-    });
+    Object.entries(sol).forEach(([id,o])=>{if(o.estado==='completado')updates[id]=null});
+    if(!Object.keys(updates).length){toast('Sin historial');closeOverlay('overlay-pin');return}
+    db.ref('solicitudes').update(updates).then(()=>{toast('✅ Limpiado');closeOverlay('overlay-pin')});
   });
 }
 
-// ══════════════════════════════════════════════════════════
-// LOGOUT
-// ══════════════════════════════════════════════════════════
-function logout(){
-  localStorage.removeItem('db_admin');
-  window.location.href='index.html';
-}
+function logout(){localStorage.removeItem('db_admin');window.location.href='index.html'}
 
-// ══════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════
-db.ref('config').on('value', snap=>{
-  const c=snap.val()||{};
-  comisionGlobal=c.comision||15;
-  notifConfig={ owner:c.owner||'', helper:c.helper||'+5355165641' };
-});
-
+db.ref('config').on('value',snap=>{const c=snap.val()||{};comisionGlobal=c.comision||15;notifConfig={owner:c.owner||'',helper:c.helper||'+5355165641'}});
 initContadores();
 renderDash();
-
-if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
