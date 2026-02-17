@@ -1,93 +1,69 @@
-const CACHE_NAME = 'dbarrio-pro-v1.0.0';
-const RUNTIME_CACHE = 'dbarrio-runtime';
-
+const CACHE_NAME = 'dbarrio-v3';
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/admin.html',
-  '/socio.html',
-  '/manifest.json',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js',
-  'https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js'
+  '/D-Barrio/',
+  '/D-Barrio/index.html',
+  '/D-Barrio/admin.html',
+  '/D-Barrio/socio.html',
+  '/D-Barrio/manifest.json',
+  'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;900&display=swap'
 ];
 
-// Install - Cache static assets
-self.addEventListener('install', (event) => {
+// INSTALAR - cachear assets estáticos
+self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(STATIC_ASSETS))
-      .catch((error) => console.log('Cache error:', error))
+      .then(cache => cache.addAll(STATIC_ASSETS))
+      .then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// Activate - Clean old caches
-self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME, RUNTIME_CACHE];
+// ACTIVAR - limpiar caches viejos
+self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    ).then(() => self.clients.claim())
   );
-  self.clients.claim();
 });
 
-// Fetch - Network first, fallback to cache
-self.addEventListener('fetch', (event) => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') return;
-  
-  // Skip Firebase API calls
-  if (event.request.url.includes('firebaseio.com') || 
-      event.request.url.includes('googleapis.com')) {
+// FETCH - estrategia inteligente para Cuba
+self.addEventListener('fetch', event => {
+  const url = new URL(event.request.url);
+
+  // Firebase: siempre red primero (datos frescos)
+  if (url.hostname.includes('firebase') || url.hostname.includes('firebaseio')) {
+    event.respondWith(
+      fetch(event.request).catch(() => new Response('{}', {
+        headers: { 'Content-Type': 'application/json' }
+      }))
+    );
     return;
   }
 
+  // Google Fonts: cache primero
+  if (url.hostname.includes('fonts.googleapis') || url.hostname.includes('fonts.gstatic')) {
+    event.respondWith(
+      caches.match(event.request).then(cached =>
+        cached || fetch(event.request).then(response => {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+          return response;
+        })
+      )
+    );
+    return;
+  }
+
+  // HTML/JS/CSS: red primero, caché como respaldo (ideal para conexiones inestables)
   event.respondWith(
     fetch(event.request)
-      .then((response) => {
-        // Clone response for cache
-        const responseClone = response.clone();
-        
-        // Cache successful responses
-        if (response && response.status === 200 && response.type === 'basic') {
-          caches.open(RUNTIME_CACHE).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
+      .then(response => {
+        if (response.ok) {
+          const clone = response.clone();
+          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
         }
-        
         return response;
       })
-      .catch(() => {
-        // Network failed, try cache
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          
-          // Return offline page for navigation requests
-          if (event.request.mode === 'navigate') {
-            return caches.match('/index.html');
-          }
-        });
-      })
+      .catch(() => caches.match(event.request))
   );
 });
-
-// Background sync for offline orders (optional)
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'sync-orders') {
-    event.waitUntil(syncOrders());
-  }
-});
-
-async function syncOrders() {
-  // Implement order synchronization when online
-  console.log('Syncing orders...');
-}
