@@ -7,6 +7,15 @@
   "background_color": "#000000",
   "theme_color": "#F9A825",
   "orientation": "portrait",
+  {
+  "name": "D'BARRIO - Servicios Profesionales",
+  "short_name": "D'BARRIO",
+  "description": "Plataforma de servicios profesionales con garantía",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#F9A825",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "https://i.ibb.co/7Q8zYqN/IMG-9656.png",
