@@ -1,19 +1,23 @@
 {
   "name": "D'BARRIO - Servicios Profesionales",
   "short_name": "D'BARRIO",
-  "description": "Plataforma de servicios técnicos con garantía",
-  "start_url": "/D-Barrio/index.html",
-  "scope": "/D-Barrio/",
+  "description": "Plataforma de servicios profesionales con garantía",
+  "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#F9A825",
+  "orientation": "portrait",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ],
-  "shortcuts": [
-    { "name": "Admin", "url": "/D-Barrio/admin.html", "description": "Panel administrador" },
-    { "name": "Mi Panel", "url": "/D-Barrio/socio.html", "description": "Panel del socio" }
+    {
+      "src": "https://i.ibb.co/7Q8zYqN/IMG-9656.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.ibb.co/7Q8zYqN/IMG-9656.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
   ]
 }
