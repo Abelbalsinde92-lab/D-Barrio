@@ -59,7 +59,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .btn-g{background:transparent;border:2px solid var(--green);color:var(--green)}
 .btn-b{background:transparent;border:2px solid #0088ff;color:#0088ff}
 .btn-r{background:rgba(255,68,68,.15);border:2px solid var(--red);color:var(--red)}
-.btn-blue-solid{background:#0088ff;color:#fff;border:none}
 .btn-orange{background:#ff9500;color:#000;border:none}
 .irow{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);gap:10px}
 .irow:last-child{border:none}
@@ -85,15 +84,13 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .modal-box{background:var(--card);border:3px solid var(--y);width:100%;max-width:440px;margin:auto}
 .modal-top{background:var(--y);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
 .modal-top h3{font-size:1.1rem;font-weight:900;color:#000;text-transform:uppercase}
-.btn-close{background:#000;border:none;color:var(--y);font-size:1.3rem;font-weight:900;cursor:pointer;padding:4px 12px}
+.btn-close-modal{background:#000;border:none;color:var(--y);font-size:1.3rem;font-weight:900;cursor:pointer;padding:4px 12px}
 .modal-body{padding:20px}
 </style>
 </head>
 <body>
 
 <div class="toast" id="toast"></div>
-
-<!-- Overlay PIN reset -->
 <div class="overlay" id="overlay-pin">
   <div class="pin-box">
     <h3>🔐 PIN</h3>
@@ -103,10 +100,9 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
   </div>
 </div>
 
-<!-- Modal candidato a socio -->
 <div class="modal-overlay" id="modal-candidato">
   <div class="modal-box">
-    <div class="modal-top"><h3>👷 DAR DE ALTA</h3><button class="btn-close" onclick="closeOverlay('modal-candidato')">✕</button></div>
+    <div class="modal-top"><h3>👷 DAR DE ALTA</h3><button class="btn-close-modal" onclick="closeOverlay('modal-candidato')">✕</button></div>
     <div class="modal-body">
       <div class="fld"><label>Nombre</label><input type="text" id="m-nom"></div>
       <div class="fld"><label>WhatsApp</label><input type="tel" id="m-tel"></div>
@@ -126,12 +122,11 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
   </div>
 </div>
 
-<!-- Modal orden manual -->
 <div class="modal-overlay" id="modal-orden">
   <div class="modal-box">
-    <div class="modal-top"><h3>📝 ORDEN MANUAL</h3><button class="btn-close" onclick="closeOverlay('modal-orden')">✕</button></div>
+    <div class="modal-top"><h3>📝 ORDEN MANUAL</h3><button class="btn-close-modal" onclick="closeOverlay('modal-orden')">✕</button></div>
     <div class="modal-body">
-      <p style="color:var(--sub);font-size:.85rem;margin-bottom:16px">Crea una orden manualmente (teléfono, visita, etc.)</p>
+      <p style="color:var(--sub);font-size:.85rem;margin-bottom:16px">Crea orden manualmente (llamada, visita, etc.)</p>
       <div class="fld"><label>Cliente</label><input type="text" id="o-nom"></div>
       <div class="fld"><label>WhatsApp</label><input type="tel" id="o-tel" placeholder="+53..."></div>
       <div class="fld"><label>Dirección</label><input type="text" id="o-dir"></div>
@@ -142,16 +137,15 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
         </select>
       </div>
       <div class="fld"><label>Problema</label><textarea id="o-pro" rows="3"></textarea></div>
-      <button class="btn btn-y" onclick="crearOrdenManual()">💾 CREAR ORDEN</button>
+      <button class="btn btn-y" onclick="crearOrdenManual()">💾 CREAR</button>
       <button class="btn btn-r" onclick="closeOverlay('modal-orden')">CANCELAR</button>
     </div>
   </div>
 </div>
 
-<!-- Modal editar socio -->
 <div class="modal-overlay" id="modal-edit-socio">
   <div class="modal-box">
-    <div class="modal-top"><h3>✏️ EDITAR SOCIO</h3><button class="btn-close" onclick="closeOverlay('modal-edit-socio')">✕</button></div>
+    <div class="modal-top"><h3>✏️ EDITAR SOCIO</h3><button class="btn-close-modal" onclick="closeOverlay('modal-edit-socio')">✕</button></div>
     <div class="modal-body">
       <div class="fld"><label>Nombre</label><input type="text" id="e-nom"></div>
       <div class="fld"><label>WhatsApp</label><input type="tel" id="e-tel"></div>
@@ -165,20 +159,18 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
       <div class="fld"><label>PIN</label><input type="password" id="e-pin" maxlength="4" pattern="[0-9]{4}" inputmode="numeric"></div>
       <div class="fld"><label>Comisión (%)</label><input type="number" id="e-com" min="0" max="100"></div>
       <input type="hidden" id="e-socio-id">
-      <button class="btn btn-y" onclick="guardarEdicionSocio()">💾 GUARDAR CAMBIOS</button>
+      <button class="btn btn-y" onclick="guardarEdicionSocio()">💾 GUARDAR</button>
       <button class="btn btn-r" onclick="closeOverlay('modal-edit-socio')">CANCELAR</button>
     </div>
   </div>
 </div>
 
-<!-- HEADER -->
 <div class="hdr">
   <button class="hdr-back" onclick="logout()">← SALIR</button>
   <div class="hdr-logo">D'BARRIO ADMIN</div>
   <div style="width:72px"></div>
 </div>
 
-<!-- TABS -->
 <div class="tabs">
   <div class="tab on" id="tab-dashboard" onclick="showTab('dashboard')">📊 DASH</div>
   <div class="tab" id="tab-candidatos" onclick="showTab('candidatos')">👷 CAND<span class="badge-count" id="cnt-cand" style="display:none">0</span></div>
@@ -190,8 +182,6 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 </div>
 
 <div class="content">
-
-  <!-- DASHBOARD -->
   <div id="sec-dashboard" class="sec on">
     <h2>📊 Dashboard</h2>
     <div class="stats">
@@ -204,69 +194,63 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
     <div id="topSocios"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- CANDIDATOS -->
   <div id="sec-candidatos" class="sec">
     <h2>👷 Candidatos</h2>
-    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Personas del formulario "Únete". Toca <strong style="color:var(--y)">DAR DE ALTA</strong> para convertirlos en socios.</p>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Personas del formulario "Únete". Toca DAR DE ALTA.</p>
     <div id="listaCandidatos"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- ÓRDENES PENDIENTES -->
   <div id="sec-ordenes" class="sec">
-    <h2>📋 Órdenes Pendientes</h2>
-    <button class="btn btn-orange" style="margin-bottom:16px" onclick="openModal('modal-orden')">➕ CREAR ORDEN MANUAL</button>
-    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">⚠️ El socio SOLO VE la orden cuando la asignas. Toca las tarjetas para expandir.</p>
+    <h2>📋 Órdenes</h2>
+    <button class="btn btn-orange" style="margin-bottom:16px" onclick="openModal('modal-orden')">➕ CREAR MANUAL</button>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">⚠️ El socio SOLO VE si asignas. Toca para expandir.</p>
     <div id="listaOrdenes"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- ARCHIVO -->
   <div id="sec-archivo" class="sec">
-    <h2>📦 Recibos Pendientes</h2>
+    <h2>📦 Recibos</h2>
     <div id="listaArchivo"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- DEUDAS -->
   <div id="sec-deudas" class="sec">
     <h2>💰 Deudas</h2>
     <div id="listaDeudas"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- SOCIOS -->
   <div id="sec-socios" class="sec">
     <h2>👥 Socios</h2>
     <div id="listaSocios"><p class="empty">Cargando...</p></div>
   </div>
 
-  <!-- CONFIG -->
   <div id="sec-config" class="sec">
-    <h2>⚙️ Configuración</h2>
+    <h2>⚙️ Config</h2>
     <div class="cfg-box">
       <h3>💰 Comisión Global</h3>
-      <div class="fld"><label>Porcentaje (%)</label><input type="number" id="cfg-com" min="0" max="100" value="15"></div>
+      <div class="fld"><label>%</label><input type="number" id="cfg-com" min="0" max="100" value="15"></div>
       <button class="btn btn-y" onclick="guardarComision()">💾 GUARDAR</button>
     </div>
     <div class="cfg-box">
       <h3>📱 Notificaciones</h3>
-      <div class="fld"><label>Dueño (WhatsApp)</label><input type="tel" id="cfg-owner" placeholder="+53..."></div>
+      <div class="fld"><label>Dueño</label><input type="tel" id="cfg-owner" placeholder="+53..."></div>
       <div class="fld"><label>Caramelo</label><input type="tel" id="cfg-helper" value="+5355165641"></div>
       <button class="btn btn-y" onclick="guardarNotif()">💾 GUARDAR</button>
     </div>
     <div class="cfg-box danger">
-      <h3>⚠️ Zona Peligro</h3>
-      <button class="btn btn-r" onclick="pedirPinReset()">🗑️ RESETEAR HISTORIAL</button>
+      <h3>⚠️ Peligro</h3>
+      <button class="btn btn-r" onclick="pedirPinReset()">🗑️ RESETEAR</button>
     </div>
   </div>
-
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-firebase.initializeApp({apiKey:"AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",authDomain:"delbarrioapp-27247.firebaseapp.com",databaseURL:"https://delbarrioapp-27247-default-rtdb.firebaseio.com",projectId:"delbarrioapp-27247",storageBucket:"delbarrioapp-27247.appspot.com",messagingSenderId:"57798249354",appId:"1:57798249354:web:18bd75ac7b8469feb35673"});
-const db=firebase.database();
+const SUPABASE_URL='https://jtorpamexbjxnomngfwq.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0b3JwYW1leGJqeG5vbW5nZndxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjE2MjMsImV4cCI6MjA4Njk5NzYyM30.Tzun90wyUfPYb8K8WxmziwlKyJS8kY1K_zzrZNh7R-8';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
 if(!localStorage.getItem('db_admin'))window.location.href='index.html';
 
-let comisionGlobal=15,notifConfig={owner:'',helper:'+5355165641'},sociosCache={},tabActual='dashboard',listeners={};
+let comisionGlobal=15,notifConfig={owner:'',helper:'+5355165641'},sociosCache={},tabActual='dashboard';
 
 function ct(t){return(t||'').replace(/[\s\-\(\)\+]/g,'')}
 function money(n){return'$'+(parseFloat(n)||0).toFixed(2)}
@@ -278,7 +262,6 @@ function closeOverlay(id){document.getElementById(id).classList.remove('open')}
 function openModal(id){document.getElementById(id).classList.add('open')}
 
 function showTab(id){
-  if(listeners[tabActual]){listeners[tabActual].ref.off('value',listeners[tabActual].fn);delete listeners[tabActual]}
   tabActual=id;
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
@@ -293,36 +276,52 @@ function showTab(id){
   if(id==='config')cargarConfig();
 }
 
-function initContadores(){
-  db.ref('postulantes').on('value',snap=>{const n=snap.val()?Object.keys(snap.val()).length:0;const el=document.getElementById('cnt-cand');el.textContent=n;el.style.display=n>0?'flex':'none'});
-  db.ref('solicitudes').on('value',snap=>{const sol=snap.val()||{};const n=Object.values(sol).filter(o=>o.estado==='pendiente').length;const el=document.getElementById('cnt-ord');el.textContent=n;el.style.display=n>0?'flex':'none'});
+async function initContadores(){
+  const{data:post}=await sb.from('postulantes').select('*');
+  const n=post?post.length:0;
+  document.getElementById('cnt-cand').textContent=n;
+  document.getElementById('cnt-cand').style.display=n>0?'flex':'none';
+  
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','pendiente');
+  const m=sol?sol.length:0;
+  document.getElementById('cnt-ord').textContent=m;
+  document.getElementById('cnt-ord').style.display=m>0?'flex':'none';
+  
+  setInterval(async()=>{
+    const{data:p2}=await sb.from('postulantes').select('*');
+    const n2=p2?p2.length:0;
+    document.getElementById('cnt-cand').textContent=n2;
+    document.getElementById('cnt-cand').style.display=n2>0?'flex':'none';
+    const{data:s2}=await sb.from('solicitudes').select('*').eq('estado','pendiente');
+    const m2=s2?s2.length:0;
+    document.getElementById('cnt-ord').textContent=m2;
+    document.getElementById('cnt-ord').style.display=m2>0?'flex':'none'
+  },10000)
 }
 
-function renderDash(){
-  db.ref('solicitudes').once('value',snap=>{
-    const sol=snap.val()||{};
-    document.getElementById('d-total').textContent=Object.keys(sol).length;
-    document.getElementById('d-pend').textContent=Object.values(sol).filter(o=>o.estado==='pendiente').length;
-    let ing=0;Object.values(sol).forEach(o=>{if(o.monto)ing+=o.monto*(comisionGlobal/100)});
-    document.getElementById('d-ing').textContent=money(ing);
-  });
-  db.ref('socios').once('value',snap=>{
-    const soc=snap.val()||{};
-    document.getElementById('d-socios').textContent=Object.keys(soc).length;
-    const top=Object.entries(soc).map(([id,s])=>({id,...s})).sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,5);
-    document.getElementById('topSocios').innerHTML=top.length?top.map((s,i)=>`<div class="card"><div class="card-hdr" style="cursor:default"><div style="display:flex;align-items:center;gap:12px"><span class="rank">${i+1}</span><div><div class="card-title">${s.usuario||s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'} · ${s.trabajos||0} trabajos</div></div></div><span style="color:var(--y)">${stars(s.rating)}</span></div></div>`).join(''):'<p class="empty">Sin socios</p>';
-  });
+async function renderDash(){
+  const{data:sol}=await sb.from('solicitudes').select('*');
+  const total=sol?sol.length:0;
+  const pend=sol?sol.filter(o=>o.estado==='pendiente').length:0;
+  let ing=0;
+  if(sol)sol.forEach(o=>{if(o.monto)ing+=o.monto*(comisionGlobal/100)});
+  document.getElementById('d-total').textContent=total;
+  document.getElementById('d-pend').textContent=pend;
+  document.getElementById('d-ing').textContent=money(ing);
+  
+  const{data:soc}=await sb.from('socios').select('*');
+  document.getElementById('d-socios').textContent=soc?soc.length:0;
+  if(soc){
+    const top=soc.sort((a,b)=>(b.rating||0)-(a.rating||0)).slice(0,5);
+    document.getElementById('topSocios').innerHTML=top.length?top.map((s,i)=>`<div class="card"><div class="card-hdr" style="cursor:default"><div style="display:flex;align-items:center;gap:12px"><span class="rank">${i+1}</span><div><div class="card-title">${s.usuario||s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'} · ${s.trabajos||0} trabajos</div></div></div><span style="color:var(--y)">${stars(s.rating)}</span></div></div>`).join(''):'<p class="empty">Sin socios</p>'
+  }
 }
 
-function renderCandidatos(){
+async function renderCandidatos(){
   const c=document.getElementById('listaCandidatos');
-  const fn=snap=>{
-    const data=snap.val()||{};
-    const arr=Object.entries(data);
-    if(!arr.length){c.innerHTML='<p class="empty">Sin candidatos 🎉</p>';return}
-    c.innerHTML=arr.reverse().map(([id,p])=>`<div class="card cand" id="cand-${id}"><div class="card-hdr" onclick="toggleCard('cand-${id}')"><div><div class="card-title">${p.nombre||'—'}</div><div class="card-sub">${p.oficio||'—'} · ${p.fecha||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-b">NUEVO</span><span class="arrow" style="color:#0088ff">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${p.telefono||'—'}</span></div><div class="irow"><span class="ilbl">Especialidad</span><span class="ival">${p.oficio||'—'}</span></div><div class="irow"><span class="ilbl">Zona</span><span class="ival">${p.zona||'—'}</span></div><button class="btn btn-blue-solid" onclick="abrirModalCandidato('${id}','${(p.nombre||'').replace(/'/g,"\\'")}','${(p.telefono||'').replace(/'/g,"\\'")}','${(p.zona||'').replace(/'/g,"\\'")}','${(p.oficio||'').replace(/'/g,"\\'")}')">⬆️ DAR DE ALTA</button><button class="btn btn-g" onclick="window.open('https://wa.me/${ct(p.telefono||'')}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarCandidato('${id}')">🗑️ RECHAZAR</button></div></div>`).join('');
-  };
-  const ref=db.ref('postulantes');ref.on('value',fn);listeners['candidatos']={ref,fn};
+  const{data}=await sb.from('postulantes').select('*').order('created_at',{ascending:false});
+  if(!data||!data.length){c.innerHTML='<p class="empty">Sin candidatos 🎉</p>';return}
+  c.innerHTML=data.map(p=>`<div class="card cand" id="cand-${p.id}"><div class="card-hdr" onclick="toggleCard('cand-${p.id}')"><div><div class="card-title">${p.nombre||'—'}</div><div class="card-sub">${p.oficio||'—'} · ${p.fecha||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-b">NUEVO</span><span class="arrow" style="color:#0088ff">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${p.telefono||'—'}</span></div><div class="irow"><span class="ilbl">Especialidad</span><span class="ival">${p.oficio||'—'}</span></div><div class="irow"><span class="ilbl">Zona</span><span class="ival">${p.zona||'—'}</span></div><button class="btn btn-orange" onclick="abrirModalCandidato('${p.id}','${(p.nombre||'').replace(/'/g,"\\'")}','${(p.telefono||'').replace(/'/g,"\\'")}','${(p.zona||'').replace(/'/g,"\\'")}','${(p.oficio||'').replace(/'/g,"\\'")}')">⬆️ DAR DE ALTA</button><button class="btn btn-g" onclick="window.open('https://wa.me/${ct(p.telefono||'')}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarCandidato('${p.id}')">🗑️ RECHAZAR</button></div></div>`).join('')
 }
 
 function abrirModalCandidato(id,nom,tel,zon,esp){
@@ -333,10 +332,10 @@ function abrirModalCandidato(id,nom,tel,zon,esp){
   document.getElementById('m-esp').value=esp;
   document.getElementById('m-pin').value='';
   document.getElementById('m-com').value=comisionGlobal;
-  openModal('modal-candidato');
+  openModal('modal-candidato')
 }
 
-function convertirEnSocio(){
+async function convertirEnSocio(){
   const cid=document.getElementById('m-candidato-id').value;
   const nom=document.getElementById('m-nom').value.trim();
   const tel=document.getElementById('m-tel').value.trim();
@@ -345,129 +344,154 @@ function convertirEnSocio(){
   const pin=document.getElementById('m-pin').value.trim();
   const com=parseInt(document.getElementById('m-com').value)||15;
   if(!nom||!tel||!pin||pin.length<4){toast('⚠️ Completa todos',true);return}
-  const newRef=db.ref('socios').push({usuario:nom,nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com,deuda:0,disponible:true,admitido:true,rating:0,trabajos:0});
-  db.ref('postulantes/'+cid).remove();
-  const link=`https://abelbalsinde92-lab.github.io/D-Barrio/socio.html?id=${newRef.key}`;
-  const msg=`🎉 Bienvenido D'BARRIO, ${nom}!\n\n✅ Acceso:\n${link}\n\n🔐 Usuario: ${nom}\n🔑 PIN: ${pin}\n\n📱 Guarda esto.`;
+  
+  const{data,error}=await sb.from('socios').insert({usuario:nom,nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com,deuda:0,disponible:true,admitido:true,rating:0,trabajos:0}).select();
+  if(error){toast('⚠️ Error',true);return}
+  
+  await sb.from('postulantes').delete().eq('id',cid);
+  
+  const link=`https://abelbalsinde92-lab.github.io/D-Barrio/socio.html?id=${data[0].id}`;
+  const msg=`🎉 Bienvenido D'BARRIO, ${nom}!\n\n✅ Tu acceso:\n${link}\n\n🔐 Usuario: ${nom}\n🔑 PIN: ${pin}\n\n📱 Guarda esto.`;
   window.open(`https://wa.me/${ct(tel)}?text=${encodeURIComponent(msg)}`,'_blank');
+  
   closeOverlay('modal-candidato');
   toast(`✅ ${nom} registrado`);
+  renderCandidatos()
 }
 
-function eliminarCandidato(id){if(!confirm('¿Rechazar?'))return;db.ref('postulantes/'+id).remove();toast('🗑️ Eliminado')}
+async function eliminarCandidato(id){
+  if(!confirm('¿Rechazar?'))return;
+  await sb.from('postulantes').delete().eq('id',id);
+  toast('🗑️ Eliminado');
+  renderCandidatos()
+}
 
-function crearOrdenManual(){
+async function crearOrdenManual(){
   const nom=document.getElementById('o-nom').value.trim();
   const tel=document.getElementById('o-tel').value.trim();
   const dir=document.getElementById('o-dir').value.trim();
   const cat=document.getElementById('o-cat').value;
   const pro=document.getElementById('o-pro').value.trim();
-  if(!nom||!tel||!dir||!cat){toast('⚠️ Completa campos',true);return}
-  db.ref('solicitudes').push({cliente:nom,telefono:tel,direccion:dir,categoria:cat,problema:pro,estado:'pendiente',fecha_inicio:new Date().toLocaleDateString('es-CU'),monto:0,valoracion:0})
-  .then(()=>{
-    toast('✅ Orden creada');
-    closeOverlay('modal-orden');
-    document.getElementById('o-nom').value='';
-    document.getElementById('o-tel').value='';
-    document.getElementById('o-dir').value='';
-    document.getElementById('o-cat').value='';
-    document.getElementById('o-pro').value='';
-  });
+  if(!nom||!tel||!dir||!cat){toast('⚠️ Completa',true);return}
+  
+  await sb.from('solicitudes').insert({cliente:nom,telefono:tel,direccion:dir,categoria:cat,problema:pro,estado:'pendiente',fecha_inicio:new Date().toLocaleDateString('es-CU'),fecha_ts:Date.now(),monto:0,valoracion:0});
+  
+  toast('✅ Orden creada');
+  closeOverlay('modal-orden');
+  document.getElementById('o-nom').value='';
+  document.getElementById('o-tel').value='';
+  document.getElementById('o-dir').value='';
+  document.getElementById('o-cat').value='';
+  document.getElementById('o-pro').value='';
+  renderOrdenes()
 }
 
-function renderOrdenes(){
+async function renderOrdenes(){
   const c=document.getElementById('listaOrdenes');
-  db.ref('socios').once('value',sSnap=>{
-    sociosCache=sSnap.val()||{};
-    const fn=snap=>{
-      const sol=snap.val()||{};
-      const pend=Object.entries(sol).filter(([,o])=>o.estado==='pendiente').sort((a,b)=>(b[1].fecha_ts||0)-(a[1].fecha_ts||0));
-      if(!pend.length){c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';return}
-      c.innerHTML=pend.map(([id,o])=>{
-        const tc=ct(o.telefono||'');
-        const tecAsig=o.tecnico&&sociosCache[o.tecnico]?(sociosCache[o.tecnico].usuario||sociosCache[o.tecnico].nombre):null;
-        const opcs=Object.entries(sociosCache).filter(([,s])=>s.admitido).map(([sid,s])=>`<option value="${sid}" data-tel="${s.telefono||''}" data-nom="${s.usuario||s.nombre||''}" ${o.tecnico===sid?'selected':''}>${s.disponible?'🟢':'🔴'} ${s.usuario||s.nombre} — ${s.especialidad||''}</option>`).join('');
-        return`<div class="card hl" id="ord-${id}"><div class="card-hdr" onclick="toggleCard('ord-${id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.categoria||'—'} · ${fdate(o.fecha_inicio)}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-r pulse">PEND</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div><div class="irow"><span class="ilbl">Problema</span><span class="ival">${o.problema||'—'}</span></div><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div><div class="irow"><span class="ilbl">Técnico</span><span class="ival" style="color:${tecAsig?'var(--green)':'var(--red)'}">$${tecAsig?'✅ '+tecAsig:'❌ Sin asignar'}</span></div><hr class="sep"><div class="fld"><label>Asignar</label><select id="sel-${id}"><option value="">— Seleccionar —</option>${opcs}</select></div><button class="btn btn-y" onclick="asignarTecnico('${id}','${(o.cliente||'').replace(/'/g,"\\'")}','${(o.categoria||'').replace(/'/g,"\\'")}','${(o.problema||'').replace(/'/g,"\\'")}','${o.telefono||''}')">📤 ASIGNAR Y NOTIFICAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Cliente</button><button class="btn btn-b" onclick="window.open('tel:+${tc}','_blank')">📞 Llamar</button></div></div>`;
-      }).join('');
-    };
-    const ref=db.ref('solicitudes');ref.on('value',fn);listeners['ordenes']={ref,fn};
-  });
+  const{data:socios}=await sb.from('socios').select('*');
+  sociosCache={};
+  if(socios)socios.forEach(s=>sociosCache[s.id]=s);
+  
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','pendiente').order('fecha_ts',{ascending:false});
+  
+  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';return}
+  
+  c.innerHTML=sol.map(o=>{
+    const tc=ct(o.telefono||'');
+    const tecAsig=o.tecnico&&sociosCache[o.tecnico]?(sociosCache[o.tecnico].usuario||sociosCache[o.tecnico].nombre):null;
+    const opcs=socios?socios.filter(s=>s.admitido).map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.usuario||s.nombre||''}" ${o.tecnico===s.id?'selected':''}>${s.disponible?'🟢':'🔴'} ${s.usuario||s.nombre} — ${s.especialidad||''}</option>`).join(''):'';
+    
+    return`<div class="card hl" id="ord-${o.id}"><div class="card-hdr" onclick="toggleCard('ord-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.categoria||'—'} · ${fdate(o.fecha_inicio)}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-r pulse">PEND</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div><div class="irow"><span class="ilbl">Problema</span><span class="ival">${o.problema||'—'}</span></div><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div><div class="irow"><span class="ilbl">Técnico</span><span class="ival" style="color:${tecAsig?'var(--green)':'var(--red)'}">$${tecAsig?'✅ '+tecAsig:'❌ Sin asignar'}</span></div><hr class="sep"><div class="fld"><label>Asignar</label><select id="sel-${o.id}"><option value="">— Seleccionar —</option>${opcs}</select></div><button class="btn btn-y" onclick="asignarTecnico('${o.id}','${(o.cliente||'').replace(/'/g,"\\'")}','${(o.categoria||'').replace(/'/g,"\\'")}','${(o.problema||'').replace(/'/g,"\\'")}','${o.telefono||''}')">📤 ASIGNAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Cliente</button><button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button></div></div>`
+  }).join('')
 }
 
-function asignarTecnico(oid,cliente,cat,prob,telCli){
+async function asignarTecnico(oid,cliente,cat,prob,telCli){
   const sel=document.getElementById('sel-'+oid);
-  if(!sel){toast('⚠️ Error selector',true);return}
+  if(!sel){toast('⚠️ Error',true);return}
   const tid=sel.value;
   if(!tid){toast('⚠️ Selecciona técnico',true);return}
   const opt=sel.options[sel.selectedIndex];
   const telTec=ct(opt.dataset.tel||'');
   const nomTec=opt.dataset.nom||'Técnico';
-  db.ref('solicitudes/'+oid).update({tecnico:tid});
+  
+  await sb.from('solicitudes').update({tecnico:tid}).eq('id',oid);
+  
   const msgTec=`🔧 NUEVA ORDEN D'BARRIO\n\n👤 ${cliente}\n📞 ${telCli}\n🏷️ ${cat}\n⚙️ ${prob}\n\n✅ Asignado a ti.`;
   window.open(`https://wa.me/${telTec}?text=${encodeURIComponent(msgTec)}`,'_blank');
+  
   setTimeout(()=>{
     [notifConfig.owner,notifConfig.helper].filter(Boolean).forEach(num=>{
       const n=ct(num);
-      if(n){const m=`📋 Orden asignada a ${nomTec}\n${cliente} · ${cat}`;window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank')}
-    });
+      if(n){
+        const m=`📋 Orden asignada a ${nomTec}\n${cliente} · ${cat}`;
+        window.open(`https://wa.me/${n}?text=${encodeURIComponent(m)}`,'_blank')
+      }
+    })
   },1200);
+  
   toast(`✅ Asignado a ${nomTec}`);
+  renderOrdenes()
 }
 
-function renderArchivo(){
+async function eliminarOrden(id){
+  if(!confirm('¿Eliminar orden?'))return;
+  await sb.from('solicitudes').delete().eq('id',id);
+  toast('🗑️ Eliminada');
+  renderOrdenes()
+}
+
+async function renderArchivo(){
   const c=document.getElementById('listaArchivo');
-  const fn=snap=>{
-    const sol=snap.val()||{};
-    const listos=Object.entries(sol).filter(([,o])=>o.estado==='finalizado_pendiente_recibo');
-    if(!listos.length){c.innerHTML='<p class="empty">Sin recibos ✅</p>';return}
-    c.innerHTML=listos.map(([id,o])=>{
-      const tc=ct(o.telefono||'');
-      const fI=new Date(o.fecha_inicio||Date.now());
-      const fV=new Date(fI);fV.setDate(fV.getDate()+30);
-      const vStr=fV.toLocaleDateString('es-CU');
-      const recibo=`🛡️ RECIBO D'BARRIO\n\nCódigo: ${o.codigo_garantia||'—'}\nServicio: ${o.categoria||'—'}\nTotal: ${money(o.monto)}\nGarantía: ${vStr}\n\n✅ 30 días\n📞 wa.me/5355165641`;
-      return`<div class="card hl" id="arc-${id}"><div class="card-hdr" onclick="toggleCard('arc-${id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${money(o.monto)} · ${o.categoria||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-o">RECIBO</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Código</span><span class="ival">${o.codigo_garantia||'—'}</span></div><div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div><div class="irow"><span class="ilbl">Vence</span><span class="ival">${vStr}</span></div><button class="btn btn-y" onclick="enviarRecibo('${id}','${tc}',\`${recibo}\`)">📤 ENVIAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`;
-    }).join('');
-  };
-  const ref=db.ref('solicitudes');ref.on('value',fn);listeners['archivo']={ref,fn};
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','finalizado_pendiente_recibo');
+  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin recibos ✅</p>';return}
+  c.innerHTML=sol.map(o=>{
+    const tc=ct(o.telefono||'');
+    const fI=new Date(o.fecha_inicio||Date.now());
+    const fV=new Date(fI);fV.setDate(fV.getDate()+30);
+    const vStr=fV.toLocaleDateString('es-CU');
+    const recibo=`🛡️ RECIBO D'BARRIO\n\nCódigo: ${o.codigo_garantia||'—'}\nServicio: ${o.categoria||'—'}\nTotal: ${money(o.monto)}\nGarantía: ${vStr}\n\n✅ 30 días\n📞 wa.me/5355165641`;
+    return`<div class="card hl" id="arc-${o.id}"><div class="card-hdr" onclick="toggleCard('arc-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${money(o.monto)} · ${o.categoria||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-o">RECIBO</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Código</span><span class="ival">${o.codigo_garantia||'—'}</span></div><div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div><div class="irow"><span class="ilbl">Vence</span><span class="ival">${vStr}</span></div><button class="btn btn-y" onclick="enviarRecibo('${o.id}','${tc}',\`${recibo}\`)">📤 ENVIAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`
+  }).join('')
 }
 
-function enviarRecibo(oid,tel,msg){
-  db.ref('solicitudes/'+oid).update({estado:'completado',fecha_fin:new Date().toLocaleDateString('es-CU')});
+async function enviarRecibo(oid,tel,msg){
+  await sb.from('solicitudes').update({estado:'completado',fecha_fin:new Date().toLocaleDateString('es-CU')}).eq('id',oid);
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
   toast('✅ Recibo enviado');
+  renderArchivo()
 }
 
-function renderDeudas(){
+async function renderDeudas(){
   const c=document.getElementById('listaDeudas');
-  const fn=snap=>{
-    const soc=snap.val()||{};
-    const arr=Object.entries(soc).filter(([,s])=>s.admitido);
-    if(!arr.length){c.innerHTML='<p class="empty">Sin socios</p>';return}
-    c.innerHTML=arr.map(([id,s])=>{
-      const tc=ct(s.telefono||'');
-      return`<div class="card" id="deu-${id}"><div class="card-hdr" onclick="toggleCard('deu-${id}')"><div><div class="card-title">${s.usuario||s.nombre||'—'} ${stars(s.rating)}</div><div class="card-sub">${s.especialidad||'—'} · ${s.trabajos||0} trabajos</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Zona</span><span class="ival">${s.zona||'—'}</span></div><div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-y" onclick="liquidar('${id}')">💰 LIQUIDADO</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`;
-    }).join('');
-  };
-  const ref=db.ref('socios');ref.on('value',fn);listeners['deudas']={ref,fn};
+  const{data:soc}=await sb.from('socios').select('*').eq('admitido',true);
+  if(!soc||!soc.length){c.innerHTML='<p class="empty">Sin socios</p>';return}
+  c.innerHTML=soc.map(s=>{
+    const tc=ct(s.telefono||'');
+    return`<div class="card" id="deu-${s.id}"><div class="card-hdr" onclick="toggleCard('deu-${s.id}')"><div><div class="card-title">${s.usuario||s.nombre||'—'} ${stars(s.rating)}</div><div class="card-sub">${s.especialidad||'—'} · ${s.trabajos||0} trabajos</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Zona</span><span class="ival">${s.zona||'—'}</span></div><div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-y" onclick="liquidar('${s.id}','${s.usuario||s.nombre}','${ct(s.telefono||'')}',${s.deuda||0})">💰 LIQUIDADO</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`
+  }).join('')
 }
 
-function liquidar(sid){if(!confirm('¿Marcar liquidado?'))return;db.ref('socios/'+sid).update({deuda:0});toast('✅ Liquidado')}
+async function liquidar(sid,nom,tel,deuda){
+  if(!confirm('¿Marcar liquidado?'))return;
+  await sb.from('socios').update({deuda:0}).eq('id',sid);
+  
+  const msg=`💰 LIQUIDACIÓN D'BARRIO\n\nHola ${nom},\n\nTe confirmamos que tu deuda de ${money(deuda)} ha sido liquidada.\n\n✅ Cuenta saldada\n📊 Disponible para nuevos trabajos\n\nGracias por tu trabajo!`;
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
+  
+  toast('✅ Liquidado');
+  renderDeudas()
+}
 
-function renderSocios(){
+async function renderSocios(){
   const c=document.getElementById('listaSocios');
-  const fn=snap=>{
-    const soc=snap.val()||{};
-    const arr=Object.entries(soc);
-    if(!arr.length){c.innerHTML='<p class="empty">Sin socios</p>';return}
-    c.innerHTML=arr.map(([id,s])=>{
-      const admitido=s.admitido===true;
-      const disp=s.disponible!==false;
-      const tc=ct(s.telefono||'');
-      return`<div class="card" id="soc-${id}"><div class="card-hdr" onclick="toggleCard('soc-${id}')"><div style="display:flex;align-items:center;gap:10px"><span class="dot ${disp?'dot-g':'dot-r'}"></span><div><div class="card-title">${s.usuario||s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'} · ${s.zona||'—'}</div></div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge ${admitido?'badge-g':'badge-r'}">${admitido?'ADM':'PEND'}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono||'—'}</span></div><div class="irow"><span class="ilbl">PIN</span><span class="ival">${s.pin||'—'}</span></div><div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div><div class="irow"><span class="ilbl">Rating</span><span class="ival">${stars(s.rating)} (${(s.rating||0).toFixed(1)})</span></div><div class="irow"><span class="ilbl">Trabajos</span><span class="ival">${s.trabajos||0}</span></div><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-orange" onclick="abrirEditarSocio('${id}','${(s.nombre||s.usuario||'').replace(/'/g,"\\'")}','${(s.telefono||'').replace(/'/g,"\\'")}','${(s.zona||'').replace(/'/g,"\\'")}','${(s.especialidad||'').replace(/'/g,"\\'")}','${s.pin||''}',${s.comision||15})">✏️ EDITAR</button>${admitido?`<button class="btn btn-r" onclick="toggleAdmitido('${id}',false)">🚫 REVOCAR</button>`:`<button class="btn btn-g" onclick="toggleAdmitido('${id}',true)">✅ ADMITIR</button>`}<button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarSocio('${id}')">🗑️ ELIMINAR</button></div></div>`;
-    }).join('');
-  };
-  const ref=db.ref('socios');ref.on('value',fn);listeners['socios']={ref,fn};
+  const{data:soc}=await sb.from('socios').select('*');
+  if(!soc||!soc.length){c.innerHTML='<p class="empty">Sin socios</p>';return}
+  c.innerHTML=soc.map(s=>{
+    const admitido=s.admitido===true;
+    const disp=s.disponible!==false;
+    const tc=ct(s.telefono||'');
+    return`<div class="card" id="soc-${s.id}"><div class="card-hdr" onclick="toggleCard('soc-${s.id}')"><div style="display:flex;align-items:center;gap:10px"><span class="dot ${disp?'dot-g':'dot-r'}"></span><div><div class="card-title">${s.usuario||s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'} · ${s.zona||'—'}</div></div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge ${admitido?'badge-g':'badge-r'}">${admitido?'ADM':'PEND'}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono||'—'}</span></div><div class="irow"><span class="ilbl">PIN</span><span class="ival">${s.pin||'—'}</span></div><div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div><div class="irow"><span class="ilbl">Rating</span><span class="ival">${stars(s.rating)} (${(s.rating||0).toFixed(1)})</span></div><div class="irow"><span class="ilbl">Trabajos</span><span class="ival">${s.trabajos||0}</span></div><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-orange" onclick="abrirEditarSocio('${s.id}','${(s.nombre||s.usuario||'').replace(/'/g,"\\'")}','${(s.telefono||'').replace(/'/g,"\\'")}','${(s.zona||'').replace(/'/g,"\\'")}','${(s.especialidad||'').replace(/'/g,"\\'")}','${s.pin||''}',${s.comision||15})">✏️ EDITAR</button>${admitido?`<button class="btn btn-r" onclick="toggleAdmitido('${s.id}',false)">🚫 REVOCAR</button>`:`<button class="btn btn-g" onclick="toggleAdmitido('${s.id}',true)">✅ ADMITIR</button>`}<button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR</button></div></div>`
+  }).join('')
 }
 
 function abrirEditarSocio(id,nom,tel,zon,esp,pin,com){
@@ -478,10 +502,10 @@ function abrirEditarSocio(id,nom,tel,zon,esp,pin,com){
   document.getElementById('e-esp').value=esp;
   document.getElementById('e-pin').value=pin;
   document.getElementById('e-com').value=com;
-  openModal('modal-edit-socio');
+  openModal('modal-edit-socio')
 }
 
-function guardarEdicionSocio(){
+async function guardarEdicionSocio(){
   const id=document.getElementById('e-socio-id').value;
   const nom=document.getElementById('e-nom').value.trim();
   const tel=document.getElementById('e-tel').value.trim();
@@ -489,47 +513,86 @@ function guardarEdicionSocio(){
   const esp=document.getElementById('e-esp').value;
   const pin=document.getElementById('e-pin').value.trim();
   const com=parseInt(document.getElementById('e-com').value)||15;
-  if(!nom||!tel||!esp||!pin){toast('⚠️ Completa campos',true);return}
-  db.ref('socios/'+id).update({usuario:nom,nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com});
+  if(!nom||!tel||!esp||!pin){toast('⚠️ Completa',true);return}
+  await sb.from('socios').update({usuario:nom,nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com}).eq('id',id);
   closeOverlay('modal-edit-socio');
-  toast('✅ Socio actualizado');
+  toast('✅ Actualizado');
+  renderSocios()
 }
 
-function toggleAdmitido(id,val){db.ref('socios/'+id).update({admitido:val});toast(val?'✅ Admitido':'⚠️ Revocado')}
-function eliminarSocio(id){if(!confirm('¿Eliminar?'))return;db.ref('socios/'+id).remove();toast('🗑️ Eliminado')}
-
-function cargarConfig(){
-  db.ref('config').once('value',snap=>{
-    const c=snap.val()||{};
-    document.getElementById('cfg-com').value=c.comision||15;
-    document.getElementById('cfg-owner').value=c.owner||'';
-    document.getElementById('cfg-helper').value=c.helper||'+5355165641';
-    comisionGlobal=c.comision||15;
-    notifConfig={owner:c.owner||'',helper:c.helper||'+5355165641'};
-  });
+async function toggleAdmitido(id,val){
+  await sb.from('socios').update({admitido:val}).eq('id',id);
+  toast(val?'✅ Admitido':'⚠️ Revocado');
+  renderSocios()
 }
 
-function guardarComision(){const n=parseInt(document.getElementById('cfg-com').value)||15;comisionGlobal=n;db.ref('config').update({comision:n});toast('✅ Comisión: '+n+'%')}
-function guardarNotif(){const o=document.getElementById('cfg-owner').value.trim();const h=document.getElementById('cfg-helper').value.trim();notifConfig={owner:o,helper:h};db.ref('config').update({owner:o,helper:h});toast('✅ Números guardados')}
+async function eliminarSocio(id){
+  if(!confirm('¿Eliminar?'))return;
+  await sb.from('socios').delete().eq('id',id);
+  toast('🗑️ Eliminado');
+  renderSocios()
+}
 
-function pedirPinReset(){document.getElementById('reset-pin').value='';openModal('overlay-pin')}
-function confirmarReset(){
+async function cargarConfig(){
+  const{data}=await sb.from('config').select('*').limit(1).single();
+  if(data){
+    document.getElementById('cfg-com').value=data.comision||15;
+    document.getElementById('cfg-owner').value=data.owner||'';
+    document.getElementById('cfg-helper').value=data.helper||'+5355165641';
+    comisionGlobal=data.comision||15;
+    notifConfig={owner:data.owner||'',helper:data.helper||'+5355165641'}
+  }
+}
+
+async function guardarComision(){
+  const n=parseInt(document.getElementById('cfg-com').value)||15;
+  comisionGlobal=n;
+  const{data:exists}=await sb.from('config').select('id').limit(1).single();
+  if(exists){
+    await sb.from('config').update({comision:n}).eq('id',exists.id)
+  }else{
+    await sb.from('config').insert({comision:n,owner:'',helper:'+5355165641'})
+  }
+  toast('✅ Comisión: '+n+'%')
+}
+
+async function guardarNotif(){
+  const o=document.getElementById('cfg-owner').value.trim();
+  const h=document.getElementById('cfg-helper').value.trim();
+  notifConfig={owner:o,helper:h};
+  const{data:exists}=await sb.from('config').select('id').limit(1).single();
+  if(exists){
+    await sb.from('config').update({owner:o,helper:h}).eq('id',exists.id)
+  }else{
+    await sb.from('config').insert({comision:15,owner:o,helper:h})
+  }
+  toast('✅ Números guardados')
+}
+
+function pedirPinReset(){
+  document.getElementById('reset-pin').value='';
+  openModal('overlay-pin')
+}
+
+async function confirmarReset(){
   const pin=document.getElementById('reset-pin').value;
   if(pin!=='9202'){toast('⚠️ PIN incorrecto',true);return}
-  db.ref('solicitudes').once('value',snap=>{
-    const sol=snap.val()||{};
-    const updates={};
-    Object.entries(sol).forEach(([id,o])=>{if(o.estado==='completado')updates[id]=null});
-    if(!Object.keys(updates).length){toast('Sin historial');closeOverlay('overlay-pin');return}
-    db.ref('solicitudes').update(updates).then(()=>{toast('✅ Limpiado');closeOverlay('overlay-pin')});
-  });
+  await sb.from('solicitudes').delete().eq('estado','completado');
+  toast('✅ Historial limpiado');
+  closeOverlay('overlay-pin')
 }
 
-function logout(){localStorage.removeItem('db_admin');window.location.href='index.html'}
+function logout(){
+  localStorage.removeItem('db_admin');
+  window.location.href='index.html'
+}
 
-db.ref('config').on('value',snap=>{const c=snap.val()||{};comisionGlobal=c.comision||15;notifConfig={owner:c.owner||'',helper:c.helper||'+5355165641'}});
-initContadores();
-renderDash();
+(async()=>{
+  await cargarConfig();
+  await initContadores();
+  await renderDash()
+})();
+
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
