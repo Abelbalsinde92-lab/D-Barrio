@@ -32,8 +32,8 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .ilbl{color:var(--sub);font-size:.78rem;font-weight:700}
 .ival{color:#fff;font-weight:900;font-size:.85rem;text-align:right}
 .money{color:var(--y);font-weight:900;font-size:1.05rem}
-.toggle-row{display:flex;align-items:center;gap:14px;background:#000;border:2px solid var(--border);padding:14px;cursor:pointer;margin-top:12px}
-.tswitch{width:52px;height:26px;background:#333;border-radius:3px;position:relative;transition:background .2s}
+.toggle-row{display:flex;align-items:center;gap:14px;background:#000;border:2px solid var(--border);padding:14px;margin-top:12px}
+.tswitch{width:52px;height:26px;background:#333;border-radius:3px;position:relative;transition:background .2s;pointer-events:none;opacity:.5}
 .tswitch.on{background:var(--y)}
 .tswitch::after{content:'';position:absolute;width:20px;height:20px;background:#000;top:3px;left:3px;transition:left .2s}
 .tswitch.on::after{left:29px}
@@ -81,7 +81,7 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 <div class="toast" id="toast"></div>
 <div class="blocked" id="blocked">
   <h2>⛔ ACCESO DENEGADO</h2>
-  <p id="blocked-msg">Verificando acceso...</p>
+  <p id="blocked-msg">Verificando...</p>
   <a href="index.html" style="background:var(--y);color:#000;padding:14px 28px;font-weight:900;text-decoration:none;text-transform:uppercase">VOLVER</a>
 </div>
 
@@ -110,11 +110,12 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
         <div class="irow"><span class="ilbl">DEUDA</span><span class="money" id="s-deuda">$0.00</span></div>
         <div class="irow"><span class="ilbl">ZONA</span><span class="ival" id="s-zona">—</span></div>
         <div class="irow"><span class="ilbl">COMISIÓN</span><span class="ival" id="s-comision">15%</span></div>
-        <div class="toggle-row" onclick="cambiarDisponibilidad()">
+        <div class="toggle-row">
           <div class="tswitch" id="tswitch"></div>
           <span class="tlabel">DISPONIBILIDAD</span>
           <span class="tstatus ocup" id="tstatus">🔴 OCUPADO</span>
         </div>
+        <p style="font-size:.7rem;color:var(--sub);margin-top:8px;text-align:center">🤖 Automático: ocupado si tienes órdenes activas</p>
       </div>
     </div>
 
@@ -141,338 +142,277 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-// FIREBASE
-firebase.initializeApp({
-  apiKey:"AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",
-  authDomain:"delbarrioapp-27247.firebaseapp.com",
-  databaseURL:"https://delbarrioapp-27247-default-rtdb.firebaseio.com",
-  projectId:"delbarrioapp-27247",
-  storageBucket:"delbarrioapp-27247.appspot.com",
-  messagingSenderId:"57798249354",
-  appId:"1:57798249354:web:18bd75ac7b8469feb35673"
-});
-const db = firebase.database();
+const SUPABASE_URL='https://jtorpamexbjxnomngfwq.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0b3JwYW1leGJqeG5vbW5nZndxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjE2MjMsImV4cCI6MjA4Njk5NzYyM30.Tzun90wyUfPYb8K8WxmziwlKyJS8kY1K_zzrZNh7R-8';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 
-// VARIABLES GLOBALES
-const params = new URLSearchParams(window.location.search);
-const socioId = params.get('id') || localStorage.getItem('db_socio_id');
-let socioData = {};
-let comisionSocio = 15;
+const params=new URLSearchParams(window.location.search);
+const socioId=params.get('id')||localStorage.getItem('db_socio_id');
+let socioData={};
+let comisionSocio=15;
+let ordenesActivas=0;
 
-// HELPERS
 function ct(t){return (t||'').replace(/[\s\-\(\)\+]/g,'')}
 function money(n){return '$'+(parseFloat(n)||0).toFixed(2)}
 function stars(n){return '⭐'.repeat(Math.round(n||0))||'—'}
 
-function toast(msg, err){
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast' + (err ? ' err' : '');
-  t.style.display = 'block';
-  setTimeout(() => t.style.display = 'none', 2800);
+function toast(msg,err){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(err?' err':'');
+  t.style.display='block';
+  setTimeout(()=>t.style.display='none',2800)
 }
 
 function mostrarBloqueado(msg){
-  document.getElementById('blocked-msg').textContent = msg;
+  document.getElementById('blocked-msg').textContent=msg;
   document.getElementById('blocked').classList.add('show');
-  document.getElementById('app-content').style.display = 'none';
+  document.getElementById('app-content').style.display='none'
 }
 
 function mostrarApp(){
   document.getElementById('blocked').classList.remove('show');
-  document.getElementById('app-content').style.display = 'block';
+  document.getElementById('app-content').style.display='block'
 }
 
-// VERIFICAR ACCESO
 if(!socioId){
-  mostrarBloqueado('ID no válido. Pide tu enlace al admin.');
-} else {
-  db.ref('socios/' + socioId).once('value').then(snap => {
-    const s = snap.val();
-    if(!s){
-      mostrarBloqueado('Socio no encontrado.');
-      return;
-    }
-    if(!s.admitido){
-      mostrarBloqueado('Tu acceso aún no ha sido aprobado. Espera confirmación del admin.');
-      return;
-    }
+  mostrarBloqueado('ID no válido. Pide tu enlace al admin.')
+}else{
+  (async()=>{
+    const{data:s,error}=await sb.from('socios').select('*').eq('id',socioId).single();
+    if(error||!s){mostrarBloqueado('Socio no encontrado.');return}
+    if(!s.admitido){mostrarBloqueado('Tu acceso aún no ha sido aprobado.');return}
     
-    // TODO BIEN - CARGAR APP
-    socioData = s;
-    comisionSocio = s.comision || 15;
+    socioData=s;
+    comisionSocio=s.comision||15;
     mostrarApp();
-    cargarDatosSocio();
-    renderActivas();
+    await cargarDatosSocio();
+    await renderActivas();
     
-    // LISTENER PARA CAMBIOS
-    db.ref('socios/' + socioId).on('value', snap => {
-      const s = snap.val();
-      if(s){
-        socioData = s;
-        comisionSocio = s.comision || 15;
-        cargarDatosSocio();
-      }
-    });
-  }).catch(() => {
-    mostrarBloqueado('Error de conexión. Intenta de nuevo.');
-  });
+    setInterval(async()=>{
+      const{data:soc}=await sb.from('socios').select('*').eq('id',socioId).single();
+      if(soc){socioData=soc;comisionSocio=soc.comision||15;await cargarDatosSocio()}
+    },5000)
+  })()
 }
 
-function cargarDatosSocio(){
-  const s = socioData;
-  const nom = s.usuario || s.nombre || 'Técnico';
-  document.getElementById('hdr-nombre').textContent = "D'" + nom.split(' ')[0].toUpperCase();
-  document.getElementById('s-rating').textContent = '⭐ ' + (s.rating || 0).toFixed(1);
-  document.getElementById('s-trabajos').textContent = s.trabajos || 0;
-  document.getElementById('s-deuda').textContent = '$' + (s.deuda || 0).toFixed(2);
-  document.getElementById('s-zona').textContent = s.zona || '—';
-  document.getElementById('s-comision').textContent = (s.comision || 15) + '%';
-  actualizarToggle(s.disponible !== false);
+async function cargarDatosSocio(){
+  const s=socioData;
+  const nom=s.usuario||s.nombre||'Técnico';
+  document.getElementById('hdr-nombre').textContent="D'"+nom.split(' ')[0].toUpperCase();
+  document.getElementById('s-rating').textContent='⭐ '+(s.rating||0).toFixed(1);
+  document.getElementById('s-trabajos').textContent=s.trabajos||0;
+  document.getElementById('s-deuda').textContent='$'+(s.deuda||0).toFixed(2);
+  document.getElementById('s-zona').textContent=s.zona||'—';
+  document.getElementById('s-comision').textContent=(s.comision||15)+'%';
+  
+  const{data:ordenes}=await sb.from('solicitudes').select('*').eq('tecnico',socioId).eq('estado','pendiente');
+  ordenesActivas=ordenes?ordenes.length:0;
+  
+  const ocupado=ordenesActivas>0;
+  actualizarToggle(ocupado);
+  
+  if(ocupado!==!s.disponible){
+    await sb.from('socios').update({disponible:!ocupado}).eq('id',socioId)
+  }
 }
 
-// TABS
+function actualizarToggle(ocupado){
+  const sw=document.getElementById('tswitch');
+  const st=document.getElementById('tstatus');
+  if(ocupado){
+    sw.classList.add('on');
+    st.textContent='🔴 OCUPADO';
+    st.className='tstatus ocup'
+  }else{
+    sw.classList.remove('on');
+    st.textContent='🟢 DISPONIBLE';
+    st.className='tstatus disp'
+  }
+}
+
 function showTab(id){
-  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
-  document.getElementById('sec-' + id).classList.add('on');
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('on');
   event.target.classList.add('on');
   
-  if(id === 'activas') renderActivas();
-  if(id === 'historial') renderHistorial();
-  if(id === 'stats') renderFinanzas();
+  if(id==='activas')renderActivas();
+  if(id==='historial')renderHistorial();
+  if(id==='stats')renderFinanzas()
 }
 
-// STATS PLEGABLE
 function toggleStats(){
-  const body = document.getElementById('stats-body');
-  const toggle = event.currentTarget;
+  const body=document.getElementById('stats-body');
+  const toggle=event.currentTarget;
   toggle.classList.toggle('open');
-  body.classList.toggle('open');
+  body.classList.toggle('open')
 }
 
-// DISPONIBILIDAD
-function actualizarToggle(disp){
-  const sw = document.getElementById('tswitch');
-  const st = document.getElementById('tstatus');
-  if(disp){
-    sw.classList.add('on');
-    st.textContent = '🟢 DISPONIBLE';
-    st.className = 'tstatus disp';
-  } else {
-    sw.classList.remove('on');
-    st.textContent = '🔴 OCUPADO';
-    st.className = 'tstatus ocup';
-  }
-}
-
-function cambiarDisponibilidad(){
-  const actual = socioData.disponible !== false;
-  const nuevo = !actual;
-  db.ref('socios/' + socioId).update({disponible: nuevo}).then(() => {
-    toast(nuevo ? '🟢 Disponible' : '🔴 Ocupado');
-  });
-}
-
-// CARDS PLEGABLES
 function toggleCard(id){
-  const card = document.getElementById(id);
-  if(!card) return;
-  
-  // Cerrar otras
-  document.querySelectorAll('.card.open').forEach(c => {
-    if(c.id !== id) c.classList.remove('open');
-  });
-  
-  // Toggle esta
-  card.classList.toggle('open');
+  const card=document.getElementById(id);
+  if(!card)return;
+  document.querySelectorAll('.card.open').forEach(c=>{if(c.id!==id)c.classList.remove('open')});
+  card.classList.toggle('open')
 }
 
-// ACTIVAS
-function renderActivas(){
-  const c = document.getElementById('listaActivas');
+async function renderActivas(){
+  const c=document.getElementById('listaActivas');
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('tecnico',socioId).eq('estado','pendiente');
   
-  db.ref('solicitudes').on('value', snap => {
-    const sol = snap.val() || {};
-    const mias = Object.entries(sol).filter(([,o]) => o.tecnico === socioId && o.estado === 'pendiente');
+  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin órdenes activas 🎉</p>';return}
+  
+  c.innerHTML=sol.map(o=>{
+    const tc=ct(o.telefono||'');
+    const nom=socioData.usuario||socioData.nombre||'Técnico';
+    const cat=o.categoria||'el servicio';
+    const msgWA=encodeURIComponent(`Hola, soy ${nom} de D'BARRIO, le contacto por su solicitud de ${cat}. ¿Cuándo le viene bien que pase?`);
     
-    if(!mias.length){
-      c.innerHTML = '<p class="empty">Sin órdenes activas 🎉</p>';
-      return;
-    }
-    
-    c.innerHTML = mias.map(([id, o]) => {
-      const tc = ct(o.telefono || '');
-      const nom = socioData.usuario || socioData.nombre || 'Técnico';
-      const cat = o.categoria || 'el servicio';
-      const msgWA = encodeURIComponent(`Hola, soy ${nom} de D'BARRIO, le contacto por su solicitud de ${cat}. ¿Cuándo le viene bien que pase?`);
-      
-      return `<div class="card hl" id="act-${id}">
-        <div class="card-hdr" onclick="toggleCard('act-${id}')">
-          <div>
-            <div class="card-title">${o.cliente}</div>
-            <div class="card-sub">${o.categoria || 'General'} · ${o.fecha_inicio || '—'}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="badge badge-r">PEND</span>
-            <span class="arrow">▼</span>
-          </div>
+    return `<div class="card hl" id="act-${o.id}">
+      <div class="card-hdr" onclick="toggleCard('act-${o.id}')">
+        <div>
+          <div class="card-title">${o.cliente}</div>
+          <div class="card-sub">${o.categoria||'General'} · ${o.fecha_inicio||'—'}</div>
         </div>
-        <div class="card-body">
-          <div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion || '—'}</span></div>
-          <div class="irow"><span class="ilbl">Problema</span><span class="ival">${o.problema || '—'}</span></div>
-          <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono || '—'}</span></div>
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}?text=${msgWA}','_blank')">💬 CONTACTAR</button>
-          <button class="btn btn-b" onclick="window.open('tel:+${tc}','_blank')">📞 LLAMAR</button>
-          <hr style="border:none;border-top:2px solid var(--border);margin:14px 0">
-          <div class="fld">
-            <label>Monto cobrado ($)</label>
-            <input type="number" id="monto-${id}" step="0.01" min="0" placeholder="0.00" inputmode="decimal">
-          </div>
-          <button class="btn btn-y" onclick="finalizarTrabajo('${id}')">✅ TERMINADO</button>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-r">PEND</span>
+          <span class="arrow">▼</span>
         </div>
-      </div>`;
-    }).join('');
-  });
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div>
+        <div class="irow"><span class="ilbl">Problema</span><span class="ival">${o.problema||'—'}</span></div>
+        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div>
+        <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}?text=${msgWA}','_blank')">💬 CONTACTAR</button>
+        <button class="btn btn-b" onclick="window.open('tel:+${tc}','_blank')">📞 LLAMAR</button>
+        <hr style="border:none;border-top:2px solid var(--border);margin:14px 0">
+        <div class="fld">
+          <label>Monto cobrado ($)</label>
+          <input type="number" id="monto-${o.id}" step="0.01" min="0" placeholder="0.00" inputmode="decimal">
+        </div>
+        <button class="btn btn-y" onclick="finalizarTrabajo('${o.id}')">✅ TERMINADO</button>
+      </div>
+    </div>`
+  }).join('')
 }
 
-function finalizarTrabajo(oid){
-  const inp = document.getElementById('monto-' + oid);
-  const m = parseFloat(inp.value);
+async function finalizarTrabajo(oid){
+  const inp=document.getElementById('monto-'+oid);
+  const m=parseFloat(inp.value);
   
-  if(!m || m <= 0){
-    toast('⚠️ Ingresa el monto', true);
-    return;
-  }
+  if(!m||m<=0){toast('⚠️ Ingresa el monto',true);return}
+  if(!confirm(`¿Trabajo terminado por ${money(m)}?`))return;
   
-  if(!confirm(`¿Trabajo terminado por ${money(m)}?`)) return;
+  const cod='DB-'+Math.floor(1000+Math.random()*9000);
+  const com=m*(comisionSocio/100);
   
-  const cod = 'DB-' + Math.floor(1000 + Math.random() * 9000);
-  const com = m * (comisionSocio / 100);
+  const nDeuda=(socioData.deuda||0)+com;
+  const nTrab=(socioData.trabajos||0)+1;
   
-  db.ref('socios/' + socioId).once('value').then(snap => {
-    const s = snap.val() || {};
-    const nDeuda = (s.deuda || 0) + com;
-    const nTrab = (s.trabajos || 0) + 1;
-    
-    db.ref('solicitudes/' + oid).update({
-      estado: 'finalizado_pendiente_recibo',
-      monto: m,
-      codigo_garantia: cod,
-      fecha_fin: new Date().toLocaleDateString('es-CU')
-    });
-    
-    db.ref('socios/' + socioId).update({
-      deuda: nDeuda,
-      trabajos: nTrab
-    });
-    
-    toast(`✅ Reportado. Comisión: ${money(com)}`);
-  });
+  await sb.from('solicitudes').update({
+    estado:'finalizado_pendiente_recibo',
+    monto:m,
+    codigo_garantia:cod,
+    fecha_fin:new Date().toLocaleDateString('es-CU')
+  }).eq('id',oid);
+  
+  await sb.from('socios').update({
+    deuda:nDeuda,
+    trabajos:nTrab
+  }).eq('id',socioId);
+  
+  toast(`✅ Reportado. Comisión: ${money(com)}`);
+  renderActivas()
 }
 
-// HISTORIAL
-function renderHistorial(){
-  const c = document.getElementById('listaHistorial');
+async function renderHistorial(){
+  const c=document.getElementById('listaHistorial');
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('tecnico',socioId).neq('estado','pendiente').order('created_at',{ascending:false});
   
-  db.ref('solicitudes').once('value').then(snap => {
-    const sol = snap.val() || {};
-    const mias = Object.entries(sol)
-      .filter(([,o]) => o.tecnico === socioId && o.estado !== 'pendiente')
-      .reverse();
+  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin trabajos completados</p>';return}
+  
+  c.innerHTML=sol.map(o=>{
+    const st=o.valoracion?'⭐'.repeat(o.valoracion):'—';
     
-    if(!mias.length){
-      c.innerHTML = '<p class="empty">Sin trabajos completados</p>';
-      return;
-    }
-    
-    c.innerHTML = mias.map(([id, o]) => {
-      const st = o.valoracion ? '⭐'.repeat(o.valoracion) : '—';
-      
-      return `<div class="card" id="his-${id}">
-        <div class="card-hdr" onclick="toggleCard('his-${id}')">
-          <div>
-            <div class="card-title">${o.cliente || '—'}</div>
-            <div class="card-sub">${o.categoria || '—'} · ${money(o.monto)}</div>
-          </div>
-          <div style="display:flex;align-items:center;gap:8px">
-            <span class="badge badge-g">OK</span>
-            <span class="arrow">▼</span>
-          </div>
+    return `<div class="card" id="his-${o.id}">
+      <div class="card-hdr" onclick="toggleCard('his-${o.id}')">
+        <div>
+          <div class="card-title">${o.cliente||'—'}</div>
+          <div class="card-sub">${o.categoria||'—'} · ${money(o.monto)}</div>
         </div>
-        <div class="card-body">
-          <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${o.fecha_inicio || '—'}</span></div>
-          <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
-          <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${money(o.monto * (comisionSocio/100))}</span></div>
-          <div class="irow"><span class="ilbl">Ganancia</span><span class="money">${money(o.monto - (o.monto * (comisionSocio/100)))}</span></div>
-          <div class="irow"><span class="ilbl">Rating</span><span class="ival">${st}</span></div>
-          <div class="irow"><span class="ilbl">Código</span><span class="ival">${o.codigo_garantia || '—'}</span></div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-g">OK</span>
+          <span class="arrow">▼</span>
         </div>
-      </div>`;
-    }).join('');
-  });
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${o.fecha_inicio||'—'}</span></div>
+        <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
+        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${money(o.monto*(comisionSocio/100))}</span></div>
+        <div class="irow"><span class="ilbl">Ganancia</span><span class="money">${money(o.monto-(o.monto*(comisionSocio/100)))}</span></div>
+        <div class="irow"><span class="ilbl">Rating</span><span class="ival">${st}</span></div>
+        <div class="irow"><span class="ilbl">Código</span><span class="ival">${o.codigo_garantia||'—'}</span></div>
+      </div>
+    </div>`
+  }).join('')
 }
 
-// FINANZAS
-function renderFinanzas(){
-  db.ref('solicitudes').once('value').then(snap => {
-    const sol = snap.val() || {};
-    const mias = Object.values(sol).filter(o => o.tecnico === socioId && o.monto);
-    
-    const ahora = new Date();
-    const mesActual = ahora.getMonth();
-    const añoActual = ahora.getFullYear();
-    
-    let total = 0, neto = 0, mes = 0, count = 0;
-    
-    mias.forEach(o => {
-      total += o.monto;
-      const com = o.monto * (comisionSocio / 100);
-      neto += o.monto - com;
+async function renderFinanzas(){
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('tecnico',socioId).not('monto','is',null);
+  
+  const ahora=new Date();
+  const mesActual=ahora.getMonth();
+  const añoActual=ahora.getFullYear();
+  
+  let total=0,neto=0,mes=0,count=0;
+  
+  if(sol){
+    sol.forEach(o=>{
+      total+=o.monto;
+      const com=o.monto*(comisionSocio/100);
+      neto+=o.monto-com;
       count++;
       
       if(o.fecha_fin){
-        const p = o.fecha_fin.split('/');
-        if(p.length === 3){
-          const m = parseInt(p[1]) - 1;
-          const a = parseInt(p[2]);
-          if(m === mesActual && a === añoActual){
-            mes += o.monto - com;
+        const p=o.fecha_fin.split('/');
+        if(p.length===3){
+          const m=parseInt(p[1])-1;
+          const a=parseInt(p[2]);
+          if(m===mesActual&&a===añoActual){
+            mes+=o.monto-com
           }
         }
       }
-    });
-    
-    document.getElementById('f-total').textContent = money(total);
-    document.getElementById('f-neto').textContent = money(neto);
-    document.getElementById('f-mes').textContent = money(mes);
-    document.getElementById('f-prom').textContent = count > 0 ? money(total / count) : '$0';
-    
-    document.getElementById('statsDetalle').innerHTML = `
-      <div class="card">
-        <div class="card-hdr" onclick="toggleCard('finDet')">
-          <div class="card-title">📊 Desglose</div>
-          <span class="arrow">▼</span>
-        </div>
-        <div class="card-body">
-          <div class="irow"><span class="ilbl">Total facturado</span><span class="money">${money(total)}</span></div>
-          <div class="irow"><span class="ilbl">Comisiones (${comisionSocio}%)</span><span class="ival">${money(total * (comisionSocio/100))}</span></div>
-          <div class="irow"><span class="ilbl">Ganancia neta</span><span class="money">${money(neto)}</span></div>
-          <div class="irow"><span class="ilbl">Este mes</span><span class="money">${money(mes)}</span></div>
-          <div class="irow"><span class="ilbl">Trabajos</span><span class="ival">${count}</span></div>
-          <div class="irow"><span class="ilbl">Promedio</span><span class="ival">${count > 0 ? money(total/count) : '—'}</span></div>
-          <div class="irow"><span class="ilbl">Deuda actual</span><span class="money">${money(socioData.deuda)}</span></div>
-        </div>
-      </div>`;
-  });
+    })
+  }
+  
+  document.getElementById('f-total').textContent=money(total);
+  document.getElementById('f-neto').textContent=money(neto);
+  document.getElementById('f-mes').textContent=money(mes);
+  document.getElementById('f-prom').textContent=count>0?money(total/count):'$0';
+  
+  document.getElementById('statsDetalle').innerHTML=`
+    <div class="card">
+      <div class="card-hdr" onclick="toggleCard('finDet')">
+        <div class="card-title">📊 Desglose</div>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Total facturado</span><span class="money">${money(total)}</span></div>
+        <div class="irow"><span class="ilbl">Comisiones (${comisionSocio}%)</span><span class="ival">${money(total*(comisionSocio/100))}</span></div>
+        <div class="irow"><span class="ilbl">Ganancia neta</span><span class="money">${money(neto)}</span></div>
+        <div class="irow"><span class="ilbl">Este mes</span><span class="money">${money(mes)}</span></div>
+        <div class="irow"><span class="ilbl">Trabajos</span><span class="ival">${count}</span></div>
+        <div class="irow"><span class="ilbl">Promedio</span><span class="ival">${count>0?money(total/count):'—'}</span></div>
+        <div class="irow"><span class="ilbl">Deuda actual</span><span class="money">${money(socioData.deuda)}</span></div>
+      </div>
+    </div>`
 }
 
-// SERVICE WORKER
 if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js').catch(()=>{})
 }
 </script>
 </body>
