@@ -8,15 +8,16 @@
   "theme_color": "#F9A825",
   "orientation": "portrait",
   "icons": [
-  {
-    "src": "icon-192.png",
-    "sizes": "192x192",
-    "type": "image/png",
-    "purpose": "any maskable"
-  },
-  {
-    "src": "icon-192.png",
-    "sizes": "512x512",
-    "type": "image/png"
-  }
-]
+    {
+      "src": "https://i.ibb.co/7Q8zYqN/IMG-9656.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.ibb.co/7Q8zYqN/IMG-9656.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
