@@ -15,8 +15,6 @@ body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradi
 header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;width:100%}
 .logo-mark{display:inline-block;background:var(--y);padding:8px 20px 4px;margin-bottom:16px}
 .logo-mark svg{width:180px;height:auto;display:block}
-h1{font-size:3.8rem;font-weight:900;letter-spacing:-3px;line-height:.9;text-transform:uppercase;color:#fff;text-shadow:4px 4px 0 var(--y)}
-h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
 .tagline{display:inline-block;font-size:.65rem;font-weight:900;letter-spacing:6px;text-transform:uppercase;color:#fff;background:#000;border-top:3px solid var(--y);border-bottom:3px solid var(--y);padding:8px 16px;margin-top:16px}
 .menu{width:92%;max-width:440px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
 .btn{background:var(--card);border:3px solid var(--border);color:#fff;padding:22px 20px;font-size:1rem;font-weight:900;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:1px;box-shadow:0 5px 0 #000,0 8px 20px rgba(0,0,0,.6);position:relative;transition:transform .1s;width:100%;text-align:left}
@@ -43,7 +41,7 @@ h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
 .form-field select option{background:#111;color:#fff}
 .submit-btn{width:100%;padding:16px;background:var(--y);color:#000;border:none;font-family:'Roboto Condensed',sans-serif;font-weight:900;font-size:1rem;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 0 #c17900;margin-top:8px;position:relative}
 .submit-btn:active{transform:translateY(4px);box-shadow:none}
-.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:0 4px 0 #c17900}
+.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
 .submit-btn .spinner{display:none;position:absolute;right:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;border:3px solid #000;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite}
 .submit-btn.loading .spinner{display:block}
 @keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
@@ -55,7 +53,6 @@ h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
 .confirm-box p{color:#fff;font-size:1rem;line-height:1.6}
 #loginError{color:#ff4444;font-size:.85rem;text-align:center;margin-top:8px;display:none;font-weight:700}
 .error-box{background:rgba(255,68,68,.15);border:3px solid #ff4444;padding:16px;text-align:center;margin-bottom:16px;color:#ff4444;font-weight:900;display:none}
-@media(min-width:768px){h1{font-size:5rem}header{padding:60px 20px 40px}}
 </style>
 </head>
 <body>
@@ -77,19 +74,17 @@ h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
   <button class="btn btn-ghost" onclick="openModal('m-login')"><span>ACCESO PRIVADO</span><span class="icon">🔐</span></button>
 </div>
 
-<!-- MODAL FILOSOFIA -->
+<!-- MODALES -->
 <div id="m-filosofia" class="modal">
   <div class="modal-box">
     <div class="modal-top"><h2>⚙️ Filosofía</h2><button class="btn-close" onclick="closeModal('m-filosofia')">✕</button></div>
     <div class="modal-body">
       <div class="quote">"Reparamos bien. A la primera."</div>
-      <p>D'Barrio conecta técnicos certificados del barrio con clientes que necesitan soluciones reales.</p>
-      <p>Cada trabajo con <strong style="color:var(--y)">garantía de 30 días</strong>.</p>
+      <p>D'Barrio conecta técnicos certificados con clientes. Cada trabajo con garantía de 30 días.</p>
     </div>
   </div>
 </div>
 
-<!-- MODAL SERVICIO -->
 <div id="m-servicio" class="modal">
   <div class="modal-box">
     <div class="modal-top"><h2>🔧 Solicitud</h2><button class="btn-close" onclick="closeModal('m-servicio')">✕</button></div>
@@ -110,7 +105,6 @@ h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
   </div>
 </div>
 
-<!-- MODAL GARANTIA -->
 <div id="m-garantia" class="modal">
   <div class="modal-box">
     <div class="modal-top"><h2>🛡️ Garantía</h2><button class="btn-close" onclick="closeModal('m-garantia')">✕</button></div>
@@ -124,20 +118,19 @@ h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
   </div>
 </div>
 
-<!-- MODAL VALORAR -->
 <div id="m-valorar" class="modal">
   <div class="modal-box">
     <div class="modal-top"><h2>⭐ Calificar</h2><button class="btn-close" onclick="closeModal('m-valorar')">✕</button></div>
     <div class="modal-body">
       <div class="error-box" id="error-valorar"></div>
       <p style="text-align:center;margin-bottom:20px">¿Cómo fue tu experiencia?</p>
-      <div class="form-field"><label>Código de Garantía</label><input type="text" id="v-cod" placeholder="DB-XXXX" style="text-align:center;letter-spacing:4px;font-size:1.2rem"></div>
+      <div class="form-field"><label>Código</label><input type="text" id="v-cod" placeholder="DB-XXXX" style="text-align:center;letter-spacing:4px;font-size:1.2rem"></div>
       <div class="stars" id="rating-stars">
-        <span class="star" data-rating="1" onclick="setRating(1)">★</span>
-        <span class="star" data-rating="2" onclick="setRating(2)">★</span>
-        <span class="star" data-rating="3" onclick="setRating(3)">★</span>
-        <span class="star" data-rating="4" onclick="setRating(4)">★</span>
-        <span class="star" data-rating="5" onclick="setRating(5)">★</span>
+        <span class="star" onclick="setRating(1)">★</span>
+        <span class="star" onclick="setRating(2)">★</span>
+        <span class="star" onclick="setRating(3)">★</span>
+        <span class="star" onclick="setRating(4)">★</span>
+        <span class="star" onclick="setRating(5)">★</span>
       </div>
       <p style="text-align:center;color:var(--y);font-weight:900;font-size:1.2rem;margin-bottom:16px" id="rating-text">Selecciona estrellas</p>
       <button class="submit-btn" id="btn-valorar" onclick="enviarValoracion()">📤 ENVIAR<span class="spinner"></span></button>
@@ -145,7 +138,6 @@ h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
   </div>
 </div>
 
-<!-- MODAL UNIRSE -->
 <div id="m-unirse" class="modal">
   <div class="modal-box">
     <div class="modal-top"><h2>⚡ Únete</h2><button class="btn-close" onclick="closeModal('m-unirse')">✕</button></div>
@@ -165,7 +157,6 @@ h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
   </div>
 </div>
 
-<!-- MODAL LOGIN -->
 <div id="m-login" class="modal">
   <div class="modal-box">
     <div class="modal-top"><h2>🔐 Acceso</h2><button class="btn-close" onclick="closeModal('m-login')">✕</button></div>
@@ -178,290 +169,97 @@ h1 span{color:var(--y);text-shadow:4px 4px 0 #000}
   </div>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-firebase.initializeApp({
-  apiKey:"AIzaSyAqQyYN7nxMTRsXcISSNYwESX9JYLsTquI",
-  authDomain:"delbarrioapp-27247.firebaseapp.com",
-  databaseURL:"https://delbarrioapp-27247-default-rtdb.firebaseio.com",
-  projectId:"delbarrioapp-27247",
-  storageBucket:"delbarrioapp-27247.appspot.com",
-  messagingSenderId:"57798249354",
-  appId:"1:57798249354:web:18bd75ac7b8469feb35673"
-});
-const db = firebase.database();
-let selectedRating = 0;
+const SUPABASE_URL='https://jtorpamexbjxnomngfwq.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0b3JwYW1leGJqeG5vbW5nZndxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjE2MjMsImV4cCI6MjA4Njk5NzYyM30.Tzun90wyUfPYb8K8WxmziwlKyJS8kY1K_zzrZNh7R-8';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let selectedRating=0;
 
-function openModal(id){
-  document.getElementById(id).classList.add('open');
-  document.body.style.overflow = 'hidden';
+function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden'}
+function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';if(id==='m-servicio')resetServicioForm();if(id==='m-unirse')resetUnirseForm()}
+function showError(id,msg){const err=document.getElementById('error-'+id);err.textContent=msg;err.style.display='block';setTimeout(()=>err.style.display='none',5000)}
+function setLoading(btnId,loading){const btn=document.getElementById(btnId);if(loading){btn.classList.add('loading');btn.disabled=true}else{btn.classList.remove('loading');btn.disabled=false}}
+
+function resetServicioForm(){document.getElementById('form-servicio-body').innerHTML='<div class="error-box" id="error-servicio"></div><div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53..."></div><div class="form-field"><label>Dirección</label><input type="text" id="s-dir"></div><div class="form-field"><label>Servicio</label><select id="s-cat"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option></select></div><div class="form-field"><label>Problema</label><textarea id="s-pro" rows="3"></textarea></div><button class="submit-btn" id="btn-servicio" onclick="enviarSolicitud()">📤 ENVIAR<span class="spinner"></span></button>'}
+function resetUnirseForm(){document.getElementById('form-unirse-body').innerHTML='<div class="error-box" id="error-unirse"></div><div class="form-field"><label>Nombre</label><input type="text" id="p-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel"></div><div class="form-field"><label>Especialidad</label><select id="p-esp"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option></select></div><div class="form-field"><label>Zona</label><input type="text" id="p-zon"></div><button class="submit-btn" id="btn-unirse" onclick="enviarPostulacion()">📤 ENVIAR<span class="spinner"></span></button>'}
+
+async function enviarSolicitud(){
+  const nom=document.getElementById('s-nom').value.trim();
+  const tel=document.getElementById('s-tel').value.trim();
+  const cat=document.getElementById('s-cat').value;
+  const dir=document.getElementById('s-dir').value.trim();
+  if(!nom||!tel||!cat||!dir){showError('servicio','⚠️ Completa todos los campos');return}
+  setLoading('btn-servicio',true);
+  const{error}=await sb.from('solicitudes').insert({cliente:nom,telefono:tel,direccion:dir,categoria:cat,problema:document.getElementById('s-pro').value,estado:'pendiente',fecha_inicio:new Date().toLocaleDateString('es-CU'),fecha_ts:Date.now(),monto:0,valoracion:0});
+  if(error){setLoading('btn-servicio',false);showError('servicio','⚠️ Error de conexión');return}
+  document.getElementById('form-servicio-body').innerHTML='<div class="confirm-box"><h3>✅ SOLICITUD RECIBIDA</h3><p>Pronto será atendido por nuestros técnicos.</p><p style="margin-top:12px;color:var(--y)">Te contactaremos por WhatsApp.</p></div><button class="submit-btn" onclick="closeModal(\'m-servicio\')">CERRAR</button>'
 }
 
-function closeModal(id){
-  document.getElementById(id).classList.remove('open');
-  document.body.style.overflow = '';
-  if(id === 'm-servicio') resetServicioForm();
-  if(id === 'm-unirse') resetUnirseForm();
+async function enviarGarantia(){
+  const cod=document.getElementById('g-cod').value.trim();
+  const tel=document.getElementById('g-tel').value.trim();
+  if(!cod||!tel){showError('garantia','⚠️ Completa los campos');return}
+  setLoading('btn-garantia',true);
+  const{error}=await sb.from('garantias').insert({recibo:cod,telefono:tel,falla:document.getElementById('g-pro').value,fecha:new Date().toLocaleString('es-CU')});
+  setLoading('btn-garantia',false);
+  if(error){showError('garantia','⚠️ Error');return}
+  alert('✅ Garantía activada');closeModal('m-garantia');document.getElementById('g-cod').value='';document.getElementById('g-tel').value='';document.getElementById('g-pro').value=''
 }
 
-function resetServicioForm(){
-  document.getElementById('form-servicio-body').innerHTML = `
-    <div class="error-box" id="error-servicio"></div>
-    <div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom"></div>
-    <div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53..."></div>
-    <div class="form-field"><label>Dirección</label><input type="text" id="s-dir"></div>
-    <div class="form-field"><label>Servicio</label>
-      <select id="s-cat">
-        <option value="">Seleccionar...</option>
-        <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option>
-      </select>
-    </div>
-    <div class="form-field"><label>Problema</label><textarea id="s-pro" rows="3"></textarea></div>
-    <button class="submit-btn" id="btn-servicio" onclick="enviarSolicitud()">📤 ENVIAR<span class="spinner"></span></button>`;
-}
+function setRating(n){selectedRating=n;document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('active',i<n));const txt=['Muy malo','Malo','Regular','Bueno','Excelente'];document.getElementById('rating-text').textContent=txt[n-1]||'Selecciona'}
 
-function resetUnirseForm(){
-  document.getElementById('form-unirse-body').innerHTML = `
-    <div class="error-box" id="error-unirse"></div>
-    <div class="form-field"><label>Nombre</label><input type="text" id="p-nom"></div>
-    <div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel"></div>
-    <div class="form-field"><label>Especialidad</label>
-      <select id="p-esp">
-        <option value="">Seleccionar...</option>
-        <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
-      </select>
-    </div>
-    <div class="form-field"><label>Zona</label><input type="text" id="p-zon"></div>
-    <button class="submit-btn" id="btn-unirse" onclick="enviarPostulacion()">📤 ENVIAR<span class="spinner"></span></button>`;
-}
-
-function showError(id, msg){
-  const err = document.getElementById('error-' + id);
-  err.textContent = msg;
-  err.style.display = 'block';
-  setTimeout(() => err.style.display = 'none', 5000);
-}
-
-function setLoading(btnId, loading){
-  const btn = document.getElementById(btnId);
-  if(loading){
-    btn.classList.add('loading');
-    btn.disabled = true;
-  } else {
-    btn.classList.remove('loading');
-    btn.disabled = false;
-  }
-}
-
-function enviarSolicitud(){
-  const nom = document.getElementById('s-nom').value.trim();
-  const tel = document.getElementById('s-tel').value.trim();
-  const cat = document.getElementById('s-cat').value;
-  const dir = document.getElementById('s-dir').value.trim();
-  
-  if(!nom || !tel || !cat || !dir){
-    showError('servicio', '⚠️ Completa todos los campos obligatorios');
-    return;
-  }
-  
-  setLoading('btn-servicio', true);
-  
-  db.ref('solicitudes').push({
-    cliente: nom,
-    telefono: tel,
-    direccion: dir,
-    categoria: cat,
-    problema: document.getElementById('s-pro').value,
-    estado: 'pendiente',
-    fecha_inicio: new Date().toLocaleDateString('es-CU'),
-    fecha_ts: Date.now(),
-    monto: 0,
-    valoracion: 0
-  }).then(() => {
-    document.getElementById('form-servicio-body').innerHTML = `
-      <div class="confirm-box">
-        <h3>✅ SOLICITUD RECIBIDA</h3>
-        <p>Pronto será atendido por uno de nuestros técnicos certificados.</p>
-        <p style="margin-top:12px;color:var(--y)">Te contactaremos por WhatsApp muy pronto.</p>
-      </div>
-      <button class="submit-btn" onclick="closeModal('m-servicio')">CERRAR</button>`;
-  }).catch(err => {
-    setLoading('btn-servicio', false);
-    showError('servicio', '⚠️ Error de conexión. Intenta de nuevo.');
-    console.error(err);
-  });
-}
-
-function enviarGarantia(){
-  const cod = document.getElementById('g-cod').value.trim();
-  const tel = document.getElementById('g-tel').value.trim();
-  
-  if(!cod || !tel){
-    showError('garantia', '⚠️ Completa el código y teléfono');
-    return;
-  }
-  
-  setLoading('btn-garantia', true);
-  
-  db.ref('garantias').push({
-    recibo: cod,
-    telefono: tel,
-    falla: document.getElementById('g-pro').value,
-    fecha: new Date().toLocaleString('es-CU')
-  }).then(() => {
-    setLoading('btn-garantia', false);
-    alert('✅ Garantía activada. Te contactaremos pronto.');
-    closeModal('m-garantia');
-    document.getElementById('g-cod').value = '';
-    document.getElementById('g-tel').value = '';
-    document.getElementById('g-pro').value = '';
-  }).catch(err => {
-    setLoading('btn-garantia', false);
-    showError('garantia', '⚠️ Error de conexión. Intenta de nuevo.');
-    console.error(err);
-  });
-}
-
-function setRating(n){
-  selectedRating = n;
-  document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < n));
-  const txt = ['Muy malo', 'Malo', 'Regular', 'Bueno', 'Excelente'];
-  document.getElementById('rating-text').textContent = txt[n - 1] || 'Selecciona';
-}
-
-function enviarValoracion(){
-  const cod = document.getElementById('v-cod').value.trim();
-  
-  if(!cod){
-    showError('valorar', '⚠️ Ingresa el código de garantía');
-    return;
-  }
-  
-  if(!selectedRating){
-    showError('valorar', '⚠️ Selecciona las estrellas');
-    return;
-  }
-  
-  setLoading('btn-valorar', true);
-  
-  db.ref('solicitudes').orderByChild('codigo_garantia').equalTo(cod).once('value').then(snap => {
-    const sol = snap.val();
-    
-    if(!sol){
-      setLoading('btn-valorar', false);
-      showError('valorar', '⚠️ Código no encontrado');
-      return;
-    }
-    
-    const [id, o] = Object.entries(sol)[0];
-    
-    db.ref('solicitudes/' + id).update({valoracion: selectedRating});
-    
-    // Actualizar rating socio
-    if(o.tecnico){
-      db.ref('socios/' + o.tecnico).once('value').then(s => {
-        const soc = s.val();
-        if(!soc) return;
-        
-        const trab = soc.trabajos || 1;
-        const rat = soc.rating || 0;
-        const newRat = ((rat * (trab - 1)) + selectedRating) / trab;
-        
-        db.ref('socios/' + o.tecnico).update({rating: newRat});
-      });
-    }
-    
-    setLoading('btn-valorar', false);
-    alert('✅ Gracias por tu calificación');
-    closeModal('m-valorar');
-    selectedRating = 0;
-    document.getElementById('v-cod').value = '';
-    document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
-  }).catch(err => {
-    setLoading('btn-valorar', false);
-    showError('valorar', '⚠️ Error de conexión. Intenta de nuevo.');
-    console.error(err);
-  });
-}
-
-function enviarPostulacion(){
-  const nom = document.getElementById('p-nom').value.trim();
-  const tel = document.getElementById('p-tel').value.trim();
-  const esp = document.getElementById('p-esp').value;
-  
-  if(!nom || !tel || !esp){
-    showError('unirse', '⚠️ Completa nombre, teléfono y especialidad');
-    return;
-  }
-  
-  setLoading('btn-unirse', true);
-  
-  db.ref('postulantes').push({
-    nombre: nom,
-    telefono: tel,
-    oficio: esp,
-    zona: document.getElementById('p-zon').value,
-    fecha: new Date().toLocaleString('es-CU')
-  }).then(() => {
-    document.getElementById('form-unirse-body').innerHTML = `
-      <div class="confirm-box">
-        <h3>✅ PERFIL ENVIADO</h3>
-        <p>Tu solicitud ha sido recibida.</p>
-        <p style="margin-top:12px;color:var(--y)">El administrador revisará tu perfil y te contactará pronto.</p>
-      </div>
-      <button class="submit-btn" onclick="closeModal('m-unirse')">CERRAR</button>`;
-  }).catch(err => {
-    setLoading('btn-unirse', false);
-    showError('unirse', '⚠️ Error de conexión. Intenta de nuevo.');
-    console.error(err);
-  });
-}
-
-function login(){
-  const user = document.getElementById('l-user').value.trim();
-  const pin = document.getElementById('l-pin').value.trim();
-  const err = document.getElementById('loginError');
-  
-  if(!user || !pin){
-    err.style.display = 'block';
-    return;
-  }
-  
-  setLoading('btn-login', true);
-  err.style.display = 'none';
-  
-  if(user === 'Admin' && pin === '9202'){
-    localStorage.setItem('db_admin', '1');
-    window.location.href = 'admin.html';
-    return;
-  }
-  
-  db.ref('socios').once('value').then(snap => {
-    const soc = snap.val();
-    
+async function enviarValoracion(){
+  const cod=document.getElementById('v-cod').value.trim();
+  if(!cod){showError('valorar','⚠️ Ingresa código');return}
+  if(!selectedRating){showError('valorar','⚠️ Selecciona estrellas');return}
+  setLoading('btn-valorar',true);
+  const{data,error}=await sb.from('solicitudes').select('*').eq('codigo_garantia',cod).single();
+  if(error||!data){setLoading('btn-valorar',false);showError('valorar','⚠️ Código no encontrado');return}
+  await sb.from('solicitudes').update({valoracion:selectedRating}).eq('id',data.id);
+  if(data.tecnico){
+    const{data:soc}=await sb.from('socios').select('*').eq('id',data.tecnico).single();
     if(soc){
-      for(const [id, s] of Object.entries(soc)){
-        if((s.usuario === user || s.nombre === user) && s.pin === pin && s.admitido){
-          localStorage.setItem('db_socio_id', id);
-          window.location.href = 'socio.html?id=' + id;
-          return;
-        }
+      const trab=soc.trabajos||1;
+      const rat=soc.rating||0;
+      const newRat=((rat*(trab-1))+selectedRating)/trab;
+      await sb.from('socios').update({rating:newRat}).eq('id',data.tecnico)
+    }
+  }
+  setLoading('btn-valorar',false);alert('✅ Gracias por tu calificación');closeModal('m-valorar');selectedRating=0;document.getElementById('v-cod').value='';document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'))
+}
+
+async function enviarPostulacion(){
+  const nom=document.getElementById('p-nom').value.trim();
+  const tel=document.getElementById('p-tel').value.trim();
+  const esp=document.getElementById('p-esp').value;
+  if(!nom||!tel||!esp){showError('unirse','⚠️ Completa los campos');return}
+  setLoading('btn-unirse',true);
+  const{error}=await sb.from('postulantes').insert({nombre:nom,telefono:tel,oficio:esp,zona:document.getElementById('p-zon').value,fecha:new Date().toLocaleString('es-CU')});
+  if(error){setLoading('btn-unirse',false);showError('unirse','⚠️ Error');return}
+  document.getElementById('form-unirse-body').innerHTML='<div class="confirm-box"><h3>✅ PERFIL ENVIADO</h3><p>El administrador revisará tu perfil.</p></div><button class="submit-btn" onclick="closeModal(\'m-unirse\')">CERRAR</button>'
+}
+
+async function login(){
+  const user=document.getElementById('l-user').value.trim();
+  const pin=document.getElementById('l-pin').value.trim();
+  const err=document.getElementById('loginError');
+  if(!user||!pin){err.style.display='block';return}
+  setLoading('btn-login',true);err.style.display='none';
+  if(user==='Admin'&&pin==='9202'){localStorage.setItem('db_admin','1');window.location.href='admin.html';return}
+  const{data}=await sb.from('socios').select('*').or(`usuario.eq.${user},nombre.eq.${user}`);
+  if(data){
+    for(const s of data){
+      if(s.pin===pin&&s.admitido){
+        localStorage.setItem('db_socio_id',s.id);
+        window.location.href='socio.html?id='+s.id;return
       }
     }
-    
-    setLoading('btn-login', false);
-    err.style.display = 'block';
-  }).catch(() => {
-    setLoading('btn-login', false);
-    err.textContent = '⚠️ Error de conexión';
-    err.style.display = 'block';
-  });
+  }
+  setLoading('btn-login',false);err.style.display='block'
 }
 
-if('serviceWorker' in navigator){
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
 </script>
 </body>
 </html>
