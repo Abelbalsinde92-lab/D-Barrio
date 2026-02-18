@@ -9,15 +9,10 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "https://i.ibb.co/7Q8zYqN/IMG-9656.png",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23F9A825'/%3E%3Ctext x='256' y='320' font-family='Arial Black' font-size='180' fill='%23000' text-anchor='middle' font-weight='900'%3ED'%3C/text%3E%3C/svg%3E",
       "sizes": "512x512",
-      "type": "image/png",
+      "type": "image/svg+xml",
       "purpose": "any maskable"
-    },
-    {
-      "src": "https://i.ibb.co/7Q8zYqN/IMG-9656.png",
-      "sizes": "192x192",
-      "type": "image/png"
     }
   ]
 }
