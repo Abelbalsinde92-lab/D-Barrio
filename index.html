@@ -184,7 +184,17 @@ function setLoading(btnId,loading){const btn=document.getElementById(btnId);if(l
 function resetServicioForm(){document.getElementById('form-servicio-body').innerHTML='<div class="error-box" id="error-servicio"></div><div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53..."></div><div class="form-field"><label>Dirección</label><input type="text" id="s-dir"></div><div class="form-field"><label>Servicio</label><select id="s-cat"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option></select></div><div class="form-field"><label>Problema</label><textarea id="s-pro" rows="3"></textarea></div><button class="submit-btn" id="btn-servicio" onclick="enviarSolicitud()">📤 ENVIAR<span class="spinner"></span></button>'}
 function resetUnirseForm(){document.getElementById('form-unirse-body').innerHTML='<div class="error-box" id="error-unirse"></div><div class="form-field"><label>Nombre</label><input type="text" id="p-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel"></div><div class="form-field"><label>Especialidad</label><select id="p-esp"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option></select></div><div class="form-field"><label>Zona</label><input type="text" id="p-zon"></div><button class="submit-btn" id="btn-unirse" onclick="enviarPostulacion()">📤 ENVIAR<span class="spinner"></span></button>'}
 
-    const{error}=await sb.from('solicitudes').insert({
+   async function enviarSolicitud(){
+  const nom=document.getElementById('s-nom').value.trim();
+  const tel=document.getElementById('s-tel').value.trim();
+  const cat=document.getElementById('s-cat').value;
+  const dir=document.getElementById('s-dir').value.trim();
+  
+  if(!nom||!tel||!cat||!dir){showError('servicio','⚠️ Completa todos los campos');return}
+  
+  setLoading('btn-servicio',true);
+  
+  const { error } = await sb.from('solicitudes').insert({
     cliente: nom,
     telefono: tel,
     direccion: dir,
@@ -195,7 +205,16 @@ function resetUnirseForm(){document.getElementById('form-unirse-body').innerHTML
     fecha_ts: Date.now(),
     monto: 0,
     valoracion: 0
-});
+  });
+
+  if(error){
+    setLoading('btn-servicio',false);
+    showError('servicio','⚠️ Error de conexión');
+    return;
+  }
+  
+  document.getElementById('form-servicio-body').innerHTML='<div class="confirm-box"><h3>✅ SOLICITUD RECIBIDA</h3><p>Pronto será atendido por nuestros técnicos.</p><p style="margin-top:12px;color:var(--y)">Te contactaremos por WhatsApp.</p></div><button class="submit-btn" onclick="closeModal(\'m-servicio\')">CERRAR</button>';
+}
 
   if(error){setLoading('btn-servicio',false);showError('servicio','⚠️ Error de conexión');return}
   document.getElementById('form-servicio-body').innerHTML='<div class="confirm-box"><h3>✅ SOLICITUD RECIBIDA</h3><p>Pronto será atendido por nuestros técnicos.</p><p style="margin-top:12px;color:var(--y)">Te contactaremos por WhatsApp.</p></div><button class="submit-btn" onclick="closeModal(\'m-servicio\')">CERRAR</button>'
