@@ -181,7 +181,8 @@ if(!socioId){
   mostrarBloqueado('ID no válido. Pide tu enlace al admin.')
 }else{
   (async()=>{
-    const{data:s,error}=await sb.from('socios').select('*').eq('id',socioId).single();
+    const{data:s,error}=await sb.from('socios').select('*').eq('socio_asignado', socioId)
+.single();
     if(error||!s){mostrarBloqueado('Socio no encontrado.');return}
     if(!s.admitido){mostrarBloqueado('Tu acceso aún no ha sido aprobado.');return}
     
