@@ -236,6 +236,34 @@ let comisionGlobal=15,notifConfig={owner:''},sociosCache={},tabActual='dashboard
 // Utilidades
 function ct(t){return(t||'').replace(/[\s\-\(\)\+]/g,'')}
 function money(n){return'$'+(parseFloat(n)||0).toFixed(2)}
+function enviarGarantiaCliente(cliente, telefono, servicio, codigo) {
+  const hoy = new Date();
+  const expira = new Date();
+  expira.setDate(hoy.getDate() + 30);
+
+  const fechaExpira = expira.toLocaleDateString('es-ES', { 
+    day: '2-digit', 
+    month: '2-digit', 
+    year: 'numeric' 
+  });
+
+  const msg = `🔰 *GARANTÍA D'BARRIO*\n\n` +
+              `Estimado(a) *${cliente}*,\n` +
+              `Su servicio de *${servicio}* ha sido completado con éxito.\n\n` +
+              `📌 *Código de Garantía:* ${codigo}\n` +
+              `📅 *Vence el:* ${fechaExpira}\n\n` +
+              `Guarde este mensaje. Ante cualquier inconveniente, contáctenos con su código.`;
+
+  window.open(`https://wa.me/${ct(telefono)}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+async function eliminarArchivada(id) {
+  if(!confirm('¿Eliminar esta orden del archivo permanentemente?')) return;
+  const { error } = await sb.from('solicitudes').delete().eq('id', id);
+  if(error) { toast('Error al eliminar', true); }
+  else { toast('Orden eliminada'); renderArchivo(); }
+}
+
 function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' err':'');t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000)}
 function toggleCard(id){const c=document.getElementById(id);if(!c)return;const wasOpen=c.classList.contains('open');document.querySelectorAll('.card.open').forEach(x=>{if(x.id!==id)x.classList.remove('open')});c.classList.toggle('open',!wasOpen)}
 function closeOverlay(id){document.getElementById(id).classList.remove('open')}
@@ -291,7 +319,6 @@ async function registrarSocio(){
   const{data,error}=await sb.from('socios').insert({nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com,deuda:0}).select();
   if(error){toast('⚠️ Error al registrar',true);return}
   
-  // Si venía de una postulación, borrarlo
   if(candId) { await sb.from('postulantes').delete().eq('id', candId); }
   
   const link=`https://abelbalsinde92-lab.github.io/D-Barrio/socio.html?id=${data[0].id}`;
@@ -303,6 +330,74 @@ async function registrarSocio(){
   if(tabActual==='candidatos') renderCandidatos();
   if(tabActual==='socios') renderSocios();
   initContadores();
+}
+
+async function renderSocios(){
+  const c = document.getElementById('listaSocios');
+  const {data:soc} = await sb.from('socios').select('*').order('nombre');
+  if(!soc || !soc.length){ c.innerHTML = '<p class="empty">Sin socios registrados</p>'; return; }
+  
+  c.innerHTML = soc.map(s => {
+    const params = JSON.stringify({
+      id: s.id, nom: s.nombre, tel: s.telefono, zon: s.zona, esp: s.especialidad, pin: s.pin, com: s.comision
+    }).replace(/"/g, '&quot;');
+
+    return `
+    <div class="card" id="soc-${s.id}">
+      <div class="card-hdr" onclick="toggleCard('soc-${s.id}')">
+        <div>
+          <div class="card-title">${s.nombre || '—'}</div>
+          <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+        </div>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
+        <div class="irow"><span class="ilbl">PIN</span><span class="ival" style="color:var(--y)">${s.pin || '—'}</span></div>
+        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision || 15}%</span></div>
+        <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+          <button class="btn btn-g" onclick="window.location.href='tel:${s.telefono}'">📞 LLAMAR</button>
+          <button class="btn btn-orange" onclick="prepararEdicionSocio('${params}')">✏️ EDITAR</button>
+        </div>
+        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR SOCIO</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function prepararEdicionSocio(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  document.getElementById('e-socio-id').value = s.id;
+  document.getElementById('e-nom').value = s.nom;
+  document.getElementById('e-tel').value = s.tel;
+  document.getElementById('e-zon').value = s.zon;
+  document.getElementById('e-esp').value = s.esp;
+  document.getElementById('e-pin').value = s.pin;
+  document.getElementById('e-com').value = s.com;
+  openModal('modal-edit-socio');
+}
+
+async function guardarEdicionSocio() {
+  const id = document.getElementById('e-socio-id').value;
+  const up = {
+    nombre: document.getElementById('e-nom').value,
+    telefono: document.getElementById('e-tel').value,
+    zona: document.getElementById('e-zon').value,
+    especialidad: document.getElementById('e-esp').value,
+    pin: document.getElementById('e-pin').value,
+    comision: parseFloat(document.getElementById('e-com').value)
+  };
+  const { error } = await sb.from('socios').update(up).eq('id', id);
+  if (error) { toast('Error al guardar', true); }
+  else { toast('Socio actualizado'); closeOverlay('modal-edit-socio'); renderSocios(); }
+}
+
+async function eliminarSocio(id) {
+  if(!confirm('¿Eliminar socio?')) return;
+  await sb.from('socios').delete().eq('id', id);
+  toast('Socio eliminado');
+  renderSocios();
 }
 
 async function renderCandidatos(){
@@ -460,12 +555,54 @@ async function eliminarOrden(id){
 
 // ARCHIVO, DEUDAS Y SOCIOS
 async function renderArchivo(){
-  const c=document.getElementById('listaArchivo');
-  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','completada').order('created_at',{ascending:false});
-  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin completadas</p>';return}
-  c.innerHTML=sol.map(o=>{
-    const tc=ct(o.telefono||'');
-    return`<div class="card" id="arc-${o.id}"><div class="card-hdr" onclick="toggleCard('arc-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.servicio||'—'} · ${o.municipio||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-g">OK</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Servicio</span><span class="ival">${o.servicio||'—'}</span></div><div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles||'—'}</span></div><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarArchivada('${o.id}')">🗑️ ELIMINAR</button></div></div>`;
+  const c = document.getElementById('listaArchivo');
+  
+  // Filtro de 30 días para que el archivo no pese
+  const limite = new Date();
+  limite.setDate(limite.getDate() - 30);
+  const fechaISO = limite.toISOString();
+
+  const {data:sol} = await sb.from('solicitudes')
+    .select('*')
+    .eq('estado', 'completada')
+    .gt('created_at', fechaISO)
+    .order('created_at', {ascending: false});
+
+  if(!sol || !sol.length){
+    c.innerHTML = '<p class="empty">No hay órdenes archivadas en los últimos 30 días</p>';
+    return;
+  }
+
+  c.innerHTML = sol.map(o => {
+    const tc = ct(o.telefono || '');
+    // Generamos un código de garantía si no tiene uno
+    const codG = o.codigo_garantia || 'DB-' + o.id.toString().slice(-5).toUpperCase();
+
+    return `
+    <div class="card" id="arc-${o.id}">
+      <div class="card-hdr" onclick="toggleCard('arc-${o.id}')">
+        <div>
+          <div class="card-title">${o.cliente || '—'}</div>
+          <div class="card-sub">${o.servicio || '—'} · ${o.municipio || '—'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-g">OK</span>
+          <span class="arrow">▼</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
+        <div class="irow"><span class="ilbl">Garantía</span><span class="ival" style="color:var(--y)">${codG}</span></div>
+        <div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles || '—'}</span></div>
+        
+        <button class="btn btn-y" onclick="enviarGarantiaCliente('${(o.cliente||'').replace(/'/g,"")}', '${o.telefono}', '${o.servicio}', '${codG}')">
+          ✉️ ENVIAR GARANTÍA (WA)
+        </button>
+        
+        <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 CONTACTAR CLIENTE</button>
+        <button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ BORRAR REGISTRO</button>
+      </div>
+    </div>`;
   }).join('');
 }
 
