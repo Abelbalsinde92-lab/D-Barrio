@@ -455,7 +455,10 @@ async function renderArchivo(){
 }
 
 async function enviarRecibo(oid,tel,msg){
-  await sb.from('solicitudes').update({estado:'completado',fecha_fin:new Date().toLocaleDateString('es-CU')}).eq('id',oid);
+const { error } = await sb.from('solicitudes')
+    .update({ socio_asignado: idSocio }) // <--- Aquí cambiamos 'tecnico' por 'socio_asignado'
+    .eq('id', idOrden);
+
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
   toast('✅ Recibo enviado');
   renderArchivo()
