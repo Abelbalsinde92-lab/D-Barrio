@@ -191,12 +191,12 @@ async function enviarSolicitud(){
   const dir=document.getElementById('s-dir').value.trim();
   if(!nom||!tel||!cat||!dir){showError('servicio','⚠️ Completa todos los campos');return}
   setLoading('btn-servicio',true);
-  const{error}=await sb.from('solicitudes').insert({
+    const{error}=await sb.from('solicitudes').insert({
     cliente: nom,
     telefono: tel,
     direccion: dir,
-    servicio: cat,
-    detalles: document.getElementById('s-pro').value,
+    servicio: cat, // Antes aquí algunos códigos decían 'categoria'
+    detalles: document.getElementById('s-pro').value, // Antes 'problema'
     estado: 'pendiente',
     fecha_inicio: new Date().toLocaleDateString('es-CU'),
     fecha_ts: Date.now(),
