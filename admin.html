@@ -233,6 +233,7 @@ if(!localStorage.getItem('db_admin'))window.location.href='index.html';
 
 let comisionGlobal=15,notifConfig={owner:''},sociosCache={},tabActual='dashboard';
 
+// Utilidades
 function ct(t){return(t||'').replace(/[\s\-\(\)\+]/g,'')}
 function money(n){return'$'+(parseFloat(n)||0).toFixed(2)}
 function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' err':'');t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000)}
@@ -240,6 +241,7 @@ function toggleCard(id){const c=document.getElementById(id);if(!c)return;const w
 function closeOverlay(id){document.getElementById(id).classList.remove('open')}
 function openModal(id){document.getElementById(id).classList.add('open')}
 
+// Navegación
 function showTab(id){
   tabActual=id;
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
@@ -261,8 +263,8 @@ async function initContadores(){
   document.getElementById('cnt-ord').textContent=n;
   document.getElementById('cnt-ord').style.display=n>0?'flex':'none';
   
-  const{data:soc}=await sb.from('socios').select('*');
-  const cand=soc?soc.filter(s=>!s.nombre).length:0;
+  const{data:post}=await sb.from('postulantes').select('*');
+  const cand=post?post.length:0;
   document.getElementById('cnt-cand').textContent=cand;
   document.getElementById('cnt-cand').style.display=cand>0?'flex':'none';
   
@@ -270,41 +272,11 @@ async function initContadores(){
     const{data:s2}=await sb.from('solicitudes').select('*').eq('estado','pendiente');
     const m=s2?s2.length:0;
     document.getElementById('cnt-ord').textContent=m;
-    document.getElementById('cnt-ord').style.display=m>0?'flex':'none'
-  },10000)
+    document.getElementById('cnt-ord').style.display=m>0?'flex':'none';
+  },10000);
 }
 
-async function renderDash(){
-  const{data:sol}=await sb.from('solicitudes').select('*');
-  const total=sol?sol.length:0;
-  const pend=sol?sol.filter(o=>o.estado==='pendiente').length:0;
-  const comp=sol?sol.filter(o=>o.estado==='completada').length:0;
-  document.getElementById('d-total').textContent=total;
-  document.getElementById('d-pend').textContent=pend;
-  document.getElementById('d-comp').textContent=comp;
-  
-  const{data:soc}=await sb.from('socios').select('*');
-  document.getElementById('d-socios').textContent=soc?soc.length:0;
-  
-  if(soc&&soc.length){
-    const top=soc.sort((a,b)=>(b.trabajos||0)-(a.trabajos||0)).slice(0,5);
-    document.getElementById('topSocios').innerHTML=top.map((s,i)=>`<div class="card"><div class="card-hdr" style="cursor:default"><div style="display:flex;align-items:center;gap:12px"><span class="rank">${i+1}</span><div><div class="card-title">${s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'} · ${s.zona||'—'}</div></div></div><span style="color:var(--y)">${money(s.deuda)}</span></div></div>`).join('')
-  }else{
-    document.getElementById('topSocios').innerHTML='<p class="empty">Sin socios</p>'
-  }
-}
-
-function abrirModalNuevoSocio(){
-  document.getElementById('m-candidato-id').value='';
-  document.getElementById('m-nom').value='';
-  document.getElementById('m-tel').value='';
-  document.getElementById('m-zon').value='';
-  document.getElementById('m-esp').value='';
-  document.getElementById('m-pin').value='';
-  document.getElementById('m-com').value=comisionGlobal;
-  openModal('modal-candidato')
-}
-
+// Registro y Gestión de Socios
 async function registrarSocio(){
   const nom=document.getElementById('m-nom').value.trim();
   const tel=document.getElementById('m-tel').value.trim();
@@ -312,54 +284,116 @@ async function registrarSocio(){
   const esp=document.getElementById('m-esp').value;
   const pin=document.getElementById('m-pin').value.trim();
   const com=parseInt(document.getElementById('m-com').value)||15;
-  if(!nom||!tel||!pin||pin.length<4){toast('⚠️ Completa todos',true);return}
+  const candId = document.getElementById('m-candidato-id').value;
+
+  if(!nom||!tel||!pin||pin.length<4){toast('⚠️ Completa todos los campos',true);return}
   
   const{data,error}=await sb.from('socios').insert({nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com,deuda:0}).select();
-  if(error){toast('⚠️ Error',true);return}
+  if(error){toast('⚠️ Error al registrar',true);return}
+  
+  // Si venía de una postulación, borrarlo
+  if(candId) { await sb.from('postulantes').delete().eq('id', candId); }
   
   const link=`https://abelbalsinde92-lab.github.io/D-Barrio/socio.html?id=${data[0].id}`;
-  const msg=`🎉 Bienvenido D'BARRIO, ${nom}!\n\n✅ Tu acceso:\n${link}\n\n🔐 Usuario: ${nom}\n🔑 PIN: ${pin}`;
+  const msg=`🎉 Bienvenido a D'BARRIO, ${nom}!\n\n✅ Tu acceso:\n${link}\n\n🔐 Usuario: ${nom}\n🔑 PIN: ${pin}`;
   window.open(`https://wa.me/${ct(tel)}?text=${encodeURIComponent(msg)}`,'_blank');
   
   closeOverlay('modal-candidato');
-  toast(`✅ ${nom} registrado`);
-  renderCandidatos()
+  toast(`✅ ${nom} registrado con éxito`);
+  if(tabActual==='candidatos') renderCandidatos();
+  if(tabActual==='socios') renderSocios();
+  initContadores();
 }
 
 async function renderCandidatos(){
   const c=document.getElementById('listaCandidatos');
-  const{data:soc}=await sb.from('socios').select('*').order('created_at',{ascending:false});
+  const{data:soc, error}=await sb.from('postulantes').select('*').order('created_at',{ascending:false});
   
-  if(!soc||!soc.length){c.innerHTML='<p class="empty">Sin socios registrados</p>';return}
+  if(error) { toast('Error cargando postulantes', true); return; }
+  if(!soc||!soc.length){c.innerHTML='<p class="empty">Sin candidatos nuevos</p>';return}
   
   c.innerHTML=soc.map(s=>{
     const tc=ct(s.telefono||'');
-    return`<div class="card cand" id="cand-${s.id}">
+    return `<div class="card cand" id="cand-${s.id}">
       <div class="card-hdr" onclick="toggleCard('cand-${s.id}')">
         <div>
           <div class="card-title">${s.nombre||'—'}</div>
-          <div class="card-sub">${s.especialidad||'—'} · ${s.zona||'—'}</div>
+          <div class="card-sub">${s.oficio||'—'} · ${s.zona||'—'}</div>
         </div>
         <span class="arrow" style="color:#0088ff">▼</span>
       </div>
       <div class="card-body">
         <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono||'—'}</span></div>
-        <div class="irow"><span class="ilbl">PIN</span><span class="ival">${s.pin||'—'}</span></div>
-        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||15}%</span></div>
+        <div class="irow"><span class="ilbl">Especialidad</span><span class="ival">${s.oficio||'—'}</span></div>
+        <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${new Date(s.created_at).toLocaleDateString()||'—'}</span></div>
+        <button class="btn btn-y" onclick="prepararRegistro('${s.id}','${(s.nombre||'').replace(/'/g,"\\'")}','${s.telefono}','${(s.zona||'').replace(/'/g,"\\'")}','${s.oficio}')">✅ ACEPTAR SOCIO</button>
         <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button>
-        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR</button>
+        <button class="btn btn-r" onclick="eliminarCandidato('${s.id}')">🗑️ RECHAZAR</button>
       </div>
-    </div>`
-  }).join('')
+    </div>`;
+  }).join('');
 }
 
+function prepararRegistro(id, nom, tel, zon, esp) {
+    document.getElementById('m-candidato-id').value = id;
+    document.getElementById('m-nom').value = nom;
+    document.getElementById('m-tel').value = tel;
+    document.getElementById('m-zon').value = zon;
+    document.getElementById('m-esp').value = esp;
+    openModal('modal-candidato');
+}
+
+async function eliminarCandidato(id) {
+    if(!confirm('¿Eliminar esta postulación?')) return;
+    await sb.from('postulantes').delete().eq('id', id);
+    toast('Candidato eliminado');
+    renderCandidatos();
+    initContadores();
+}
+
+// DASHBOARD
+async function renderDash(){
+  const {data:sol} = await sb.from('solicitudes').select('*');
+  const total = sol ? sol.length : 0;
+  const pend = sol ? sol.filter(o => o.estado === 'pendiente').length : 0;
+  const comp = sol ? sol.filter(o => o.estado === 'completada').length : 0;
+  
+  document.getElementById('d-total').textContent = total;
+  document.getElementById('d-pend').textContent = pend;
+  document.getElementById('d-comp').textContent = comp;
+  
+  const {data:soc} = await sb.from('socios').select('*');
+  document.getElementById('d-socios').textContent = soc ? soc.length : 0;
+  
+  if(soc && soc.length){
+    // Mejorado para que no falle si 'trabajos' es null
+    const top = [...soc].sort((a, b) => (Number(b.trabajos) || 0) - (Number(a.trabajos) || 0)).slice(0, 5);
+    document.getElementById('topSocios').innerHTML = top.map((s, i) => `
+      <div class="card">
+        <div class="card-hdr" style="cursor:default">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="rank">${i+1}</span>
+            <div>
+              <div class="card-title">${s.nombre || '—'}</div>
+              <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+            </div>
+          </div>
+          <span style="color:var(--y)">${money(s.deuda)}</span>
+        </div>
+      </div>`).join('');
+  } else {
+    document.getElementById('topSocios').innerHTML = '<p class="empty">Sin socios registrados</p>';
+  }
+}
+
+// GESTIÓN DE ÓRDENES
 async function crearOrdenManual(){
   const nom=document.getElementById('o-nom').value.trim();
   const tel=document.getElementById('o-tel').value.trim();
   const dir=document.getElementById('o-dir').value.trim();
   const mun=document.getElementById('o-mun').value.trim();
   const serv=document.getElementById('o-serv').value;
-  if(!nom||!tel||!dir||!serv){toast('⚠️ Completa',true);return}
+  if(!nom||!tel||!dir||!serv){toast('⚠️ Completa los campos',true);return}
   
   await sb.from('solicitudes').insert({cliente:nom,telefono:tel,direccion:dir,municipio:mun,servicio:serv,detalles:document.getElementById('o-det').value,estado:'pendiente'});
   
@@ -371,7 +405,8 @@ async function crearOrdenManual(){
   document.getElementById('o-mun').value='';
   document.getElementById('o-serv').value='';
   document.getElementById('o-det').value='';
-  renderOrdenes()
+  renderOrdenes();
+  initContadores();
 }
 
 async function renderOrdenes(){
@@ -389,161 +424,131 @@ async function renderOrdenes(){
     const socioAsignado=o.socio_asignado&&sociosCache[o.socio_asignado]?(sociosCache[o.socio_asignado].nombre||'Socio'):null;
     const opcs=socios?socios.map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.nombre||''}" ${o.socio_asignado===s.id?'selected':''}>${s.nombre||'—'} — ${s.especialidad||'—'}</option>`).join(''):'';
     
-    return`<div class="card hl" id="ord-${o.id}"><div class="card-hdr" onclick="toggleCard('ord-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.servicio||'—'} · ${o.municipio||'—'}</div></div><div style="display:flex;align-items:center;gap:8px">${socioAsignado?`<span class="badge badge-o">ASIGNADO</span>`:`<span class="badge badge-r pulse">PEND</span>`}<span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div><div class="irow"><span class="ilbl">Municipio</span><span class="ival">${o.municipio||'—'}</span></div><div class="irow"><span class="ilbl">Servicio</span><span class="ival">${o.servicio||'—'}</span></div><div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles||'—'}</span></div><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div>${socioAsignado?`<div class="irow"><span class="ilbl">Asignado</span><span class="ival" style="color:var(--green)">✅ ${socioAsignado}</span></div>`:''}<hr class="sep"><div class="fld"><label>Asignar</label><select id="sel-${o.id}"><option value="">— Seleccionar —</option>${opcs}</select></div><button class="btn btn-y" onclick="asignarSocio('${o.id}','${(o.cliente||'').replace(/'/g,"\\'")}','${(o.servicio||'').replace(/'/g,"\\'")}','${(o.detalles||'').replace(/'/g,"\\'")}','${o.telefono||''}')">📤 ASIGNAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Cliente</button><button class="btn btn-g" onclick="completarOrden('${o.id}')">✅ COMPLETAR</button><button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button></div></div>`
-  }).join('')
+    return`<div class="card hl" id="ord-${o.id}"><div class="card-hdr" onclick="toggleCard('ord-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.servicio||'—'} · ${o.municipio||'—'}</div></div><div style="display:flex;align-items:center;gap:8px">${socioAsignado?`<span class="badge badge-o">ASIGNADO</span>`:`<span class="badge badge-r pulse">PEND</span>`}<span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div><div class="irow"><span class="ilbl">Municipio</span><span class="ival">${o.municipio||'—'}</span></div><div class="irow"><span class="ilbl">Servicio</span><span class="ival">${o.servicio||'—'}</span></div><div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles||'—'}</span></div><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div>${socioAsignado?`<div class="irow"><span class="ilbl">Asignado</span><span class="ival" style="color:var(--green)">✅ ${socioAsignado}</span></div>`:''}<hr class="sep"><div class="fld"><label>Asignar</label><select id="sel-${o.id}"><option value="">— Seleccionar —</option>${opcs}</select></div><button class="btn btn-y" onclick="asignarSocio('${o.id}','${(o.cliente||'').replace(/'/g,"\\'")}','${(o.servicio||'').replace(/'/g,"\\'")}','${(o.detalles||'').replace(/'/g,"\\'")}','${o.telefono||''}')">📤 ASIGNAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Cliente</button><button class="btn btn-g" onclick="completarOrden('${o.id}')">✅ COMPLETAR</button><button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button></div></div>`;
+  }).join('');
 }
 
 async function asignarSocio(oid,cliente,servicio,detalles,telCli){
   const sel=document.getElementById('sel-'+oid);
-  if(!sel){toast('⚠️ Error',true);return}
   const sid=sel.value;
   if(!sid){toast('⚠️ Selecciona socio',true);return}
   const opt=sel.options[sel.selectedIndex];
   const telSoc=ct(opt.dataset.tel||'');
   const nomSoc=opt.dataset.nom||'Socio';
-  
   await sb.from('solicitudes').update({socio_asignado:sid}).eq('id',oid);
-  
   const msgSoc=`🔧 NUEVA ORDEN D'BARRIO\n\n👤 ${cliente}\n📞 ${telCli}\n🏷️ ${servicio}\n⚙️ ${detalles}\n\n✅ Asignado a ti.`;
   window.open(`https://wa.me/${telSoc}?text=${encodeURIComponent(msgSoc)}`,'_blank');
-  
   toast(`✅ Asignado a ${nomSoc}`);
-  renderOrdenes()
+  renderOrdenes();
 }
 
 async function completarOrden(id){
   if(!confirm('¿Completar?'))return;
   await sb.from('solicitudes').update({estado:'completada'}).eq('id',id);
   toast('✅ Completada');
-  renderOrdenes()
+  renderOrdenes();
+  initContadores();
 }
 
 async function eliminarOrden(id){
   if(!confirm('¿Eliminar?'))return;
   await sb.from('solicitudes').delete().eq('id',id);
   toast('🗑️ Eliminada');
-  renderOrdenes()
+  renderOrdenes();
+  initContadores();
 }
 
+// ARCHIVO, DEUDAS Y SOCIOS
 async function renderArchivo(){
   const c=document.getElementById('listaArchivo');
   const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','completada').order('created_at',{ascending:false});
   if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin completadas</p>';return}
-  
   c.innerHTML=sol.map(o=>{
     const tc=ct(o.telefono||'');
-    return`<div class="card" id="arc-${o.id}"><div class="card-hdr" onclick="toggleCard('arc-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.servicio||'—'} · ${o.municipio||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-g">OK</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Servicio</span><span class="ival">${o.servicio||'—'}</span></div><div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles||'—'}</span></div><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarArchivada('${o.id}')">🗑️ ELIMINAR</button></div></div>`
-  }).join('')
-}
-
-async function eliminarArchivada(id){
-  if(!confirm('¿Eliminar de archivo?'))return;
-  await sb.from('solicitudes').delete().eq('id',id);
-  toast('🗑️ Eliminada');
-  renderArchivo()
+    return`<div class="card" id="arc-${o.id}"><div class="card-hdr" onclick="toggleCard('arc-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.servicio||'—'} · ${o.municipio||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-g">OK</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Servicio</span><span class="ival">${o.servicio||'—'}</span></div><div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles||'—'}</span></div><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarArchivada('${o.id}')">🗑️ ELIMINAR</button></div></div>`;
+  }).join('');
 }
 
 async function renderDeudas(){
   const c=document.getElementById('listaDeudas');
-  const{data:soc}=await sb.from('socios').select('*');
-  if(!soc||!soc.length){c.innerHTML='<p class="empty">Sin socios</p>';return}
+  const{data:soc}=await sb.from('socios').select('*').gt('deuda', 0);
+  if(!soc||!soc.length){c.innerHTML='<p class="empty">No hay deudas pendientes</p>';return}
   c.innerHTML=soc.map(s=>{
     const tc=ct(s.telefono||'');
-    return`<div class="card" id="deu-${s.id}"><div class="card-hdr" onclick="toggleCard('deu-${s.id}')"><div><div class="card-title">${s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Zona</span><span class="ival">${s.zona||'—'}</span></div><div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-y" onclick="liquidar('${s.id}','${s.nombre||''}','${tc}',${s.deuda||0})">💰 LIQUIDAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`
-  }).join('')
+    return`<div class="card" id="deu-${s.id}"><div class="card-hdr" onclick="toggleCard('deu-${s.id}')"><div><div class="card-title">${s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-y" onclick="liquidar('${s.id}','${s.nombre||''}','${tc}',${s.deuda||0})">💰 LIQUIDAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`;
+  }).join('');
 }
 
 async function liquidar(sid,nom,tel,deuda){
   if(!confirm('¿Liquidado?'))return;
   await sb.from('socios').update({deuda:0}).eq('id',sid);
-  
   const msg=`💰 LIQUIDACIÓN D'BARRIO\n\nHola ${nom},\n\nTu deuda de ${money(deuda)} ha sido liquidada.\n\n✅ Cuenta saldada`;
   window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
-  
   toast('✅ Liquidado');
-  renderDeudas()
+  renderDeudas();
 }
 
 async function renderSocios(){
-  const c=document.getElementById('listaSocios');
-  const{data:soc}=await sb.from('socios').select('*');
-  if(!soc||!soc.length){c.innerHTML='<p class="empty">Sin socios</p>';return}
-  c.innerHTML=soc.map(s=>{
-    const tc=ct(s.telefono||'');
-    return`<div class="card" id="soc-${s.id}"><div class="card-hdr" onclick="toggleCard('soc-${s.id}')"><div><div class="card-title">${s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'} · ${s.zona||'—'}</div></div><span class="arrow">▼</span></div><div class="card-body"><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono||'—'}</span></div><div class="irow"><span class="ilbl">PIN</span><span class="ival">${s.pin||'—'}</span></div><div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision||comisionGlobal}%</span></div><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-orange" onclick="abrirEditarSocio('${s.id}','${(s.nombre||'').replace(/'/g,"\\'")}','${(s.telefono||'').replace(/'/g,"\\'")}','${(s.zona||'').replace(/'/g,"\\'")}','${(s.especialidad||'').replace(/'/g,"\\'")}','${s.pin||''}',${s.comision||15})">✏️ EDITAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button><button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR</button></div></div>`
-  }).join('')
-}
-
-function abrirEditarSocio(id,nom,tel,zon,esp,pin,com){
-  document.getElementById('e-socio-id').value=id;
-  document.getElementById('e-nom').value=nom;
-  document.getElementById('e-tel').value=tel;
-  document.getElementById('e-zon').value=zon;
-  document.getElementById('e-esp').value=esp;
-  document.getElementById('e-pin').value=pin;
-  document.getElementById('e-com').value=com;
-  openModal('modal-edit-socio')
-}
-
-async function guardarEdicionSocio(){
-  const id=document.getElementById('e-socio-id').value;
-  const nom=document.getElementById('e-nom').value.trim();
-  const tel=document.getElementById('e-tel').value.trim();
-  const zon=document.getElementById('e-zon').value.trim();
-  const esp=document.getElementById('e-esp').value;
-  const pin=document.getElementById('e-pin').value.trim();
-  const com=parseInt(document.getElementById('e-com').value)||15;
-  if(!nom||!tel||!esp||!pin){toast('⚠️ Completa',true);return}
-  await sb.from('socios').update({nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com}).eq('id',id);
-  closeOverlay('modal-edit-socio');
-  toast('✅ Actualizado');
-  renderSocios()
-}
-
-async function eliminarSocio(id){
-  if(!confirm('¿Eliminar?'))return;
-  await sb.from('socios').delete().eq('id',id);
-  toast('🗑️ Eliminado');
-  if(tabActual==='socios')renderSocios();
-  if(tabActual==='candidatos')renderCandidatos()
-}
-
-async function cargarConfig(){
-  const{data}=await sb.from('config').select('*').eq('clave','comision_global').single();
-  if(data)document.getElementById('cfg-com').value=data.valor||15;
+  const c = document.getElementById('listaSocios');
+  const {data:soc} = await sb.from('socios').select('*').order('nombre');
+  if(!soc || !soc.length){ c.innerHTML = '<p class="empty">Sin socios registrados</p>'; return; }
   
+  c.innerHTML = soc.map(s => {
+    const tc = ct(s.telefono || '');
+    const params = JSON.stringify({
+      id: s.id, nom: s.nombre, tel: s.telefono, zon: s.zona, esp: s.especialidad, pin: s.pin, com: s.comision
+    }).replace(/"/g, '&quot;');
+
+    return `
+    <div class="card" id="soc-${s.id}">
+      <div class="card-hdr" onclick="toggleCard('soc-${s.id}')">
+        <div>
+          <div class="card-title">${s.nombre || '—'}</div>
+          <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+        </div>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
+        <div class="irow"><span class="ilbl">PIN</span><span class="ival">${s.pin || '—'}</span></div>
+        <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
+        <button class="btn btn-orange" onclick="prepararEdicion('${params}')">✏️ EDITAR</button>
+        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function prepararEdicion(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  abrirEditarSocio(s.id, s.nom, s.tel, s.zon, s.esp, s.pin, s.com);
+}
+
+// CONFIGURACIÓN Y OTROS
+async function cargarConfig(){
+  const{data:com}=await sb.from('config').select('*').eq('clave','comision_global').single();
+  if(com)document.getElementById('cfg-com').value=com.valor||15;
   const{data:owner}=await sb.from('config').select('*').eq('clave','telefono_admin').single();
-  if(owner)document.getElementById('cfg-owner').value=owner.valor||''
+  if(owner)document.getElementById('cfg-owner').value=owner.valor||'';
 }
 
 async function guardarComision(){
-  const n=parseInt(document.getElementById('cfg-com').value)||15;
-  comisionGlobal=n;
-  const{data:exists}=await sb.from('config').select('*').eq('clave','comision_global').single();
-  if(exists){
-    await sb.from('config').update({valor:n.toString()}).eq('clave','comision_global')
-  }else{
-    await sb.from('config').insert({clave:'comision_global',valor:n.toString()})
-  }
-  toast('✅ Comisión: '+n+'%')
+  const n=document.getElementById('cfg-com').value;
+  await sb.from('config').upsert({clave:'comision_global',valor:n.toString()});
+  toast('✅ Comisión guardada');
 }
 
 async function guardarNotif(){
   const o=document.getElementById('cfg-owner').value.trim();
-  const{data:exists}=await sb.from('config').select('*').eq('clave','telefono_admin').single();
-  if(exists){
-    await sb.from('config').update({valor:o}).eq('clave','telefono_admin')
-  }else{
-    await sb.from('config').insert({clave:'telefono_admin',valor:o})
-  }
-  toast('✅ Número guardado')
+  await sb.from('config').upsert({clave:'telefono_admin',valor:o});
+  toast('✅ WhatsApp Admin guardado');
 }
 
 function logout(){localStorage.removeItem('db_admin');window.location.href='index.html'}
 
 (async()=>{
   await initContadores();
-  await renderDash()
+  await renderDash();
 })();
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
