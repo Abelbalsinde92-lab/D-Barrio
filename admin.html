@@ -494,7 +494,6 @@ async function renderSocios(){
   if(!soc || !soc.length){ c.innerHTML = '<p class="empty">Sin socios registrados</p>'; return; }
   
   c.innerHTML = soc.map(s => {
-    const tc = ct(s.telefono || '');
     const params = JSON.stringify({
       id: s.id, nom: s.nombre, tel: s.telefono, zon: s.zona, esp: s.especialidad, pin: s.pin, com: s.comision
     }).replace(/"/g, '&quot;');
@@ -510,13 +509,44 @@ async function renderSocios(){
       </div>
       <div class="card-body">
         <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
-        <div class="irow"><span class="ilbl">PIN</span><span class="ival">${s.pin || '—'}</span></div>
+        <div class="irow"><span class="ilbl">PIN</span><span class="ival" style="color:var(--y)">${s.pin || '—'}</span></div>
+        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision || 15}%</span></div>
         <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
-        <button class="btn btn-orange" onclick="prepararEdicion('${params}')">✏️ EDITAR</button>
-        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR</button>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+          <button class="btn btn-g" onclick="window.location.href='tel:${s.telefono}'">📞 LLAMAR</button>
+          <button class="btn btn-orange" onclick="prepararEdicion('${params}')">✏️ EDITAR</button>
+        </div>
+        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR SOCIO</button>
       </div>
     </div>`;
   }).join('');
+}
+
+function prepararEdicion(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  document.getElementById('edit-id').value = s.id;
+  document.getElementById('edit-nombre').value = s.nom;
+  document.getElementById('edit-telefono').value = s.tel;
+  document.getElementById('edit-zona').value = s.zon;
+  document.getElementById('edit-especialidad').value = s.esp;
+  document.getElementById('edit-pin').value = s.pin;
+  document.getElementById('edit-comision').value = s.com;
+  abrirModal('modalEditarSocio');
+}
+
+async function guardarCambiosSocio() {
+  const id = document.getElementById('edit-id').value;
+  const up = {
+    nombre: document.getElementById('edit-nombre').value,
+    telefono: document.getElementById('edit-telefono').value,
+    zona: document.getElementById('edit-zona').value,
+    especialidad: document.getElementById('edit-especialidad').value,
+    pin: document.getElementById('edit-pin').value,
+    comision: parseFloat(document.getElementById('edit-comision').value)
+  };
+  const { error } = await sb.from('socios').update(up).eq('id', id);
+  if (error) { toast('Error al guardar', true); }
+  else { toast('Socio actualizado'); cerrarModal('modalEditarSocio'); renderSocios(); }
 }
 
 function prepararEdicion(jsonStr) {
