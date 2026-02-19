@@ -74,7 +74,6 @@ header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;widt
   <button class="btn btn-ghost" onclick="openModal('m-login')"><span>ACCESO PRIVADO</span><span class="icon">🔐</span></button>
 </div>
 
-<!-- MODALES -->
 <div id="m-filosofia" class="modal">
   <div class="modal-box">
     <div class="modal-top"><h2>⚙️ Filosofía</h2><button class="btn-close" onclick="closeModal('m-filosofia')">✕</button></div>
@@ -184,41 +183,25 @@ function setLoading(btnId,loading){const btn=document.getElementById(btnId);if(l
 function resetServicioForm(){document.getElementById('form-servicio-body').innerHTML='<div class="error-box" id="error-servicio"></div><div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53..."></div><div class="form-field"><label>Dirección</label><input type="text" id="s-dir"></div><div class="form-field"><label>Servicio</label><select id="s-cat"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option></select></div><div class="form-field"><label>Problema</label><textarea id="s-pro" rows="3"></textarea></div><button class="submit-btn" id="btn-servicio" onclick="enviarSolicitud()">📤 ENVIAR<span class="spinner"></span></button>'}
 function resetUnirseForm(){document.getElementById('form-unirse-body').innerHTML='<div class="error-box" id="error-unirse"></div><div class="form-field"><label>Nombre</label><input type="text" id="p-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel"></div><div class="form-field"><label>Especialidad</label><select id="p-esp"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option></select></div><div class="form-field"><label>Zona</label><input type="text" id="p-zon"></div><button class="submit-btn" id="btn-unirse" onclick="enviarPostulacion()">📤 ENVIAR<span class="spinner"></span></button>'}
 
-   async function enviarSolicitud() {
-    const nom = document.getElementById('s-nom').value.trim();
-    const tel = document.getElementById('s-tel').value.trim();
-    const cat = document.getElementById('s-cat').value;
-    const dir = document.getElementById('s-dir').value.trim();
-
-    if (!nom || !tel || !cat || !dir) { showError('servicio', '⚠️ Completa todos los campos'); return }
-
-    setLoading('btn-servicio', true);
-
-    const { error } = await sb.from('solicitudes').insert({
-        cliente: nom,
-        telefono: tel,
-        direccion: dir,
-        servicio: cat,
-        detalles: document.getElementById('s-pro').value,
-        estado: 'pendiente',
-        fecha_inicio: new Date().toLocaleDateString('es-CU'),
-        fecha_ts: Date.now(),
-        monto: 0,
-        valoracion: 0
-    });
-
-    if (error) {
-        setLoading('btn-servicio', false);
-        showError('servicio', '⚠️ Error de conexión');
-        return;
-    }
-
-    document.getElementById('form-servicio-body').innerHTML = '<div class="confirm-box"><h3>✅ SOLICITUD RECIBIDA</h3><p>Pronto será atendido por nuestros técnicos.</p></div><button class="submit-btn" onclick="closeModal(\'m-servicio\')">CERRAR</button>';
-}
- 
-  document.getElementById('form-servicio-body').innerHTML='<div class="confirm-box"><h3>✅ SOLICITUD RECIBIDA</h3><p>Pronto será atendido por nuestros técnicos.</p><p style="margin-top:12px;color:var(--y)">Te contactaremos por WhatsApp.</p></div><button class="submit-btn" onclick="closeModal(\'m-servicio\')">CERRAR</button>';
-}
-
+async function enviarSolicitud(){
+  const nom=document.getElementById('s-nom').value.trim();
+  const tel=document.getElementById('s-tel').value.trim();
+  const cat=document.getElementById('s-cat').value;
+  const dir=document.getElementById('s-dir').value.trim();
+  if(!nom||!tel||!cat||!dir){showError('servicio','⚠️ Completa todos los campos');return}
+  setLoading('btn-servicio',true);
+  const { error } = await sb.from('solicitudes').insert({
+    cliente: nom,
+    telefono: tel,
+    direccion: dir,
+    servicio: cat,
+    detalles: document.getElementById('s-pro').value,
+    estado: 'pendiente',
+    fecha_inicio: new Date().toLocaleDateString('es-CU'),
+    fecha_ts: Date.now(),
+    monto: 0,
+    valoracion: 0
+  });
   if(error){setLoading('btn-servicio',false);showError('servicio','⚠️ Error de conexión');return}
   document.getElementById('form-servicio-body').innerHTML='<div class="confirm-box"><h3>✅ SOLICITUD RECIBIDA</h3><p>Pronto será atendido por nuestros técnicos.</p><p style="margin-top:12px;color:var(--y)">Te contactaremos por WhatsApp.</p></div><button class="submit-btn" onclick="closeModal(\'m-servicio\')">CERRAR</button>'
 }
@@ -231,15 +214,14 @@ async function enviarGarantia(){
   const{error}=await sb.from('garantias').insert({recibo:cod,telefono:tel,falla:document.getElementById('g-pro').value,fecha:new Date().toLocaleString('es-CU')});
   setLoading('btn-garantia',false);
   if(error){showError('garantia','⚠️ Error');return}
-  alert('✅ Garantía activada');closeModal('m-garantia');document.getElementById('g-cod').value='';document.getElementById('g-tel').value='';document.getElementById('g-pro').value=''
+  alert('✅ Garantía activada');closeModal('m-garantia');
 }
 
 function setRating(n){selectedRating=n;document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('active',i<n));const txt=['Muy malo','Malo','Regular','Bueno','Excelente'];document.getElementById('rating-text').textContent=txt[n-1]||'Selecciona'}
 
 async function enviarValoracion(){
   const cod=document.getElementById('v-cod').value.trim();
-  if(!cod){showError('valorar','⚠️ Ingresa código');return}
-  if(!selectedRating){showError('valorar','⚠️ Selecciona estrellas');return}
+  if(!cod||!selectedRating){showError('valorar','⚠️ Datos incompletos');return}
   setLoading('btn-valorar',true);
   const{data,error}=await sb.from('solicitudes').select('*').eq('codigo_garantia',cod).single();
   if(error||!data){setLoading('btn-valorar',false);showError('valorar','⚠️ Código no encontrado');return}
@@ -247,13 +229,13 @@ async function enviarValoracion(){
   if(data.socio_asignado){
     const{data:soc}=await sb.from('socios').select('*').eq('id',data.socio_asignado).single();
     if(soc){
-      const trab=soc.trabajos||1;
+      const trab=(soc.trabajos||0)+1;
       const rat=soc.rating||0;
       const newRat=((rat*(trab-1))+selectedRating)/trab;
-      await sb.from('socios').update({rating:newRat}).eq('id',data.socio_asignado)
+      await sb.from('socios').update({rating:newRat, trabajos:trab}).eq('id',data.socio_asignado)
     }
   }
-  setLoading('btn-valorar',false);alert('✅ Gracias por tu calificación');closeModal('m-valorar');selectedRating=0;document.getElementById('v-cod').value='';document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'))
+  setLoading('btn-valorar',false);alert('✅ Gracias por tu calificación');closeModal('m-valorar');
 }
 
 async function enviarPostulacion(){
