@@ -191,7 +191,19 @@ async function enviarSolicitud(){
   const dir=document.getElementById('s-dir').value.trim();
   if(!nom||!tel||!cat||!dir){showError('servicio','⚠️ Completa todos los campos');return}
   setLoading('btn-servicio',true);
-  const{error}=await sb.from('solicitudes').insert({cliente:nom,telefono:tel,direccion:dir,categoria:cat,problema:document.getElementById('s-pro').value,estado:'pendiente',fecha_inicio:new Date().toLocaleDateString('es-CU'),fecha_ts:Date.now(),monto:0,valoracion:0});
+  const{error}=await sb.from('solicitudes').insert({
+    cliente: nom,
+    telefono: tel,
+    direccion: dir,
+    servicio: cat,
+    detalles: document.getElementById('s-pro').value,
+    estado: 'pendiente',
+    fecha_inicio: new Date().toLocaleDateString('es-CU'),
+    fecha_ts: Date.now(),
+    monto: 0,
+    valoracion: 0
+});
+
   if(error){setLoading('btn-servicio',false);showError('servicio','⚠️ Error de conexión');return}
   document.getElementById('form-servicio-body').innerHTML='<div class="confirm-box"><h3>✅ SOLICITUD RECIBIDA</h3><p>Pronto será atendido por nuestros técnicos.</p><p style="margin-top:12px;color:var(--y)">Te contactaremos por WhatsApp.</p></div><button class="submit-btn" onclick="closeModal(\'m-servicio\')">CERRAR</button>'
 }
