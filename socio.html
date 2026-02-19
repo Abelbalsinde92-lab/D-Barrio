@@ -181,8 +181,7 @@ if(!socioId){
   mostrarBloqueado('ID no válido. Pide tu enlace al admin.')
 }else{
   (async()=>{
-    const{data:s,error}=await sb.from('socios').select('*').eq('id', socioId).single();
-
+    const{data:s,error}=await sb.from('socios').select('*').eq('socio_asignado', socioId)
 .single();
     if(error||!s){mostrarBloqueado('Socio no encontrado.');return}
     if(!s.admitido){mostrarBloqueado('Tu acceso aún no ha sido aprobado.');return}
@@ -210,7 +209,8 @@ async function cargarDatosSocio(){
   document.getElementById('s-zona').textContent=s.zona||'—';
   document.getElementById('s-comision').textContent=(s.comision||15)+'%';
   
-  const{data:ordenes}=await sb.from('solicitudes').select('*').eq('tecnico',socioId).eq('estado','pendiente');
+  // CORRECCIÓN: socio_asignado
+  const{data:ordenes}=await sb.from('solicitudes').select('*').eq('socio_asignado',socioId).eq('estado','pendiente');
   ordenesActivas=ordenes?ordenes.length:0;
   
   const ocupado=ordenesActivas>0;
@@ -221,148 +221,8 @@ async function cargarDatosSocio(){
   }
 }
 
-function actualizarToggle(ocupado){
-  const sw=document.getElementById('tswitch');
-  const st=document.getElementById('tstatus');
-  if(ocupado){
-    sw.classList.add('on');
-    st.textContent='🔴 OCUPADO';
-    st.className='tstatus ocup'
-  }else{
-    sw.classList.remove('on');
-    st.textContent='🟢 DISPONIBLE';
-    st.className='tstatus disp'
-  }
-}
-
-function showTab(id){
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.getElementById('sec-'+id).classList.add('on');
-  event.target.classList.add('on');
-  
-  if(id==='activas')renderActivas();
-  if(id==='historial')renderHistorial();
-  if(id==='stats')renderFinanzas()
-}
-
-function toggleStats(){
-  const body=document.getElementById('stats-body');
-  const toggle=event.currentTarget;
-  toggle.classList.toggle('open');
-  body.classList.toggle('open')
-}
-
-function toggleCard(id){
-  const card=document.getElementById(id);
-  if(!card)return;
-  document.querySelectorAll('.card.open').forEach(c=>{if(c.id!==id)c.classList.remove('open')});
-  card.classList.toggle('open')
-}
-
-async function renderActivas(){
-  const c=document.getElementById('listaActivas');
-  const{data:sol}=await sb.from('solicitudes').select('*').eq('tecnico',socioId).eq('estado','pendiente');
-  
-  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin órdenes activas 🎉</p>';return}
-  
-  c.innerHTML=sol.map(o=>{
-    const tc=ct(o.telefono||'');
-    const nom=socioData.usuario||socioData.nombre||'Técnico';
-    const cat=o.categoria||'el servicio';
-    const msgWA=encodeURIComponent(`Hola, soy ${nom} de D'BARRIO, le contacto por su solicitud de ${cat}. ¿Cuándo le viene bien que pase?`);
-    
-    return `<div class="card hl" id="act-${o.id}">
-      <div class="card-hdr" onclick="toggleCard('act-${o.id}')">
-        <div>
-          <div class="card-title">${o.cliente}</div>
-          <div class="card-sub">${o.categoria||'General'} · ${o.fecha_inicio||'—'}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="badge badge-r">PEND</span>
-          <span class="arrow">▼</span>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div>
-        <div class="irow"><span class="ilbl">Problema</span><span class="ival">${o.problema||'—'}</span></div>
-        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div>
-        <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}?text=${msgWA}','_blank')">💬 CONTACTAR</button>
-        <button class="btn btn-b" onclick="window.open('tel:+${tc}','_blank')">📞 LLAMAR</button>
-        <hr style="border:none;border-top:2px solid var(--border);margin:14px 0">
-        <div class="fld">
-          <label>Monto cobrado ($)</label>
-          <input type="number" id="monto-${o.id}" step="0.01" min="0" placeholder="0.00" inputmode="decimal">
-        </div>
-        <button class="btn btn-y" onclick="finalizarTrabajo('${o.id}')">✅ TERMINADO</button>
-      </div>
-    </div>`
-  }).join('')
-}
-
-async function finalizarTrabajo(oid){
-  const inp=document.getElementById('monto-'+oid);
-  const m=parseFloat(inp.value);
-  
-  if(!m||m<=0){toast('⚠️ Ingresa el monto',true);return}
-  if(!confirm(`¿Trabajo terminado por ${money(m)}?`))return;
-  
-  const cod='DB-'+Math.floor(1000+Math.random()*9000);
-  const com=m*(comisionSocio/100);
-  
-  const nDeuda=(socioData.deuda||0)+com;
-  const nTrab=(socioData.trabajos||0)+1;
-  
-  await sb.from('solicitudes').update({
-    estado:'finalizado_pendiente_recibo',
-    monto:m,
-    codigo_garantia:cod,
-    fecha_fin:new Date().toLocaleDateString('es-CU')
-  }).eq('id',oid);
-  
-  await sb.from('socios').update({
-    deuda:nDeuda,
-    trabajos:nTrab
-  }).eq('id',socioId);
-  
-  toast(`✅ Reportado. Comisión: ${money(com)}`);
-  renderActivas()
-}
-
-async function renderHistorial(){
-  const c=document.getElementById('listaHistorial');
-  const{data:sol}=await sb.from('solicitudes').select('*').eq('tecnico',socioId).neq('estado','pendiente').order('created_at',{ascending:false});
-  
-  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin trabajos completados</p>';return}
-  
-  c.innerHTML=sol.map(o=>{
-    const st=o.valoracion?'⭐'.repeat(o.valoracion):'—';
-    
-    return `<div class="card" id="his-${o.id}">
-      <div class="card-hdr" onclick="toggleCard('his-${o.id}')">
-        <div>
-          <div class="card-title">${o.cliente||'—'}</div>
-          <div class="card-sub">${o.categoria||'—'} · ${money(o.monto)}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="badge badge-g">OK</span>
-          <span class="arrow">▼</span>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${o.fecha_inicio||'—'}</span></div>
-        <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
-        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${money(o.monto*(comisionSocio/100))}</span></div>
-        <div class="irow"><span class="ilbl">Ganancia</span><span class="money">${money(o.monto-(o.monto*(comisionSocio/100)))}</span></div>
-        <div class="irow"><span class="ilbl">Rating</span><span class="ival">${st}</span></div>
-        <div class="irow"><span class="ilbl">Código</span><span class="ival">${o.codigo_garantia||'—'}</span></div>
-      </div>
-    </div>`
-  }).join('')
-}
-
 async function renderFinanzas(){
-  const{data:sol}=await sb.from('solicitudes').select('*').eq('tecnico',socioId).not('monto','is',null);
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('socio_asignado',socioId).not('monto','is',null);
   
   const ahora=new Date();
   const mesActual=ahora.getMonth();
@@ -390,6 +250,38 @@ async function renderFinanzas(){
     })
   }
   
+async function renderHistorial(){
+  const c=document.getElementById('listaHistorial');
+  // CORRECCIÓN: socio_asignado
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('socio_asignado',socioId).neq('estado','pendiente').order('created_at',{ascending:false});
+  
+  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin trabajos completados</p>';return}
+  
+  c.innerHTML=sol.map(o=>{
+    const st=o.valoracion?'⭐'.repeat(o.valoracion):'—';
+    return `<div class="card" id="his-${o.id}">
+      <div class="card-hdr" onclick="toggleCard('his-${o.id}')">
+        <div>
+          <div class="card-title">${o.cliente||'—'}</div>
+          <div class="card-sub">${o.servicio||'—'} · ${money(o.monto)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-g">OK</span>
+          <span class="arrow">▼</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${o.fecha_inicio||'—'}</span></div>
+        <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
+        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${money(o.monto*(comisionSocio/100))}</span></div>
+        <div class="irow"><span class="ilbl">Ganancia</span><span class="money">${money(o.monto-(o.monto*(comisionSocio/100)))}</span></div>
+        <div class="irow"><span class="ilbl">Rating</span><span class="ival">${st}</span></div>
+        <div class="irow"><span class="ilbl">Código</span><span class="ival">${o.codigo_garantia||'—'}</span></div>
+      </div>
+    </div>`
+  }).join('')
+}
+
   document.getElementById('f-total').textContent=money(total);
   document.getElementById('f-neto').textContent=money(neto);
   document.getElementById('f-mes').textContent=money(mes);
