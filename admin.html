@@ -524,6 +524,11 @@ function prepararEdicion(jsonStr) {
   abrirEditarSocio(s.id, s.nom, s.tel, s.zon, s.esp, s.pin, s.com);
 }
 
+function prepararEdicion(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  abrirEditarSocio(s.id, s.nom, s.tel, s.zon, s.esp, s.pin, s.com);
+}
+
 // CONFIGURACIÓN Y OTROS
 async function cargarConfig(){
   const{data:com}=await sb.from('config').select('*').eq('clave','comision_global').single();
