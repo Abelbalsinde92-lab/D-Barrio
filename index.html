@@ -184,19 +184,12 @@ function setLoading(btnId,loading){const btn=document.getElementById(btnId);if(l
 function resetServicioForm(){document.getElementById('form-servicio-body').innerHTML='<div class="error-box" id="error-servicio"></div><div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53..."></div><div class="form-field"><label>Dirección</label><input type="text" id="s-dir"></div><div class="form-field"><label>Servicio</label><select id="s-cat"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option></select></div><div class="form-field"><label>Problema</label><textarea id="s-pro" rows="3"></textarea></div><button class="submit-btn" id="btn-servicio" onclick="enviarSolicitud()">📤 ENVIAR<span class="spinner"></span></button>'}
 function resetUnirseForm(){document.getElementById('form-unirse-body').innerHTML='<div class="error-box" id="error-unirse"></div><div class="form-field"><label>Nombre</label><input type="text" id="p-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel"></div><div class="form-field"><label>Especialidad</label><select id="p-esp"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option></select></div><div class="form-field"><label>Zona</label><input type="text" id="p-zon"></div><button class="submit-btn" id="btn-unirse" onclick="enviarPostulacion()">📤 ENVIAR<span class="spinner"></span></button>'}
 
-async function enviarSolicitud(){
-  const nom=document.getElementById('s-nom').value.trim();
-  const tel=document.getElementById('s-tel').value.trim();
-  const cat=document.getElementById('s-cat').value;
-  const dir=document.getElementById('s-dir').value.trim();
-  if(!nom||!tel||!cat||!dir){showError('servicio','⚠️ Completa todos los campos');return}
-  setLoading('btn-servicio',true);
     const{error}=await sb.from('solicitudes').insert({
     cliente: nom,
     telefono: tel,
     direccion: dir,
-    servicio: cat, // Antes aquí algunos códigos decían 'categoria'
-    detalles: document.getElementById('s-pro').value, // Antes 'problema'
+    servicio: cat,
+    detalles: document.getElementById('s-pro').value,
     estado: 'pendiente',
     fecha_inicio: new Date().toLocaleDateString('es-CU'),
     fecha_ts: Date.now(),
@@ -229,13 +222,13 @@ async function enviarValoracion(){
   const{data,error}=await sb.from('solicitudes').select('*').eq('codigo_garantia',cod).single();
   if(error||!data){setLoading('btn-valorar',false);showError('valorar','⚠️ Código no encontrado');return}
   await sb.from('solicitudes').update({valoracion:selectedRating}).eq('id',data.id);
-  if(data.tecnico){
-    const{data:soc}=await sb.from('socios').select('*').eq('id',data.tecnico).single();
+  if(data.socio_asignado){
+    const{data:soc}=await sb.from('socios').select('*').eq('id',data.socio_asignado).single();
     if(soc){
       const trab=soc.trabajos||1;
       const rat=soc.rating||0;
       const newRat=((rat*(trab-1))+selectedRating)/trab;
-      await sb.from('socios').update({rating:newRat}).eq('id',data.tecnico)
+      await sb.from('socios').update({rating:newRat}).eq('id',data.socio_asignado)
     }
   }
   setLoading('btn-valorar',false);alert('✅ Gracias por tu calificación');closeModal('m-valorar');selectedRating=0;document.getElementById('v-cod').value='';document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'))
