@@ -179,24 +179,59 @@ function mostrarApp(){
 
 if(!socioId){
   mostrarBloqueado('ID no válido. Pide tu enlace al admin.')
-}else{
+} else {
   (async()=>{
-    const{data:s,error}=await sb.from('socios').select('*').eq('socio_asignado', socioId)
-.single();
-    if(error||!s){mostrarBloqueado('Socio no encontrado.');return}
-    if(!s.admitido){mostrarBloqueado('Tu acceso aún no ha sido aprobado.');return}
-    
-    socioData=s;
-    comisionSocio=s.comision||15;
+    const {data:s, error} = await sb.from('socios').select('*').eq('id', socioId).single();
+    if(error || !s){ mostrarBloqueado('Socio no encontrado.'); return; }
+    socioData = s;
+    comisionSocio = s.comision || 15;
     mostrarApp();
     await cargarDatosSocio();
     await renderActivas();
-    
     setInterval(async()=>{
-      const{data:soc}=await sb.from('socios').select('*').eq('id',socioId).single();
-      if(soc){socioData=soc;comisionSocio=soc.comision||15;await cargarDatosSocio()}
-    },5000)
+      const {data:soc} = await sb.from('socios').select('*').eq('id', socioId).single();
+      if(soc){ socioData = soc; comisionSocio = soc.comision || 15; await cargarDatosSocio(); }
+    }, 15000);
   })()
+}
+
+async function renderActivas(){
+  const c = document.getElementById('listaActivas');
+  const {data:sol} = await sb.from('solicitudes').select('*').eq('socio_asignado', socioId).eq('estado', 'pendiente').order('created_at', {ascending: false});
+  if(!sol || sol.length === 0){ c.innerHTML = '<p class="empty">No tienes órdenes activas</p>'; return; }
+  c.innerHTML = sol.map(o => `
+    <div class="card hl open" id="ord-${o.id}">
+      <div class="card-hdr">
+        <div><div class="card-title">${o.cliente}</div><div class="card-sub">${o.servicio} · ${o.municipio || ''}</div></div>
+        <span class="badge badge-r">NUEVA</span>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Dirección:</span><span class="ival">${o.direccion}</span></div>
+        <div class="irow"><span class="ilbl">Detalles:</span><span class="ival">${o.detalles || ''}</span></div>
+        <div class="irow"><span class="ilbl">Teléfono:</span><span class="ival">${o.telefono}</span></div>
+        <button class="btn btn-g" onclick="window.open('https://wa.me/${ct(o.telefono)}','_blank')">💬 WHATSAPP CLIENTE</button>
+        <div class="fld" style="margin-top:15px">
+          <label>MONTO TOTAL COBRADO ($)</label>
+          <input type="number" id="monto-${o.id}" placeholder="0.00" inputmode="numeric">
+        </div>
+        <button class="btn btn-y" onclick="finalizarTrabajo('${o.id}', '${(o.cliente||'').replace(/'/g,"")}')">✅ REPORTAR TRABAJO</button>
+      </div>
+    </div>`).join('');
+}
+
+async function finalizarTrabajo(id, cliente){
+  const monto = parseFloat(document.getElementById(`monto-${id}`).value);
+  if(!monto || monto <= 0){ toast('⚠️ Ingresa el monto cobrado', true); return; }
+  const comision = monto * (comisionSocio / 100);
+  const nuevaDeuda = (socioData.deuda || 0) + comision;
+  const {error: errOrd} = await sb.from('solicitudes').update({estado:'completada', monto:monto, fecha_fin:new Date().toLocaleDateString()}).eq('id', id);
+  const {error: errSoc} = await sb.from('socios').update({deuda:nuevaDeuda, trabajos:(socioData.trabajos || 0) + 1}).eq('id', socioId);
+  if(errOrd || errSoc){ toast('❌ Error al guardar', true); return; }
+  const msg = `✅ TRABAJO TERMINADO\n\n👷 Socio: ${socioData.nombre}\n👤 Cliente: ${cliente}\n💰 Cobrado: $${monto}\n📉 Comisión: $${comision.toFixed(2)}\n📌 Deuda total: $${nuevaDeuda.toFixed(2)}`;
+  window.open(`https://wa.me/5355165641?text=${encodeURIComponent(msg)}`, '_blank');
+  toast('✅ Reporte enviado');
+  renderActivas();
+  cargarDatosSocio();
 }
 
 async function cargarDatosSocio(){
