@@ -269,21 +269,36 @@ async function finalizarTrabajo(id, cliente){
 }
 
 async function renderHistorial(){
-  const c=document.getElementById('listaHistorial');
-  const {data:sol}=await sb.from('solicitudes').select('*').eq('socio_asignado',socioId).neq('estado','pendiente').order('created_at',{ascending:false});
-  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin trabajos completados</p>';return}
-  c.innerHTML=sol.map(o=>`
-    <div class="card" id="his-${o.id}">
+  const c = document.getElementById('listaHistorial');
+  const {data:sol} = await sb.from('solicitudes')
+    .select('*')
+    .eq('socio_asignado', socioId)
+    .neq('estado', 'pendiente')
+    .order('created_at', {ascending: false});
+  
+  if(!sol || !sol.length){ c.innerHTML = '<p class="empty">No hay historial disponible</p>'; return; }
+  
+  c.innerHTML = sol.map(o => {
+    const tieneG = o.codigo_garantia ? 'border-left: 5px solid var(--y)' : '';
+    const badgeG = o.codigo_garantia ? `<div style="margin-top:8px"><span class="badge" style="background:var(--y); color:#000; padding:4px 8px">🛡️ GARANTÍA: ${o.codigo_garantia}</span></div>` : '';
+
+    return `
+    <div class="card" id="his-${o.id}" style="${tieneG}">
       <div class="card-hdr" onclick="toggleCard('his-${o.id}')">
-        <div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.servicio} · ${money(o.monto)}</div></div>
+        <div>
+          <div class="card-title">${o.cliente || '—'}</div>
+          <div class="card-sub">${o.fecha_fin || '—'} · ${o.servicio}</div>
+        </div>
         <span class="arrow">▼</span>
       </div>
       <div class="card-body">
-        <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${o.fecha_fin||'—'}</span></div>
-        <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
-        <div class="irow"><span class="ilbl">Garantía</span><span class="ival">${o.codigo_garantia||'—'}</span></div>
+        <div class="irow"><span class="ilbl">Monto Cobrado</span><span class="money">${money(o.monto)}</span></div>
+        <div class="irow"><span class="ilbl">Comisión (${comisionSocio}%)</span><span class="ival">${money(o.monto * (comisionSocio/100))}</span></div>
+        <div class="irow"><span class="ilbl">Estado</span><span class="ival" style="color:var(--green)">COMPLETADO</span></div>
+        ${badgeG}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function renderFinanzas(){
