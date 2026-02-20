@@ -3,182 +3,234 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>D'BARRIO | Servicios Profesionales</title>
+<title>D'BARRIO ADMIN</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#F9A825">
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-:root{--y:#F9A825;--yb:#FFD700;--bg:#000;--card:#111;--border:#222;--text:#fff;--sub:#aaa}
+:root{--y:#F9A825;--yb:#FFD700;--bg:#000;--card:#111;--card2:#1a1a1a;--border:#2a2a2a;--text:#fff;--sub:#aaa;--red:#ff4444;--green:#00d856}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto Condensed',sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;overflow-x:hidden;padding-bottom:40px}
-body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(255,255,255,.015) 18px,rgba(255,255,255,.015) 20px);pointer-events:none;z-index:0}
-header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;width:100%}
-.logo-mark{display:inline-block;background:var(--y);padding:8px 20px 4px;margin-bottom:16px}
-.logo-mark svg{width:180px;height:auto;display:block}
-.tagline{display:inline-block;font-size:.65rem;font-weight:900;letter-spacing:6px;text-transform:uppercase;color:#fff;background:#000;border-top:3px solid var(--y);border-bottom:3px solid var(--y);padding:8px 16px;margin-top:16px}
-.menu{width:92%;max-width:440px;display:flex;flex-direction:column;gap:12px;position:relative;z-index:1}
-.btn{background:var(--card);border:3px solid var(--border);color:#fff;padding:22px 20px;font-size:1rem;font-weight:900;cursor:pointer;display:flex;justify-content:space-between;align-items:center;text-transform:uppercase;letter-spacing:1px;box-shadow:0 5px 0 #000,0 8px 20px rgba(0,0,0,.6);position:relative;transition:transform .1s;width:100%;text-align:left}
-.btn::before{content:"";position:absolute;inset:5px;border:1px solid rgba(255,255,255,.07);pointer-events:none}
-.btn:active{transform:translateY(5px);box-shadow:0 0 0 #000}
-.btn .icon{font-size:1.4rem;color:var(--y)}
-.btn-primary{background:var(--y);color:#000;border-color:var(--yb);box-shadow:0 5px 0 #c17900,0 8px 20px rgba(249,168,37,.4)}
-.btn-primary:active{box-shadow:0 0 0 #c17900}
-.btn-primary .icon{color:#000}
-.btn-ghost{border-style:dashed;opacity:.55}
-.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:1000;overflow-y:auto}
-.modal.open{display:block}
-.modal-box{background:var(--card);border:3px solid var(--y);width:94%;max-width:440px;margin:6vh auto 4vh;box-shadow:0 0 0 6px var(--border),0 20px 60px rgba(249,168,37,.25)}
+body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:80px}
+.hdr{background:var(--card);border-bottom:3px solid var(--y);padding:14px 18px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
+.hdr-logo{font-size:1.2rem;font-weight:900;color:var(--y);text-transform:uppercase}
+.hdr-back{background:rgba(249,168,37,.15);border:2px solid var(--y);color:var(--y);padding:7px 14px;font-size:.75rem;font-weight:900;cursor:pointer;text-transform:uppercase;text-decoration:none}
+.tabs{background:var(--card);border-bottom:3px solid var(--border);display:flex;overflow-x:auto;position:sticky;top:55px;z-index:99;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:13px 8px;font-size:.65rem;font-weight:900;white-space:nowrap;text-transform:uppercase;color:var(--sub);border-bottom:3px solid transparent;cursor:pointer;flex:1;text-align:center;min-width:55px;position:relative}
+.tab.on{color:var(--y);border-bottom-color:var(--y)}
+.tab .badge-count{position:absolute;top:6px;right:4px;background:var(--red);color:#fff;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:900}
+.content{padding:18px;max-width:1200px;margin:0 auto}
+.sec{display:none}.sec.on{display:block}
+h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;border-bottom:3px solid var(--y);padding-bottom:8px;margin-bottom:18px}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:22px}
+@media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}}
+.stat{background:var(--card2);border:3px solid var(--border);padding:16px;text-align:center}
+.stat-val{font-size:2rem;font-weight:900;color:var(--y);line-height:1}
+.stat-lbl{font-size:.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:5px;font-weight:700}
+.card{background:var(--card);border:3px solid var(--border);margin-bottom:12px;box-shadow:0 4px 0 #000}
+.card.hl{border-color:var(--y);box-shadow:0 4px 0 #c17900}
+.card.cand{border-color:#0088ff;box-shadow:0 4px 0 #005cb2}
+.card-hdr{padding:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+.card-hdr:active{background:#0a0a0a}
+.card-title{font-weight:900;font-size:.95rem;text-transform:uppercase;color:#fff}
+.card-sub{font-size:.7rem;color:var(--sub);margin-top:3px}
+.card-body{padding:0 15px;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
+.card.open .card-body{padding:15px;max-height:5000px}
+.arrow{color:var(--y);font-size:.9rem;transition:transform .3s;flex-shrink:0}
+.card.open .arrow{transform:rotate(180deg)}
+.badge{padding:4px 10px;font-size:.62rem;font-weight:900;text-transform:uppercase;flex-shrink:0}
+.badge-y{background:var(--y);color:#000}
+.badge-r{background:var(--red);color:#fff}
+.badge-g{background:var(--green);color:#000}
+.badge-o{background:#ff9500;color:#000}
+.badge-b{background:#0088ff;color:#fff}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+.fld{margin-bottom:12px}
+.fld label{display:block;font-size:.62rem;font-weight:900;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
+.fld input,.fld select,.fld textarea{width:100%;background:#000;border:2px solid var(--border);color:#fff;padding:12px;font-family:'Roboto Condensed',sans-serif;font-size:.9rem;font-weight:700}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--y)}
+.fld select option{background:#111;color:#fff}
+.btn{padding:12px 16px;border:none;font-family:'Roboto Condensed',sans-serif;font-weight:900;font-size:.85rem;cursor:pointer;text-transform:uppercase;display:block;width:100%;margin:5px 0}
+.btn-y{background:var(--y);color:#000;box-shadow:0 4px 0 #c17900}
+.btn-y:active{transform:translateY(4px);box-shadow:none}
+.btn-g{background:transparent;border:2px solid var(--green);color:var(--green)}
+.btn-b{background:transparent;border:2px solid #0088ff;color:#0088ff}
+.btn-r{background:rgba(255,68,68,.15);border:2px solid var(--red);color:var(--red)}
+.btn-orange{background:#ff9500;color:#000;border:none}
+.irow{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);gap:10px}
+.irow:last-child{border:none}
+.ilbl{color:var(--sub);font-size:.78rem;font-weight:700;flex-shrink:0}
+.ival{color:#fff;font-weight:900;font-size:.85rem;text-align:right}
+.money{color:var(--y);font-weight:900;font-size:1.05rem}
+.sep{border:none;border-top:2px solid var(--border);margin:14px 0}
+.cfg-box{background:var(--card2);border:3px solid var(--y);padding:20px;margin-bottom:18px}
+.cfg-box h3{color:var(--y);font-size:1rem;text-transform:uppercase;margin-bottom:14px;font-weight:900}
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--y);color:#000;padding:13px 22px;font-weight:900;font-size:.9rem;z-index:9999;text-align:center;min-width:240px;pointer-events:none;display:none}
+.toast.err{background:var(--red);color:#fff}
+.empty{color:var(--sub);text-align:center;padding:35px 20px;font-size:.9rem}
+.rank{background:var(--y);color:#000;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;flex-shrink:0}
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:600;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--card);border:3px solid var(--y);width:100%;max-width:440px;margin:auto}
 .modal-top{background:var(--y);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
-.modal-top h2{font-size:1.2rem;font-weight:900;color:#000;text-transform:uppercase}
-.btn-close{background:#000;border:none;color:var(--y);font-size:1.4rem;font-weight:900;cursor:pointer;padding:4px 12px}
-.modal-body{padding:24px}
-.modal-body p{color:var(--sub);font-size:.95rem;line-height:1.6;margin-bottom:16px}
-.quote{color:var(--y);font-size:1.1rem;font-weight:900;font-style:italic;border-left:4px solid var(--y);padding-left:14px;margin-bottom:16px}
-.form-field{margin-bottom:14px}
-.form-field label{display:block;font-size:.65rem;font-weight:900;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.form-field input,.form-field select,.form-field textarea{width:100%;background:#000;border:2px solid var(--border);color:#fff;padding:14px;font-family:'Roboto Condensed',sans-serif;font-size:.95rem;font-weight:700}
-.form-field input:focus,.form-field select:focus,.form-field textarea:focus{outline:none;border-color:var(--y);box-shadow:0 0 0 3px rgba(249,168,37,.2)}
-.form-field select option{background:#111;color:#fff}
-.submit-btn{width:100%;padding:16px;background:var(--y);color:#000;border:none;font-family:'Roboto Condensed',sans-serif;font-weight:900;font-size:1rem;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 0 #c17900;margin-top:8px;position:relative}
-.submit-btn:active{transform:translateY(4px);box-shadow:none}
-.submit-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.submit-btn .spinner{display:none;position:absolute;right:16px;top:50%;transform:translateY(-50%);width:20px;height:20px;border:3px solid #000;border-top-color:transparent;border-radius:50%;animation:spin 1s linear infinite}
-.submit-btn.loading .spinner{display:block}
-@keyframes spin{to{transform:translateY(-50%) rotate(360deg)}}
-.stars{display:flex;gap:8px;justify-content:center;margin:20px 0}
-.star{font-size:2.5rem;cursor:pointer;color:#333;transition:color .2s}
-.star.active,.star:hover{color:var(--y)}
-.confirm-box{background:rgba(249,168,37,.15);border:3px solid var(--y);padding:20px;text-align:center;margin-bottom:20px}
-.confirm-box h3{color:var(--y);font-size:1.3rem;font-weight:900;margin-bottom:10px}
-.confirm-box p{color:#fff;font-size:1rem;line-height:1.6}
-#loginError{color:#ff4444;font-size:.85rem;text-align:center;margin-top:8px;display:none;font-weight:700}
-.error-box{background:rgba(255,68,68,.15);border:3px solid #ff4444;padding:16px;text-align:center;margin-bottom:16px;color:#ff4444;font-weight:900;display:none}
+.modal-top h3{font-size:1.1rem;font-weight:900;color:#000;text-transform:uppercase}
+.btn-close-modal{background:#000;border:none;color:var(--y);font-size:1.3rem;font-weight:900;cursor:pointer;padding:4px 12px}
+.modal-body{padding:20px}
 </style>
 </head>
 <body>
-<header>
-  <div class="logo-mark">
-    <svg viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg">
-      <text x="90" y="50" text-anchor="middle" font-family="Roboto Condensed,Impact" font-weight="900" font-size="52" fill="#000" letter-spacing="-2">D'BARRIO</text>
-    </svg>
-  </div>
-  <div class="tagline">Servicios Profesionales con Garantía</div>
-</header>
 
-<div class="menu">
-  <button class="btn" onclick="openModal('m-filosofia')"><span>NUESTRA FILOSOFÍA</span><span class="icon">⚙️</span></button>
-  <button class="btn btn-primary" onclick="openModal('m-servicio')"><span>SOLICITAR TÉCNICO</span><span class="icon">🔧</span></button>
-  <button class="btn" onclick="openModal('m-garantia')"><span>GARANTÍA 30 DÍAS</span><span class="icon">🛡️</span></button>
-  <button class="btn" onclick="openModal('m-valorar')"><span>CALIFICAR SERVICIO</span><span class="icon">⭐</span></button>
-  <button class="btn" onclick="openModal('m-unirse')"><span>ÚNETE AL EQUIPO</span><span class="icon">⚡</span></button>
-<button class="btn" onclick="openModal('m-quejas')"><span>BUZÓN DE QUEJAS</span><span class="icon">💬</span></button>
-  <button class="btn btn-ghost" onclick="openModal('m-login')"><span>ACCESO PRIVADO</span><span class="icon">🔐</span></button>
-</div>
+<div class="toast" id="toast"></div>
 
-<div id="m-filosofia" class="modal">
+<div class="modal-overlay" id="modal-candidato">
   <div class="modal-box">
-    <div class="modal-top"><h2>⚙️ Filosofía</h2><button class="btn-close" onclick="closeModal('m-filosofia')">✕</button></div>
+    <div class="modal-top"><h3>👷 REGISTRAR SOCIO</h3><button class="btn-close-modal" onclick="closeOverlay('modal-candidato')">✕</button></div>
     <div class="modal-body">
-      <div class="quote">"Reparamos bien. A la primera."</div>
-      <p>D'Barrio conecta técnicos certificados con clientes. Cada trabajo con garantía de 30 días.</p>
-    </div>
-  </div>
-</div>
-
-<div id="m-servicio" class="modal">
-  <div class="modal-box">
-    <div class="modal-top"><h2>🔧 Solicitud</h2><button class="btn-close" onclick="closeModal('m-servicio')">✕</button></div>
-    <div class="modal-body" id="form-servicio-body">
-      <div class="error-box" id="error-servicio"></div>
-      <div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom"></div>
-      <div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53..."></div>
-      <div class="form-field"><label>Dirección</label><input type="text" id="s-dir"></div>
-      <div class="form-field"><label>Servicio</label>
-        <select id="s-cat">
-          <option value="">Seleccionar...</option>
-          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option>
-        </select>
-      </div>
-      <div class="form-field"><label>Problema</label><textarea id="s-pro" rows="3"></textarea></div>
-      <button class="submit-btn" id="btn-servicio" onclick="enviarSolicitud()">📤 ENVIAR<span class="spinner"></span></button>
-    </div>
-  </div>
-</div>
-
-<div id="m-garantia" class="modal">
-  <div class="modal-box">
-    <div class="modal-top"><h2>🛡️ Garantía</h2><button class="btn-close" onclick="closeModal('m-garantia')">✕</button></div>
-    <div class="modal-body">
-      <div class="error-box" id="error-garantia"></div>
-      <div class="form-field"><label>Código</label><input type="text" id="g-cod" placeholder="DB-XXXX" style="text-align:center;letter-spacing:4px;font-size:1.2rem"></div>
-      <div class="form-field"><label>WhatsApp</label><input type="tel" id="g-tel"></div>
-      <div class="form-field"><label>Problema</label><textarea id="g-pro" rows="3"></textarea></div>
-      <button class="submit-btn" id="btn-garantia" onclick="enviarGarantia()">🛡️ ACTIVAR<span class="spinner"></span></button>
-    </div>
-  </div>
-</div>
-
-<div id="m-valorar" class="modal">
-  <div class="modal-box">
-    <div class="modal-top"><h2>⭐ Calificar</h2><button class="btn-close" onclick="closeModal('m-valorar')">✕</button></div>
-    <div class="modal-body">
-      <div class="error-box" id="error-valorar"></div>
-      <p style="text-align:center;margin-bottom:20px">¿Cómo fue tu experiencia?</p>
-      <div class="form-field"><label>Código</label><input type="text" id="v-cod" placeholder="DB-XXXX" style="text-align:center;letter-spacing:4px;font-size:1.2rem"></div>
-      <div class="stars" id="rating-stars">
-        <span class="star" onclick="setRating(1)">★</span>
-        <span class="star" onclick="setRating(2)">★</span>
-        <span class="star" onclick="setRating(3)">★</span>
-        <span class="star" onclick="setRating(4)">★</span>
-        <span class="star" onclick="setRating(5)">★</span>
-      </div>
-      <p style="text-align:center;color:var(--y);font-weight:900;font-size:1.2rem;margin-bottom:16px" id="rating-text">Selecciona estrellas</p>
-      <button class="submit-btn" id="btn-valorar" onclick="enviarValoracion()">📤 ENVIAR<span class="spinner"></span></button>
-    </div>
-  </div>
-</div>
-
-<div id="m-unirse" class="modal">
-  <div class="modal-box">
-    <div class="modal-top"><h2>⚡ Únete</h2><button class="btn-close" onclick="closeModal('m-unirse')">✕</button></div>
-    <div class="modal-body" id="form-unirse-body">
-      <div class="error-box" id="error-unirse"></div>
-      <div class="form-field"><label>Nombre</label><input type="text" id="p-nom"></div>
-      <div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel"></div>
-      <div class="form-field"><label>Especialidad</label>
-        <select id="p-esp">
+      <div class="fld"><label>Nombre</label><input type="text" id="m-nom"></div>
+      <div class="fld"><label>WhatsApp</label><input type="tel" id="m-tel"></div>
+      <div class="fld"><label>Zona</label><input type="text" id="m-zon"></div>
+      <div class="fld"><label>Especialidad</label>
+        <select id="m-esp">
           <option value="">Seleccionar...</option>
           <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
         </select>
       </div>
-      <div class="form-field"><label>Zona</label><input type="text" id="p-zon"></div>
-      <button class="submit-btn" id="btn-unirse" onclick="enviarPostulacion()">📤 ENVIAR<span class="spinner"></span></button>
+      <div class="fld"><label>PIN (4 dígitos)</label><input type="password" id="m-pin" maxlength="4" pattern="[0-9]{4}" inputmode="numeric"></div>
+      <div class="fld"><label>Comisión (%)</label><input type="number" id="m-com" min="0" max="100" value="15"></div>
+      <input type="hidden" id="m-candidato-id">
+      <button class="btn btn-y" onclick="registrarSocio()">✅ REGISTRAR</button>
+      <button class="btn btn-r" onclick="closeOverlay('modal-candidato')">CANCELAR</button>
     </div>
   </div>
 </div>
 
-<div id="m-login" class="modal">
+<div class="modal-overlay" id="modal-orden">
   <div class="modal-box">
-    <div class="modal-top"><h2>🔐 Acceso</h2><button class="btn-close" onclick="closeModal('m-login')">✕</button></div>
+    <div class="modal-top"><h3>📝 ORDEN MANUAL</h3><button class="btn-close-modal" onclick="closeOverlay('modal-orden')">✕</button></div>
     <div class="modal-body">
-      <div class="form-field"><label>Usuario</label><input type="text" id="l-user"></div>
-      <div class="form-field"><label>PIN</label><input type="password" id="l-pin" maxlength="6" inputmode="numeric"></div>
-      <button class="submit-btn" id="btn-login" onclick="login()">INGRESAR<span class="spinner"></span></button>
-      <div id="loginError">⚠️ Usuario o PIN incorrecto</div>
+      <p style="color:var(--sub);font-size:.85rem;margin-bottom:16px">Crea orden manualmente (llamada, visita, etc.)</p>
+      <div class="fld"><label>Cliente</label><input type="text" id="o-nom"></div>
+      <div class="fld"><label>WhatsApp</label><input type="tel" id="o-tel" placeholder="+53..."></div>
+      <div class="fld"><label>Dirección</label><input type="text" id="o-dir"></div>
+      <div class="fld"><label>Municipio</label><input type="text" id="o-mun"></div>
+      <div class="fld"><label>Servicio</label>
+        <select id="o-serv">
+          <option value="">Seleccionar...</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option>
+        </select>
+      </div>
+      <div class="fld"><label>Detalles</label><textarea id="o-det" rows="3"></textarea></div>
+      <button class="btn btn-y" onclick="crearOrdenManual()">💾 CREAR</button>
+      <button class="btn btn-r" onclick="closeOverlay('modal-orden')">CANCELAR</button>
     </div>
   </div>
 </div>
 
-<div id="m-quejas" class="modal">
+<div class="modal-overlay" id="modal-edit-socio">
   <div class="modal-box">
-    <div class="modal-top"><h2>💬 QUEJAS</h2><button class="btn-close" onclick="closeModal('m-quejas')">✕</button></div>
-    <div class="modal-body" id="form-quejas-body">
-      <div class="error-box" id="error-quejas"></div>
-      <p>Tu opinión nos ayuda a mejorar. Cuéntanos qué sucedió con el servicio.</p>
-      <div class="form-field"><label>WhatsApp de contacto</label><input type="tel" id="q-tel" placeholder="+53..."></div>
-      <div class="form-field"><label>Código de Servicio (Opcional)</label><input type="text" id="q-cod" placeholder="DB-XXXX"></div>
-      <div class="form-field"><label>Tu Mensaje</label><textarea id="q-msg" rows="4" placeholder="Describe el inconveniente..."></textarea></div>
-      <button class="submit-btn" id="btn-queja" onclick="enviarQueja()">📤 ENVIAR REPORTE<span class="spinner"></span></button>
+    <div class="modal-top"><h3>✏️ EDITAR SOCIO</h3><button class="btn-close-modal" onclick="closeOverlay('modal-edit-socio')">✕</button></div>
+    <div class="modal-body">
+      <div class="fld"><label>Nombre</label><input type="text" id="e-nom"></div>
+      <div class="fld"><label>WhatsApp</label><input type="tel" id="e-tel"></div>
+      <div class="fld"><label>Zona</label><input type="text" id="e-zon"></div>
+      <div class="fld"><label>Especialidad</label>
+        <select id="e-esp">
+          <option value="">Seleccionar...</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
+        </select>
+      </div>
+      <div class="fld"><label>PIN</label><input type="password" id="e-pin" maxlength="4" pattern="[0-9]{4}" inputmode="numeric"></div>
+      <div class="fld"><label>Comisión (%)</label><input type="number" id="e-com" min="0" max="100"></div>
+      <input type="hidden" id="e-socio-id">
+      <button class="btn btn-y" onclick="guardarEdicionSocio()">💾 GUARDAR</button>
+      <button class="btn btn-r" onclick="closeOverlay('modal-edit-socio')">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<div class="hdr">
+  <button class="hdr-back" onclick="logout()">← SALIR</button>
+  <div class="hdr-logo">D'BARRIO ADMIN</div>
+  <div style="width:72px"></div>
+</div>
+
+<div class="tabs">
+  <div class="tab on" id="tab-dashboard" onclick="showTab('dashboard')">📊 DASH</div>
+  <div class="tab" id="tab-candidatos" onclick="showTab('candidatos')">👷 CAND<span class="badge-count" id="cnt-cand" style="display:none">0</span></div>
+  <div class="tab" id="tab-ordenes" onclick="showTab('ordenes')">📋 ÓRDS<span class="badge-count" id="cnt-ord" style="display:none">0</span></div>
+  <div class="tab" id="tab-archivo" onclick="showTab('archivo')">📦 ARCH</div>
+  <div class="tab" id="tab-deudas" onclick="showTab('deudas')">💰 DEU</div>
+  <div class="tab" id="tab-socios" onclick="showTab('socios')">👥 SOC</div>
+  <div class="tab" id="tab-config" onclick="showTab('config')">⚙️ CFG</div>
+<div class="tab" id="tab-quejas" onclick="showTab('quejas')">💬 QUEJAS<span class="badge-count" id="cnt-quejas" style="display:none">0</span></div>
+</div>
+
+<div class="content">
+  <div id="sec-dashboard" class="sec on">
+    <h2>📊 Dashboard</h2>
+    <div class="stats">
+      <div class="stat"><div class="stat-val" id="d-total">—</div><div class="stat-lbl">Órdenes</div></div>
+      <div class="stat"><div class="stat-val" id="d-pend" style="color:var(--red)">—</div><div class="stat-lbl">Pendientes</div></div>
+      <div class="stat"><div class="stat-val" id="d-socios">—</div><div class="stat-lbl">Socios</div></div>
+      <div class="stat"><div class="stat-val" id="d-comp">—</div><div class="stat-lbl">Completadas</div></div>
+    </div>
+    <h2>⭐ Top Socios</h2>
+    <div id="topSocios"><p class="empty">Cargando...</p></div>
+  </div>
+
+  <div id="sec-candidatos" class="sec">
+    <h2>👷 Candidatos</h2>
+    <button class="btn btn-orange" style="margin-bottom:16px" onclick="abrirModalNuevoSocio()">➕ REGISTRAR NUEVO</button>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Personas que se registraron como socios desde el formulario público.</p>
+    <div id="listaCandidatos"><p class="empty">Cargando...</p></div>
+  </div>
+
+  <div id="sec-ordenes" class="sec">
+    <h2>📋 Órdenes</h2>
+    <button class="btn btn-orange" style="margin-bottom:16px" onclick="openModal('modal-orden')">➕ CREAR MANUAL</button>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">⚠️ Asigna socio y envía notificación por WhatsApp.</p>
+    <div id="listaOrdenes"><p class="empty">Cargando...</p></div>
+  </div>
+
+  <div id="sec-archivo" class="sec">
+    <h2>📦 Archivo</h2>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Órdenes completadas.</p>
+    <div id="listaArchivo"><p class="empty">Cargando...</p></div>
+  </div>
+
+  <div id="sec-deudas" class="sec">
+    <h2>💰 Deudas</h2>
+    <div id="listaDeudas"><p class="empty">Cargando...</p></div>
+  </div>
+
+  <div id="sec-socios" class="sec">
+    <h2>👥 Socios</h2>
+    <div id="listaSocios"><p class="empty">Cargando...</p></div>
+  </div>
+
+<div id="sec-quejas" class="sec">
+  <h2>💬 Buzón de Quejas</h2>
+  
+  <div style="display: flex; gap: 8px; margin-bottom: 18px;">
+    <button class="btn-back" style="flex: 1; font-size: 0.65rem; padding: 8px;" onclick="renderQuejas('pendiente')">🔴 PENDIENTES</button>
+    <button class="btn-back" style="flex: 1; font-size: 0.65rem; padding: 8px; border-color: var(--sub); color: var(--sub);" onclick="renderQuejas('todos')">👁️ VER TODAS</button>
+  </div>
+
+  <div id="listaQuejas"><p class="empty">Cargando reportes...</p></div>
+</div>
+
+  <div id="sec-config" class="sec">
+    <h2>⚙️ Config</h2>
+    <div class="cfg-box">
+      <h3>💰 Comisión Global</h3>
+      <div class="fld"><label>%</label><input type="number" id="cfg-com" min="0" max="100" value="15"></div>
+      <button class="btn btn-y" onclick="guardarComision()">💾 GUARDAR</button>
+    </div>
+    <div class="cfg-box">
+      <h3>📱 Notificaciones</h3>
+      <div class="fld"><label>WhatsApp Admin</label><input type="tel" id="cfg-owner" placeholder="+53..."></div>
+      <button class="btn btn-y" onclick="guardarNotif()">💾 GUARDAR</button>
     </div>
   </div>
 </div>
@@ -188,155 +240,593 @@ header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;widt
 const SUPABASE_URL='https://jtorpamexbjxnomngfwq.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0b3JwYW1leGJqeG5vbW5nZndxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjE2MjMsImV4cCI6MjA4Njk5NzYyM30.Tzun90wyUfPYb8K8WxmziwlKyJS8kY1K_zzrZNh7R-8';
 const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
-let selectedRating=0;
 
-function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden'}
-function closeModal(id){
-document.getElementById(id).classList.remove('open');
-document.body.style.overflow='';
-  // Reseteos automáticos según el modal que se cierre
-  if(id==='m-servicio') resetServicioForm();
-  if(id==='m-unirse') resetUnirseForm();
-  if(id==='m-quejas') resetQuejasForm(); 
-}
-unirse')resetUnirseForm()}
-function showError(id,msg){const err=document.getElementById('error-'+id);err.textContent=msg;err.style.display='block';setTimeout(()=>err.style.display='none',5000)}
-function setLoading(btnId,loading){const btn=document.getElementById(btnId);if(loading){btn.classList.add('loading');btn.disabled=true}else{btn.classList.remove('loading');btn.disabled=false}}
-function resetServicioForm(){document.getElementById('form-servicio-body').innerHTML='<div class="error-box" id="error-servicio"></div><div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53..."></div><div class="form-field"><label>Dirección</label><input type="text" id="s-dir"></div><div class="form-field"><label>Servicio</label><select id="s-cat"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option></select></div><div class="form-field"><label>Problema</label><textarea id="s-pro" rows="3"></textarea></div><button class="submit-btn" id="btn-servicio" onclick="enviarSolicitud()">📤 ENVIAR<span class="spinner"></span></button>'}
-function resetUnirseForm(){document.getElementById('form-unirse-body').innerHTML='<div class="error-box" id="error-unirse"></div><div class="form-field"><label>Nombre</label><input type="text" id="p-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel"></div><div class="form-field"><label>Especialidad</label><select id="p-esp"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option></select></div><div class="form-field"><label>Zona</label><input type="text" id="p-zon"></div><button class="submit-btn" id="btn-unirse" onclick="enviarPostulacion()">📤 ENVIAR<span class="spinner"></span></button>'}
+if(!localStorage.getItem('db_admin'))window.location.href='index.html';
 
-async function enviarSolicitud(){
-  const nom=document.getElementById('s-nom').value.trim();
-  const tel=document.getElementById('s-tel').value.trim();
-  const cat=document.getElementById('s-cat').value;
-  const dir=document.getElementById('s-dir').value.trim();
-  if(!nom||!tel||!cat||!dir){showError('servicio','⚠️ Completa todos los campos');return}
-  setLoading('btn-servicio',true);
-  const { error } = await sb.from('solicitudes').insert({
-    cliente: nom,
-    telefono: tel,
-    direccion: dir,
-    servicio: cat,
-    detalles: document.getElementById('s-pro').value,
-    estado: 'pendiente',
-    fecha_inicio: new Date().toLocaleDateString('es-CU'),
-    fecha_ts: Date.now(),
-    monto: 0,
-    valoracion: 0
-  });
-  if(error){setLoading('btn-servicio',false);showError('servicio','⚠️ Error de conexión');return}
-  document.getElementById('form-servicio-body').innerHTML='<div class="confirm-box"><h3>✅ SOLICITUD RECIBIDA</h3><p>Pronto será atendido por nuestros técnicos.</p><p style="margin-top:12px;color:var(--y)">Te contactaremos por WhatsApp.</p></div><button class="submit-btn" onclick="closeModal(\'m-servicio\')">CERRAR</button>'
-}
+let comisionGlobal=15,notifConfig={owner:''},sociosCache={},tabActual='dashboard';
 
-async function enviarGarantia(){
-  const cod=document.getElementById('g-cod').value.trim();
-  const tel=document.getElementById('g-tel').value.trim();
-  if(!cod||!tel){showError('garantia','⚠️ Completa los campos');return}
-  setLoading('btn-garantia',true);
-  const{error}=await sb.from('garantias').insert({recibo:cod,telefono:tel,falla:document.getElementById('g-pro').value,fecha:new Date().toLocaleString('es-CU')});
-  setLoading('btn-garantia',false);
-  if(error){showError('garantia','⚠️ Error');return}
-  alert('✅ Garantía activada');closeModal('m-garantia');
-}
+// Utilidades
+function ct(t){return(t||'').replace(/[\s\-\(\)\+]/g,'')}
+function money(n){return'$'+(parseFloat(n)||0).toFixed(2)}
+function enviarGarantiaCliente(cliente, telefono, servicio, codigo) {
+  const hoy = new Date();
+  const expira = new Date();
+  expira.setDate(hoy.getDate() + 30);
 
-function setRating(n){selectedRating=n;document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('active',i<n));const txt=['Muy malo','Malo','Regular','Bueno','Excelente'];document.getElementById('rating-text').textContent=txt[n-1]||'Selecciona'}
-
-async function enviarValoracion(){
-  const cod=document.getElementById('v-cod').value.trim();
-  if(!cod||!selectedRating){showError('valorar','⚠️ Datos incompletos');return}
-  setLoading('btn-valorar',true);
-  const{data,error}=await sb.from('solicitudes').select('*').eq('codigo_garantia',cod).single();
-  if(error||!data){setLoading('btn-valorar',false);showError('valorar','⚠️ Código no encontrado');return}
-  await sb.from('solicitudes').update({valoracion:selectedRating}).eq('id',data.id);
-  if(data.socio_asignado){
-    const{data:soc}=await sb.from('socios').select('*').eq('id',data.socio_asignado).single();
-    if(soc){
-      const trab=(soc.trabajos||0)+1;
-      const rat=soc.rating||0;
-      const newRat=((rat*(trab-1))+selectedRating)/trab;
-      await sb.from('socios').update({rating:newRat, trabajos:trab}).eq('id',data.socio_asignado)
-    }
-  }
-  setLoading('btn-valorar',false);alert('✅ Gracias por tu calificación');closeModal('m-valorar');
-}
-
-async function enviarPostulacion(){
-  const nom=document.getElementById('p-nom').value.trim();
-  const tel=document.getElementById('p-tel').value.trim();
-  const esp=document.getElementById('p-esp').value;
-  if(!nom||!tel||!esp){showError('unirse','⚠️ Completa los campos');return}
-  setLoading('btn-unirse',true);
-  const{error}=await sb.from('postulantes').insert({nombre:nom,telefono:tel,oficio:esp,zona:document.getElementById('p-zon').value,fecha:new Date().toLocaleString('es-CU')});
-  if(error){setLoading('btn-unirse',false);showError('unirse','⚠️ Error');return}
-  document.getElementById('form-unirse-body').innerHTML='<div class="confirm-box"><h3>✅ PERFIL ENVIADO</h3><p>El administrador revisará tu perfil.</p></div><button class="submit-btn" onclick="closeModal(\'m-unirse\')">CERRAR</button>'
-}
-
-async function enviarQueja(){
-  const tel = document.getElementById('q-tel').value.trim();
-  const msg = document.getElementById('q-msg').value.trim();
-  const cod = document.getElementById('q-cod').value.trim();
-
-  if(!tel || !msg){ showError('quejas','⚠️ Deja un teléfono y tu mensaje'); return; }
-
-  setLoading('btn-queja', true);
-
-  const { error } = await sb.from('quejas').insert({
-    telefono: tel,
-    mensaje: msg,
-    codigo_servicio: cod,
-    estado: 'pendiente',
-    fecha: new Date().toLocaleString('es-CU')
+  const fechaExpira = expira.toLocaleDateString('es-ES', { 
+    day: '2-digit', 
+    month: '2-digit', 
+    year: 'numeric' 
   });
 
-  setLoading('btn-queja', false);
+  const msg = `🔰 *GARANTÍA D'BARRIO*\n\n` +
+              `Estimado(a) *${cliente}*,\n` +
+              `Su servicio de *${servicio}* ha sido completado con éxito.\n\n` +
+              `📌 *Código de Garantía:* ${codigo}\n` +
+              `📅 *Vence el:* ${fechaExpira}\n\n` +
+              `Guarde este mensaje. Ante cualquier inconveniente, contáctenos con su código.`;
 
-  if(error){ 
-    showError('quejas','⚠️ Error al enviar el reporte'); 
-    return; 
-  }
-
-  document.getElementById('form-quejas-body').innerHTML = `
-    <div class="confirm-box">
-      <h3>✅ REPORTE RECIBIDO</h3>
-      <p>Lamentamos el inconveniente. El administrador revisará tu caso personalmente y te contactará por WhatsApp.</p>
-    </div>
-    <button class="submit-btn" onclick="closeModal('m-quejas')">CERRAR</button>`;
+  window.open(`https://wa.me/${ct(telefono)}?text=${encodeURIComponent(msg)}`, '_blank');
 }
 
-async function login(){
-  const user=document.getElementById('l-user').value.trim();
-  const pin=document.getElementById('l-pin').value.trim();
-  const err=document.getElementById('loginError');
-  if(!user||!pin){err.style.display='block';return}
-  setLoading('btn-login',true);err.style.display='none';
-  if(user==='Admin'&&pin==='9202'){localStorage.setItem('db_admin','1');window.location.href='admin.html';return}
-  const{data}=await sb.from('socios').select('*').or(`usuario.eq.${user},nombre.eq.${user}`);
-  if(data){
-    for(const s of data){
-      if(s.pin===pin&&s.admitido){
-        localStorage.setItem('db_socio_id',s.id);
-        window.location.href='socio.html?id='+s.id;return
-      }
-    }
-  }
-  setLoading('btn-login',false);err.style.display='block'
+async function eliminarArchivada(id) {
+  if(!confirm('¿Eliminar esta orden del archivo permanentemente?')) return;
+  const { error } = await sb.from('solicitudes').delete().eq('id', id);
+  if(error) { toast('Error al eliminar', true); }
+  else { toast('Orden eliminada'); renderArchivo(); }
 }
+
+function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' err':'');t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000)}
+function toggleCard(id){const c=document.getElementById(id);if(!c)return;const wasOpen=c.classList.contains('open');document.querySelectorAll('.card.open').forEach(x=>{if(x.id!==id)x.classList.remove('open')});c.classList.toggle('open',!wasOpen)}
+function closeOverlay(id){document.getElementById(id).classList.remove('open')}
+function openModal(id){document.getElementById(id).classList.add('open')}
+
+// Navegación
+function showTab(id){
+  tabActual=id;
+
+if(id==='quejas') renderQuejas('pendiente');
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.getElementById('sec-'+id).classList.add('on');
+  document.getElementById('tab-'+id).classList.add('on');
+  if(id==='dashboard')renderDash();
+  if(id==='candidatos')renderCandidatos();
+  if(id==='ordenes')renderOrdenes();
+  if(id==='archivo')renderArchivo();
+  if(id==='deudas')renderDeudas();
+  if(id==='socios')renderSocios();
+  if(id==='config')cargarConfig();
+}
+
+async function initContadores(){
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','pendiente');
+  const n=sol?sol.length:0;
+  document.getElementById('cnt-ord').textContent=n;
+  document.getElementById('cnt-ord').style.display=n>0?'flex':'none';
+
+const {data:qjs} = await sb.from('quejas').select('*').eq('estado','pendiente');
+const nQ = qjs ? qjs.length : 0;
+document.getElementById('cnt-quejas').textContent = nQ;
+document.getElementById('cnt-quejas').style.display = nQ > 0 ? 'flex' : 'none';
+  
+  const{data:post}=await sb.from('postulantes').select('*');
+  const cand=post?post.length:0;
+  document.getElementById('cnt-cand').textContent=cand;
+  document.getElementById('cnt-cand').style.display=cand>0?'flex':'none';
+  
+  setInterval(async()=>{
+    const{data:s2}=await sb.from('solicitudes').select('*').eq('estado','pendiente');
+    const m=s2?s2.length:0;
+    document.getElementById('cnt-ord').textContent=m;
+    document.getElementById('cnt-ord').style.display=m>0?'flex':'none';
+  },10000);
+}
+
+// Registro y Gestión de Socios
+async function registrarSocio(){
+  const nom=document.getElementById('m-nom').value.trim();
+  const tel=document.getElementById('m-tel').value.trim();
+  const zon=document.getElementById('m-zon').value.trim();
+  const esp=document.getElementById('m-esp').value;
+  const pin=document.getElementById('m-pin').value.trim();
+  const com=parseInt(document.getElementById('m-com').value)||15;
+  const candId = document.getElementById('m-candidato-id').value;
+
+  if(!nom||!tel||!pin||pin.length<4){toast('⚠️ Completa todos los campos',true);return}
+  
+  const{data,error}=await sb.from('socios').insert({nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com,deuda:0}).select();
+  if(error){toast('⚠️ Error al registrar',true);return}
+  
+  if(candId) { await sb.from('postulantes').delete().eq('id', candId); }
+  
+  const link=`https://abelbalsinde92-lab.github.io/D-Barrio/socio.html?id=${data[0].id}`;
+  const msg=`🎉 Bienvenido a D'BARRIO, ${nom}!\n\n✅ Tu acceso:\n${link}\n\n🔐 Usuario: ${nom}\n🔑 PIN: ${pin}`;
+  window.open(`https://wa.me/${ct(tel)}?text=${encodeURIComponent(msg)}`,'_blank');
+  
+  closeOverlay('modal-candidato');
+  toast(`✅ ${nom} registrado con éxito`);
+  if(tabActual==='candidatos') renderCandidatos();
+  if(tabActual==='socios') renderSocios();
+  initContadores();
+}
+
+async function renderSocios(){
+  const c = document.getElementById('listaSocios');
+  const {data:soc} = await sb.from('socios').select('*').order('nombre');
+  if(!soc || !soc.length){ c.innerHTML = '<p class="empty">Sin socios registrados</p>'; return; }
+  
+  c.innerHTML = soc.map(s => {
+    const params = JSON.stringify({
+      id: s.id, nom: s.nombre, tel: s.telefono, zon: s.zona, esp: s.especialidad, pin: s.pin, com: s.comision
+    }).replace(/"/g, '&quot;');
+
+    return `
+    <div class="card" id="soc-${s.id}">
+      <div class="card-hdr" onclick="toggleCard('soc-${s.id}')">
+        <div>
+          <div class="card-title">${s.nombre || '—'}</div>
+          <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+        </div>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
+        <div class="irow"><span class="ilbl">PIN</span><span class="ival" style="color:var(--y)">${s.pin || '—'}</span></div>
+        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision || 15}%</span></div>
+        <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+          <button class="btn btn-g" onclick="window.location.href='tel:${s.telefono}'">📞 LLAMAR</button>
+          <button class="btn btn-orange" onclick="prepararEdicionSocio('${params}')">✏️ EDITAR</button>
+        </div>
+        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR SOCIO</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function prepararEdicionSocio(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  document.getElementById('e-socio-id').value = s.id;
+  document.getElementById('e-nom').value = s.nom;
+  document.getElementById('e-tel').value = s.tel;
+  document.getElementById('e-zon').value = s.zon;
+  document.getElementById('e-esp').value = s.esp;
+  document.getElementById('e-pin').value = s.pin;
+  document.getElementById('e-com').value = s.com;
+  openModal('modal-edit-socio');
+}
+
+async function guardarEdicionSocio() {
+  const id = document.getElementById('e-socio-id').value;
+  const up = {
+    nombre: document.getElementById('e-nom').value,
+    telefono: document.getElementById('e-tel').value,
+    zona: document.getElementById('e-zon').value,
+    especialidad: document.getElementById('e-esp').value,
+    pin: document.getElementById('e-pin').value,
+    comision: parseFloat(document.getElementById('e-com').value)
+  };
+  const { error } = await sb.from('socios').update(up).eq('id', id);
+  if (error) { toast('Error al guardar', true); }
+  else { toast('Socio actualizado'); closeOverlay('modal-edit-socio'); renderSocios(); }
+}
+
+async function eliminarSocio(id) {
+  if(!confirm('¿Eliminar socio?')) return;
+  await sb.from('socios').delete().eq('id', id);
+  toast('Socio eliminado');
+  renderSocios();
+}
+
+async function renderCandidatos(){
+  const c=document.getElementById('listaCandidatos');
+  const{data:soc, error}=await sb.from('postulantes').select('*').order('created_at',{ascending:false});
+  
+  if(error) { toast('Error cargando postulantes', true); return; }
+  if(!soc||!soc.length){c.innerHTML='<p class="empty">Sin candidatos nuevos</p>';return}
+  
+  c.innerHTML=soc.map(s=>{
+    const tc=ct(s.telefono||'');
+    return `<div class="card cand" id="cand-${s.id}">
+      <div class="card-hdr" onclick="toggleCard('cand-${s.id}')">
+        <div>
+          <div class="card-title">${s.nombre||'—'}</div>
+          <div class="card-sub">${s.oficio||'—'} · ${s.zona||'—'}</div>
+        </div>
+        <span class="arrow" style="color:#0088ff">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono||'—'}</span></div>
+        <div class="irow"><span class="ilbl">Especialidad</span><span class="ival">${s.oficio||'—'}</span></div>
+        <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${new Date(s.created_at).toLocaleDateString()||'—'}</span></div>
+        <button class="btn btn-y" onclick="prepararRegistro('${s.id}','${(s.nombre||'').replace(/'/g,"\\'")}','${s.telefono}','${(s.zona||'').replace(/'/g,"\\'")}','${s.oficio}')">✅ ACEPTAR SOCIO</button>
+        <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button>
+        <button class="btn btn-r" onclick="eliminarCandidato('${s.id}')">🗑️ RECHAZAR</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function prepararRegistro(id, nom, tel, zon, esp) {
+    document.getElementById('m-candidato-id').value = id;
+    document.getElementById('m-nom').value = nom;
+    document.getElementById('m-tel').value = tel;
+    document.getElementById('m-zon').value = zon;
+    document.getElementById('m-esp').value = esp;
+    openModal('modal-candidato');
+}
+
+async function eliminarCandidato(id) {
+    if(!confirm('¿Eliminar esta postulación?')) return;
+    await sb.from('postulantes').delete().eq('id', id);
+    toast('Candidato eliminado');
+    renderCandidatos();
+    initContadores();
+}
+
+// DASHBOARD
+async function renderDash(){
+  const {data:sol} = await sb.from('solicitudes').select('*');
+  const total = sol ? sol.length : 0;
+  const pend = sol ? sol.filter(o => o.estado === 'pendiente').length : 0;
+  const comp = sol ? sol.filter(o => o.estado === 'completada').length : 0;
+  
+  document.getElementById('d-total').textContent = total;
+  document.getElementById('d-pend').textContent = pend;
+  document.getElementById('d-comp').textContent = comp;
+  
+  const {data:soc} = await sb.from('socios').select('*');
+  document.getElementById('d-socios').textContent = soc ? soc.length : 0;
+  
+  if(soc && soc.length){
+    // Mejorado para que no falle si 'trabajos' es null
+    const top = [...soc].sort((a, b) => (Number(b.trabajos) || 0) - (Number(a.trabajos) || 0)).slice(0, 5);
+    document.getElementById('topSocios').innerHTML = top.map((s, i) => `
+      <div class="card">
+        <div class="card-hdr" style="cursor:default">
+          <div style="display:flex;align-items:center;gap:12px">
+            <span class="rank">${i+1}</span>
+            <div>
+              <div class="card-title">${s.nombre || '—'}</div>
+              <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+            </div>
+          </div>
+          <span style="color:var(--y)">${money(s.deuda)}</span>
+        </div>
+      </div>`).join('');
+  } else {
+    document.getElementById('topSocios').innerHTML = '<p class="empty">Sin socios registrados</p>';
+  }
+}
+
+// GESTIÓN DE ÓRDENES
+async function crearOrdenManual(){
+  const nom=document.getElementById('o-nom').value.trim();
+  const tel=document.getElementById('o-tel').value.trim();
+  const dir=document.getElementById('o-dir').value.trim();
+  const mun=document.getElementById('o-mun').value.trim();
+  const serv=document.getElementById('o-serv').value;
+  if(!nom||!tel||!dir||!serv){toast('⚠️ Completa los campos',true);return}
+  
+  await sb.from('solicitudes').insert({cliente:nom,telefono:tel,direccion:dir,municipio:mun,servicio:serv,detalles:document.getElementById('o-det').value,estado:'pendiente'});
+  
+  toast('✅ Orden creada');
+  closeOverlay('modal-orden');
+  document.getElementById('o-nom').value='';
+  document.getElementById('o-tel').value='';
+  document.getElementById('o-dir').value='';
+  document.getElementById('o-mun').value='';
+  document.getElementById('o-serv').value='';
+  document.getElementById('o-det').value='';
+  renderOrdenes();
+  initContadores();
+}
+
+async function renderOrdenes(){
+  const c=document.getElementById('listaOrdenes');
+  const{data:socios}=await sb.from('socios').select('*');
+  sociosCache={};
+  if(socios)socios.forEach(s=>sociosCache[s.id]=s);
+  
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','pendiente').order('created_at',{ascending:false});
+  
+  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';return}
+  
+  c.innerHTML=sol.map(o=>{
+    const tc=ct(o.telefono||'');
+    const socioAsignado=o.socio_asignado&&sociosCache[o.socio_asignado]?(sociosCache[o.socio_asignado].nombre||'Socio'):null;
+    const opcs=socios?socios.map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.nombre||''}" ${o.socio_asignado===s.id?'selected':''}>${s.nombre||'—'} — ${s.especialidad||'—'}</option>`).join(''):'';
+    
+    return`<div class="card hl" id="ord-${o.id}"><div class="card-hdr" onclick="toggleCard('ord-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.servicio||'—'} · ${o.municipio||'—'}</div></div><div style="display:flex;align-items:center;gap:8px">${socioAsignado?`<span class="badge badge-o">ASIGNADO</span>`:`<span class="badge badge-r pulse">PEND</span>`}<span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div><div class="irow"><span class="ilbl">Municipio</span><span class="ival">${o.municipio||'—'}</span></div><div class="irow"><span class="ilbl">Servicio</span><span class="ival">${o.servicio||'—'}</span></div><div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles||'—'}</span></div><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div>${socioAsignado?`<div class="irow"><span class="ilbl">Asignado</span><span class="ival" style="color:var(--green)">✅ ${socioAsignado}</span></div>`:''}<hr class="sep"><div class="fld"><label>Asignar</label><select id="sel-${o.id}"><option value="">— Seleccionar —</option>${opcs}</select></div><button class="btn btn-y" onclick="asignarSocio('${o.id}','${(o.cliente||'').replace(/'/g,"\\'")}','${(o.servicio||'').replace(/'/g,"\\'")}','${(o.detalles||'').replace(/'/g,"\\'")}','${o.telefono||''}')">📤 ASIGNAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Cliente</button><button class="btn btn-g" onclick="completarOrden('${o.id}')">✅ COMPLETAR</button><button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button></div></div>`;
+  }).join('');
+}
+
+async function asignarSocio(oid,cliente,servicio,detalles,telCli){
+  const sel=document.getElementById('sel-'+oid);
+  const sid=sel.value;
+  if(!sid){toast('⚠️ Selecciona socio',true);return}
+  const opt=sel.options[sel.selectedIndex];
+  const telSoc=ct(opt.dataset.tel||'');
+  const nomSoc=opt.dataset.nom||'Socio';
+  await sb.from('solicitudes').update({socio_asignado:sid}).eq('id',oid);
+  const msgSoc=`🔧 NUEVA ORDEN D'BARRIO\n\n👤 ${cliente}\n📞 ${telCli}\n🏷️ ${servicio}\n⚙️ ${detalles}\n\n✅ Asignado a ti.`;
+  window.open(`https://wa.me/${telSoc}?text=${encodeURIComponent(msgSoc)}`,'_blank');
+  toast(`✅ Asignado a ${nomSoc}`);
+  renderOrdenes();
+}
+
+async function completarOrden(id){
+  if(!confirm('¿Completar?'))return;
+  await sb.from('solicitudes').update({estado:'completada'}).eq('id',id);
+  toast('✅ Completada');
+  renderOrdenes();
+  initContadores();
+}
+
+async function eliminarOrden(id){
+  if(!confirm('¿Eliminar?'))return;
+  await sb.from('solicitudes').delete().eq('id',id);
+  toast('🗑️ Eliminada');
+  renderOrdenes();
+  initContadores();
+}
+
+// ARCHIVO, DEUDAS Y SOCIOS
+async function renderArchivo(){
+  const c = document.getElementById('listaArchivo');
+  
+  // Filtro de 30 días para que el archivo no pese
+  const limite = new Date();
+  limite.setDate(limite.getDate() - 30);
+  const fechaISO = limite.toISOString();
+
+  const {data:sol} = await sb.from('solicitudes')
+    .select('*')
+    .eq('estado', 'completada')
+    .gt('created_at', fechaISO)
+    .order('created_at', {ascending: false});
+
+  if(!sol || !sol.length){
+    c.innerHTML = '<p class="empty">No hay órdenes archivadas en los últimos 30 días</p>';
+    return;
+  }
+
+  c.innerHTML = sol.map(o => {
+    const tc = ct(o.telefono || '');
+    // Generamos un código de garantía si no tiene uno
+    const codG = o.codigo_garantia || 'DB-' + o.id.toString().slice(-5).toUpperCase();
+
+    return `
+    <div class="card" id="arc-${o.id}">
+      <div class="card-hdr" onclick="toggleCard('arc-${o.id}')">
+        <div>
+          <div class="card-title">${o.cliente || '—'}</div>
+          <div class="card-sub">${o.servicio || '—'} · ${o.municipio || '—'}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge badge-g">OK</span>
+          <span class="arrow">▼</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
+        <div class="irow"><span class="ilbl">Garantía</span><span class="ival" style="color:var(--y)">${codG}</span></div>
+        <div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles || '—'}</span></div>
+        
+        <button class="btn btn-y" onclick="enviarGarantiaCliente('${(o.cliente||'').replace(/'/g,"")}', '${o.telefono}', '${o.servicio}', '${codG}')">
+          ✉️ ENVIAR GARANTÍA (WA)
+        </button>
+        
+        <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 CONTACTAR CLIENTE</button>
+        <button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ BORRAR REGISTRO</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function renderDeudas(){
+  const c=document.getElementById('listaDeudas');
+  const{data:soc}=await sb.from('socios').select('*').gt('deuda', 0);
+  if(!soc||!soc.length){c.innerHTML='<p class="empty">No hay deudas pendientes</p>';return}
+  c.innerHTML=soc.map(s=>{
+    const tc=ct(s.telefono||'');
+    return`<div class="card" id="deu-${s.id}"><div class="card-hdr" onclick="toggleCard('deu-${s.id}')"><div><div class="card-title">${s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-y" onclick="liquidar('${s.id}','${s.nombre||''}','${tc}',${s.deuda||0})">💰 LIQUIDAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`;
+  }).join('');
+}
+
+async function liquidar(sid,nom,tel,deuda){
+  if(!confirm('¿Liquidado?'))return;
+  await sb.from('socios').update({deuda:0}).eq('id',sid);
+  const msg=`💰 LIQUIDACIÓN D'BARRIO\n\nHola ${nom},\n\nTu deuda de ${money(deuda)} ha sido liquidada.\n\n✅ Cuenta saldada`;
+  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
+  toast('✅ Liquidado');
+  renderDeudas();
+}
+
+async function renderSocios(){
+  const c = document.getElementById('listaSocios');
+  const {data:soc} = await sb.from('socios').select('*').order('nombre');
+  if(!soc || !soc.length){ c.innerHTML = '<p class="empty">Sin socios registrados</p>'; return; }
+  
+  c.innerHTML = soc.map(s => {
+    const params = JSON.stringify({
+      id: s.id, nom: s.nombre, tel: s.telefono, zon: s.zona, esp: s.especialidad, pin: s.pin, com: s.comision
+    }).replace(/"/g, '&quot;');
+
+    return `
+    <div class="card" id="soc-${s.id}">
+      <div class="card-hdr" onclick="toggleCard('soc-${s.id}')">
+        <div>
+          <div class="card-title">${s.nombre || '—'}</div>
+          <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+        </div>
+        <span class="arrow">▼</span>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
+        <div class="irow"><span class="ilbl">PIN</span><span class="ival" style="color:var(--y)">${s.pin || '—'}</span></div>
+        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision || 15}%</span></div>
+        <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+          <button class="btn btn-g" onclick="window.location.href='tel:${s.telefono}'">📞 LLAMAR</button>
+          <button class="btn btn-orange" onclick="prepararEdicion('${params}')">✏️ EDITAR</button>
+        </div>
+        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR SOCIO</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function prepararEdicion(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  document.getElementById('edit-id').value = s.id;
+  document.getElementById('edit-nombre').value = s.nom;
+  document.getElementById('edit-telefono').value = s.tel;
+  document.getElementById('edit-zona').value = s.zon;
+  document.getElementById('edit-especialidad').value = s.esp;
+  document.getElementById('edit-pin').value = s.pin;
+  document.getElementById('edit-comision').value = s.com;
+  abrirModal('modalEditarSocio');
+}
+
+async function guardarCambiosSocio() {
+  const id = document.getElementById('edit-id').value;
+  const up = {
+    nombre: document.getElementById('edit-nombre').value,
+    telefono: document.getElementById('edit-telefono').value,
+    zona: document.getElementById('edit-zona').value,
+    especialidad: document.getElementById('edit-especialidad').value,
+    pin: document.getElementById('edit-pin').value,
+    comision: parseFloat(document.getElementById('edit-comision').value)
+  };
+  const { error } = await sb.from('socios').update(up).eq('id', id);
+  if (error) { toast('Error al guardar', true); }
+  else { toast('Socio actualizado'); cerrarModal('modalEditarSocio'); renderSocios(); }
+}
+
+function prepararEdicion(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  abrirEditarSocio(s.id, s.nom, s.tel, s.zon, s.esp, s.pin, s.com);
+}
+
+function prepararEdicion(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  abrirEditarSocio(s.id, s.nom, s.tel, s.zon, s.esp, s.pin, s.com);
+}
+
+// CONFIGURACIÓN Y OTROS
+async function cargarConfig(){
+  const{data:com}=await sb.from('config').select('*').eq('clave','comision_global').single();
+  if(com)document.getElementById('cfg-com').value=com.valor||15;
+  const{data:owner}=await sb.from('config').select('*').eq('clave','telefono_admin').single();
+  if(owner)document.getElementById('cfg-owner').value=owner.valor||'';
+}
+
+async function guardarComision(){
+  const n=document.getElementById('cfg-com').value;
+  await sb.from('config').upsert({clave:'comision_global',valor:n.toString()});
+  toast('✅ Comisión guardada');
+}
+
+async function guardarNotif(){
+  const o=document.getElementById('cfg-owner').value.trim();
+  await sb.from('config').upsert({clave:'telefono_admin',valor:o});
+  toast('✅ WhatsApp Admin guardado');
+}
+
+async function renderQuejas(filtro = 'pendiente') {
+  const c = document.getElementById('listaQuejas');
+  c.innerHTML = '<p class="empty">Cargando...</p>';
+  
+  let consulta = sb.from('quejas').select('*').order('created_at', { ascending: false });
+  
+  // Aplicar filtro si no es 'todos'
+  if (filtro === 'pendiente') {
+    consulta = consulta.eq('estado', 'pendiente');
+  }
+
+  const { data: quejas, error } = await consulta;
+
+  if (error || !quejas || quejas.length === 0) {
+    c.innerHTML = `<p class="empty">${filtro === 'pendiente' ? 'No hay quejas pendientes 🎉' : 'El buzón está vacío'}</p>`;
+    return;
+  }
+
+  c.innerHTML = quejas.map(q => {
+    const isPendiente = q.estado === 'pendiente';
+    return `
+    <div class="card ${isPendiente ? 'hl' : ''}" id="queja-${q.id}">
+      <div class="card-hdr" onclick="toggleCard('queja-${q.id}')">
+        <div>
+          <div class="card-title">📞 ${q.telefono}</div>
+          <div class="card-sub">${new Date(q.created_at).toLocaleString('es-CU')}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="badge ${isPendiente ? 'badge-r pulse' : 'badge-g'}">${q.estado.toUpperCase()}</span>
+          <span class="arrow">▼</span>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Código Serv.</span><span class="ival">${q.codigo_servicio || 'No indicado'}</span></div>
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; margin: 10px 0; border-left: 4px solid ${isPendiente ? 'var(--red)' : 'var(--green)'}; font-style: italic; color: #eee;">
+          "${q.mensaje}"
+        </div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+          <button class="btn btn-g" onclick="window.open('https://wa.me/${ct(q.telefono)}','_blank')">💬 WHATSAPP</button>
+          ${isPendiente ? `<button class="btn btn-y" onclick="resolverQueja('${q.id}')">✅ RESOLVER</button>` : `<button class="btn btn-r" onclick="eliminarQueja('${q.id}')">🗑️ BORRAR</button>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function resolverQueja(id) {
+  // 1. Buscamos los datos de la queja antes de marcarla como resuelta
+  const { data: queja } = await sb.from('quejas').select('*').eq('id', id).single();
+  
+  if(!confirm('¿Marcar como resuelta y notificar al cliente?')) return;
+
+  // 2. Actualizamos en Supabase
+  const { error } = await sb.from('quejas').update({ estado: 'resuelta' }).eq('id', id);
+  
+  if (error) {
+    toast('⚠️ Error al actualizar', true);
+    return;
+  }
+
+  // 3. Preparamos el mensaje de WhatsApp
+  const telCli = ct(queja.telefono);
+  const msg = `✅ *REPORTE RESUELTO - D'BARRIO*\n\n` +
+              `Estimado cliente,\n` +
+              `Le informamos que su reporte relacionado con el mensaje: _"${queja.mensaje.substring(0, 40)}..."_ ha sido revisado y procesado por nuestra administración.\n\n` +
+              `🙏 Gracias por ayudarnos a mejorar nuestro servicio.\n` +
+              `Cualquier otra duda, estamos a su disposición.`;
+
+  // 4. Abrimos WhatsApp y refrescamos la lista
+  window.open(`https://wa.me/${telCli}?text=${encodeURIComponent(msg)}`, '_blank');
+  
+  toast('✅ Queja resuelta y cliente notificado');
+  renderQuejas('pendiente'); 
+  initContadores();
+}
+
+async function eliminarQueja(id) {
+  if(!confirm('¿Borrar permanentemente este reporte?')) return;
+  await sb.from('quejas').delete().eq('id', id);
+  toast('🗑️ Reporte eliminado');
+  renderQuejas();
+  initContadores();
+}
+
+function logout(){localStorage.removeItem('db_admin');window.location.href='index.html'}
+
+(async()=>{
+  await initContadores();
+  await renderDash();
+})();
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-function resetQuejasForm(){
-  const b = document.getElementById('form-quejas-body');
-  if(b) {
-    b.innerHTML = `
-      <div class="error-box" id="error-quejas"></div>
-      <p>Tu opinión nos ayuda a mejorar. Cuéntanos qué sucedió con el servicio.</p>
-      <div class="form-field"><label>WhatsApp de contacto</label><input type="tel" id="q-tel" placeholder="+53..."></div>
-      <div class="form-field"><label>Código de Servicio (Opcional)</label><input type="text" id="q-cod" placeholder="DB-XXXX"></div>
-      <div class="form-field"><label>Tu Mensaje</label><textarea id="q-msg" rows="4" placeholder="Describe el inconveniente..."></textarea></div>
-      <button class="submit-btn" id="btn-queja" onclick="enviarQueja()">📤 ENVIAR REPORTE<span class="spinner"></span></button>
-    `;
-  }
-}
-
 </script>
 </body>
 </html>
