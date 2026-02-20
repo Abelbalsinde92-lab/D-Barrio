@@ -180,11 +180,11 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
   </div>
 
   <div id="sec-candidatos" class="sec">
-    <h2>👷 Candidatos</h2>
-    <button class="btn btn-orange" style="margin-bottom:16px" onclick="abrirModalNuevoSocio()">➕ REGISTRAR NUEVO</button>
-    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Personas que se registraron como socios desde el formulario público.</p>
-    <div id="listaCandidatos"><p class="empty">Cargando...</p></div>
-  </div>
+  <h2>👷 Candidatos Nuevos</h2>
+  <button class="btn btn-orange" style="margin-bottom:16px" onclick="abrirModalNuevoSocio()">➕ REGISTRAR MANUAL</button>
+  <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Personas que quieren unirse al equipo.</p>
+  <div id="listaCandidatos"><p class="empty">Buscando postulantes...</p></div>
+</div>
 
   <div id="sec-ordenes" class="sec">
     <h2>📋 Órdenes</h2>
@@ -425,28 +425,38 @@ async function eliminarSocio(id) {
 }
 
 async function renderCandidatos(){
-  const c=document.getElementById('listaCandidatos');
-  const{data:soc, error}=await sb.from('postulantes').select('*').order('created_at',{ascending:false});
+  const c = document.getElementById('listaCandidatos');
+  // Importante: Que la tabla se llame 'postulantes' en tu Supabase
+  const { data: postulantes, error } = await sb.from('postulantes').select('*').order('created_at', {ascending:false});
   
-  if(error) { toast('Error cargando postulantes', true); return; }
-  if(!soc||!soc.length){c.innerHTML='<p class="empty">Sin candidatos nuevos</p>';return}
+  if(error) { 
+    console.error(error);
+    c.innerHTML = '<p class="empty" style="color:var(--red)">Error al conectar con la base de datos</p>'; 
+    return; 
+  }
+
+  if(!postulantes || postulantes.length === 0){
+    c.innerHTML = '<p class="empty">No hay solicitudes de nuevos socios por ahora.</p>';
+    return;
+  }
   
-  c.innerHTML=soc.map(s=>{
-    const tc=ct(s.telefono||'');
-    return `<div class="card cand" id="cand-${s.id}">
+  c.innerHTML = postulantes.map(s => {
+    const tc = ct(s.telefono || '');
+    return `
+    <div class="card cand" id="cand-${s.id}">
       <div class="card-hdr" onclick="toggleCard('cand-${s.id}')">
         <div>
-          <div class="card-title">${s.nombre||'—'}</div>
-          <div class="card-sub">${s.oficio||'—'} · ${s.zona||'—'}</div>
+          <div class="card-title">${s.nombre || 'Sin nombre'}</div>
+          <div class="card-sub">${s.oficio || '—'} · ${s.zona || '—'}</div>
         </div>
         <span class="arrow" style="color:#0088ff">▼</span>
       </div>
       <div class="card-body">
-        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono||'—'}</span></div>
-        <div class="irow"><span class="ilbl">Especialidad</span><span class="ival">${s.oficio||'—'}</span></div>
-        <div class="irow"><span class="ilbl">Fecha</span><span class="ival">${new Date(s.created_at).toLocaleDateString()||'—'}</span></div>
-        <button class="btn btn-y" onclick="prepararRegistro('${s.id}','${(s.nombre||'').replace(/'/g,"\\'")}','${s.telefono}','${(s.zona||'').replace(/'/g,"\\'")}','${s.oficio}')">✅ ACEPTAR SOCIO</button>
-        <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button>
+        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono}</span></div>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+          <button class="btn btn-y" onclick="prepararRegistro('${s.id}','${(s.nombre||'').replace(/'/g,"\\'")}','${s.telefono}','${(s.zona||'').replace(/'/g,"\\'")}','${s.oficio}')">✅ ACEPTAR</button>
+          <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 HABLAR</button>
+        </div>
         <button class="btn btn-r" onclick="eliminarCandidato('${s.id}')">🗑️ RECHAZAR</button>
       </div>
     </div>`;
