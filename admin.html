@@ -211,28 +211,11 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 
 <div id="sec-quejas" class="sec">
   <h2>💬 Buzón de Quejas</h2>
-  
   <div style="display: flex; gap: 8px; margin-bottom: 18px;">
     <button class="btn-back" style="flex: 1; font-size: 0.65rem; padding: 8px;" onclick="renderQuejas('pendiente')">🔴 PENDIENTES</button>
     <button class="btn-back" style="flex: 1; font-size: 0.65rem; padding: 8px; border-color: var(--sub); color: var(--sub);" onclick="renderQuejas('todos')">👁️ VER TODAS</button>
   </div>
-
   <div id="listaQuejas"><p class="empty">Cargando reportes...</p></div>
-</div>
-
-  <div id="sec-config" class="sec">
-    <h2>⚙️ Config</h2>
-    <div class="cfg-box">
-      <h3>💰 Comisión Global</h3>
-      <div class="fld"><label>%</label><input type="number" id="cfg-com" min="0" max="100" value="15"></div>
-      <button class="btn btn-y" onclick="guardarComision()">💾 GUARDAR</button>
-    </div>
-    <div class="cfg-box">
-      <h3>📱 Notificaciones</h3>
-      <div class="fld"><label>WhatsApp Admin</label><input type="tel" id="cfg-owner" placeholder="+53..."></div>
-      <button class="btn btn-y" onclick="guardarNotif()">💾 GUARDAR</button>
-    </div>
-  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -409,7 +392,7 @@ async function guardarEdicionSocio() {
   };
   const { error } = await sb.from('socios').update(up).eq('id', id);
   if (error) { toast('Error al guardar', true); }
-  else { toast('Socio actualizado'); closeOverlay('modal-edit-socio'); renderSocios(); }
+  else { toast('✅ Socio actualizado'); closeOverlay('modal-edit-socio'); renderSocios(); }
 }
 
 async function eliminarSocio(id) {
@@ -670,7 +653,7 @@ async function renderSocios(){
         <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
           <button class="btn btn-g" onclick="window.location.href='tel:${s.telefono}'">📞 LLAMAR</button>
-          <button class="btn btn-orange" onclick="prepararEdicion('${params}')">✏️ EDITAR</button>
+          <button class="btn btn-orange" onclick="prepararEdicionSocio('${params}')">✏️ EDITAR</button>
         </div>
         <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR SOCIO</button>
       </div>
@@ -739,22 +722,25 @@ async function renderQuejas(filtro = 'pendiente') {
   const c = document.getElementById('listaQuejas');
   c.innerHTML = '<p class="empty">Cargando...</p>';
   
+  // 1. Cargamos las quejas
   let consulta = sb.from('quejas').select('*').order('created_at', { ascending: false });
-  
-  // Aplicar filtro si no es 'todos'
-  if (filtro === 'pendiente') {
-    consulta = consulta.eq('estado', 'pendiente');
-  }
+  if (filtro === 'pendiente') consulta = consulta.eq('estado', 'pendiente');
+  const { data: quejas } = await consulta;
 
-  const { data: quejas, error } = await consulta;
-
-  if (error || !quejas || quejas.length === 0) {
-    c.innerHTML = `<p class="empty">${filtro === 'pendiente' ? 'No hay quejas pendientes 🎉' : 'El buzón está vacío'}</p>`;
+  if (!quejas || quejas.length === 0) {
+    c.innerHTML = `<p class="empty">No hay reportes</p>`;
     return;
   }
 
+  // 2. Dibujamos las tarjetas
   c.innerHTML = quejas.map(q => {
     const isPendiente = q.estado === 'pendiente';
+    
+    // AQUÍ ESTÁ EL TRUCO: Buscamos el nombre del socio en el cache que ya tienes
+    const nombreSocio = (q.socio_id && sociosCache[q.socio_id]) 
+                        ? sociosCache[q.socio_id].nombre 
+                        : "No asignado / Código no válido";
+
     return `
     <div class="card ${isPendiente ? 'hl' : ''}" id="queja-${q.id}">
       <div class="card-hdr" onclick="toggleCard('queja-${q.id}')">
@@ -762,19 +748,19 @@ async function renderQuejas(filtro = 'pendiente') {
           <div class="card-title">📞 ${q.telefono}</div>
           <div class="card-sub">${new Date(q.created_at).toLocaleString('es-CU')}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="badge ${isPendiente ? 'badge-r pulse' : 'badge-g'}">${q.estado.toUpperCase()}</span>
-          <span class="arrow">▼</span>
-        </div>
+        <span class="badge ${isPendiente ? 'badge-r pulse' : 'badge-g'}">${q.estado.toUpperCase()}</span>
       </div>
       <div class="card-body">
-        <div class="irow"><span class="ilbl">Código Serv.</span><span class="ival">${q.codigo_servicio || 'No indicado'}</span></div>
-        <div style="background: rgba(255,255,255,0.05); padding: 12px; margin: 10px 0; border-left: 4px solid ${isPendiente ? 'var(--red)' : 'var(--green)'}; font-style: italic; color: #eee;">
+        <div class="irow"><span class="ilbl">Socio Responsable</span><span class="ival" style="color:var(--y)">${nombreSocio}</span></div>
+        <div class="irow"><span class="ilbl">Código Serv.</span><span class="ival">${q.codigo_servicio || '—'}</span></div>
+        
+        <div style="background: rgba(255,255,255,0.05); padding: 12px; margin: 10px 0; border-left: 4px solid var(--red); font-style: italic;">
           "${q.mensaje}"
         </div>
+        
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${ct(q.telefono)}','_blank')">💬 WHATSAPP</button>
-          ${isPendiente ? `<button class="btn btn-y" onclick="resolverQueja('${q.id}')">✅ RESOLVER</button>` : `<button class="btn btn-r" onclick="eliminarQueja('${q.id}')">🗑️ BORRAR</button>`}
+          <button class="btn btn-g" onclick="window.open('https://wa.me/${ct(q.telefono)}','_blank')">💬 CONTACTAR</button>
+          ${isPendiente ? `<button class="btn btn-y" onclick="resolverQueja('${q.id}')">✅ RESOLVER</button>` : ''}
         </div>
       </div>
     </div>`;
