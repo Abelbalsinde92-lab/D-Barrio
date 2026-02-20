@@ -2,17 +2,23 @@
   "name": "D'BARRIO - Servicios Profesionales",
   "short_name": "D'BARRIO",
   "description": "Plataforma de servicios profesionales con garantía",
-  "start_url": "/",
+  "start_url": "index.html",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#F9A825",
   "orientation": "portrait",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23F9A825'/%3E%3Ctext x='256' y='320' font-family='Arial Black' font-size='180' fill='%23000' text-anchor='middle' font-weight='900'%3ED'%3C/text%3E%3C/svg%3E",
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23000000'/%3E%3Cpath d='M256 20 L480 138 L480 374 L256 492 L32 374 L32 138 Z' fill='%23F9A825'/%3E%3Cg stroke='%23000' stroke-width='25' stroke-linecap='round'%3E%3Cline x1='180' y1='180' x2='332' y2='332'/%3E%3Cline x1='332' y1='180' x2='180' y2='332'/%3E%3C/g%3E%3Ccircle cx='180' cy='180' r='25' fill='%23000'/%3E%3Ccircle cx='332' cy='332' r='25' fill='%23000'/%3E%3Ccircle cx='332' cy='180' r='25' fill='%23000'/%3E%3Ccircle cx='180' cy='332' r='25' fill='%23000'/%3E%3Cpath d='M256 120 L220 250 L256 250 L240 380 L320 230 L280 230 L300 120 Z' fill='%23000'/%3E%3C/svg%3E",
       "sizes": "512x512",
       "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23F9A825'/%3E%3Cpath d='M256 120 L220 250 L256 250 L240 380 L320 230 L280 230 L300 120 Z' fill='%23000'/%3E%3C/svg%3E",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
     }
   ]
 }
