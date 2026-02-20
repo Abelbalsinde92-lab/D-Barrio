@@ -558,51 +558,22 @@ async function eliminarOrden(id){
 // ARCHIVO, DEUDAS Y SOCIOS
 async function renderArchivo(){
   const c = document.getElementById('listaArchivo');
-  
-  // Filtro de 30 días para que el archivo no pese
-  const limite = new Date();
-  limite.setDate(limite.getDate() - 30);
-  const fechaISO = limite.toISOString();
+  const {data:sol} = await sb.from('solicitudes').select('*').eq('estado', 'completada').order('created_at', {ascending: false});
 
-  const {data:sol} = await sb.from('solicitudes')
-    .select('*')
-    .eq('estado', 'completada')
-    .gt('created_at', fechaISO)
-    .order('created_at', {ascending: false});
-
-  if(!sol || !sol.length){
-    c.innerHTML = '<p class="empty">No hay órdenes archivadas en los últimos 30 días</p>';
-    return;
-  }
+  if(!sol || !sol.length){ c.innerHTML = '<p class="empty">Archivo vacío</p>'; return; }
 
   c.innerHTML = sol.map(o => {
-    const tc = ct(o.telefono || '');
-    // Generamos un código de garantía si no tiene uno
-    const codG = o.codigo_garantia || 'DB-' + o.id.toString().slice(-5).toUpperCase();
-
+    const codG = o.codigo_garantia || 'DB-' + o.id;
     return `
     <div class="card" id="arc-${o.id}">
       <div class="card-hdr" onclick="toggleCard('arc-${o.id}')">
-        <div>
-          <div class="card-title">${o.cliente || '—'}</div>
-          <div class="card-sub">${o.servicio || '—'} · ${o.municipio || '—'}</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px">
-          <span class="badge badge-g">OK</span>
-          <span class="arrow">▼</span>
-        </div>
+        <div><div class="card-title">${o.cliente}</div><div class="card-sub">${o.servicio}</div></div>
+        <span class="badge badge-g">OK</span>
       </div>
       <div class="card-body">
-        <div class="irow"><span class="ilbl">Monto</span><span class="money">${money(o.monto)}</span></div>
         <div class="irow"><span class="ilbl">Garantía</span><span class="ival" style="color:var(--y)">${codG}</span></div>
-        <div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles || '—'}</span></div>
-        
-        <button class="btn btn-y" onclick="enviarGarantiaCliente('${(o.cliente||'').replace(/'/g,"")}', '${o.telefono}', '${o.servicio}', '${codG}')">
-          ✉️ ENVIAR GARANTÍA (WA)
-        </button>
-        
-        <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 CONTACTAR CLIENTE</button>
-        <button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ BORRAR REGISTRO</button>
+        <button class="btn btn-y" onclick="enviarGarantiaCliente('${o.cliente}', '${o.telefono}', '${o.servicio}', '${codG}')">✉️ ENVIAR GARANTÍA</button>
+        <button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ BORRAR</button>
       </div>
     </div>`;
   }).join('');
@@ -720,26 +691,23 @@ async function guardarNotif(){
 
 async function renderQuejas(filtro = 'pendiente') {
   const c = document.getElementById('listaQuejas');
-  c.innerHTML = '<p class="empty">Cargando...</p>';
+  c.innerHTML = '<p class="empty">Cargando reportes...</p>';
   
-  // 1. Cargamos las quejas
   let consulta = sb.from('quejas').select('*').order('created_at', { ascending: false });
   if (filtro === 'pendiente') consulta = consulta.eq('estado', 'pendiente');
   const { data: quejas } = await consulta;
 
   if (!quejas || quejas.length === 0) {
-    c.innerHTML = `<p class="empty">No hay reportes</p>`;
+    c.innerHTML = `<p class="empty">No hay reportes ${filtro === 'pendiente' ? 'pendientes' : ''}</p>`;
     return;
   }
 
-  // 2. Dibujamos las tarjetas
   c.innerHTML = quejas.map(q => {
     const isPendiente = q.estado === 'pendiente';
-    
-    // AQUÍ ESTÁ EL TRUCO: Buscamos el nombre del socio en el cache que ya tienes
+    // Buscamos el nombre del socio en el caché que ya cargó el Admin
     const nombreSocio = (q.socio_id && sociosCache[q.socio_id]) 
                         ? sociosCache[q.socio_id].nombre 
-                        : "No asignado / Código no válido";
+                        : "No identificado";
 
     return `
     <div class="card ${isPendiente ? 'hl' : ''}" id="queja-${q.id}">
@@ -751,13 +719,11 @@ async function renderQuejas(filtro = 'pendiente') {
         <span class="badge ${isPendiente ? 'badge-r pulse' : 'badge-g'}">${q.estado.toUpperCase()}</span>
       </div>
       <div class="card-body">
-        <div class="irow"><span class="ilbl">Socio Responsable</span><span class="ival" style="color:var(--y)">${nombreSocio}</span></div>
+        <div class="irow"><span class="ilbl">Socio Implicado</span><span class="ival" style="color:var(--y)">${nombreSocio}</span></div>
         <div class="irow"><span class="ilbl">Código Serv.</span><span class="ival">${q.codigo_servicio || '—'}</span></div>
-        
-        <div style="background: rgba(255,255,255,0.05); padding: 12px; margin: 10px 0; border-left: 4px solid var(--red); font-style: italic;">
+        <div style="background: rgba(255,68,68,0.1); padding: 12px; margin: 10px 0; border-left: 4px solid var(--red); font-size: 0.9rem;">
           "${q.mensaje}"
         </div>
-        
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
           <button class="btn btn-g" onclick="window.open('https://wa.me/${ct(q.telefono)}','_blank')">💬 CONTACTAR</button>
           ${isPendiente ? `<button class="btn btn-y" onclick="resolverQueja('${q.id}')">✅ RESOLVER</button>` : ''}
@@ -768,31 +734,16 @@ async function renderQuejas(filtro = 'pendiente') {
 }
 
 async function resolverQueja(id) {
-  // 1. Buscamos los datos de la queja antes de marcarla como resuelta
   const { data: queja } = await sb.from('quejas').select('*').eq('id', id).single();
-  
   if(!confirm('¿Marcar como resuelta y notificar al cliente?')) return;
 
-  // 2. Actualizamos en Supabase
   const { error } = await sb.from('quejas').update({ estado: 'resuelta' }).eq('id', id);
-  
-  if (error) {
-    toast('⚠️ Error al actualizar', true);
-    return;
-  }
+  if (error) { toast('⚠️ Error al actualizar', true); return; }
 
-  // 3. Preparamos el mensaje de WhatsApp
-  const telCli = ct(queja.telefono);
-  const msg = `✅ *REPORTE RESUELTO - D'BARRIO*\n\n` +
-              `Estimado cliente,\n` +
-              `Le informamos que su reporte relacionado con el mensaje: _"${queja.mensaje.substring(0, 40)}..."_ ha sido revisado y procesado por nuestra administración.\n\n` +
-              `🙏 Gracias por ayudarnos a mejorar nuestro servicio.\n` +
-              `Cualquier otra duda, estamos a su disposición.`;
-
-  // 4. Abrimos WhatsApp y refrescamos la lista
-  window.open(`https://wa.me/${telCli}?text=${encodeURIComponent(msg)}`, '_blank');
+  const msg = `✅ *REPORTE RESUELTO - D'BARRIO*\n\nHola, le informamos que su reporte ha sido procesado por nuestra administración. Gracias por ayudarnos a mejorar.\n\n🙏 Estamos a su disposición.`;
+  window.open(`https://wa.me/${ct(queja.telefono)}?text=${encodeURIComponent(msg)}`, '_blank');
   
-  toast('✅ Queja resuelta y cliente notificado');
+  toast('✅ Queja resuelta');
   renderQuejas('pendiente'); 
   initContadores();
 }
