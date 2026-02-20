@@ -271,19 +271,27 @@ async function enviarQueja(){
   const pro = document.getElementById('q-pro').value.trim();
   const cod = document.getElementById('q-cod').value.trim();
   if(!tel || !pro){ showError('queja','⚠️ WhatsApp y motivo son obligatorios'); return}
+  
   setLoading('btn-queja', true);
+  
+  // Intentamos buscar si el código pertenece a una orden para identificar al socio
+  let socioId = null;
+  if(cod) {
+    const cleanId = cod.replace('DB-', '').trim();
+    const { data: orden } = await sb.from('solicitudes').select('socio_asignado').eq('id', cleanId).single();
+    if(orden) socioId = orden.socio_asignado;
+  }
+
   const { error } = await sb.from('quejas').insert({
     telefono: tel,
     codigo_servicio: cod,
     mensaje: pro,
-    fecha: new Date().toLocaleString('es-CU'),
+    socio_id: socioId, // Esto permite al admin saber quién fue sin buscar
     estado: 'pendiente'
   });
+
   setLoading('btn-queja', false);
-  if(error){ 
-    showError('queja','⚠️ Error de conexión'); 
-    return;
-  }
+  if(error){ showError('queja','⚠️ Error de conexión'); return; }
   alert('✅ Reporte enviado. Revisaremos esto seriamente.');
   closeModal('m-queja');
 }
