@@ -328,6 +328,37 @@ document.getElementById('cnt-quejas').style.display = nQ > 0 ? 'flex' : 'none';
   },10000);
 }
 
+// --- GESTIÓN DE MODALES DE SOCIOS ---
+
+function abrirModalNuevoSocio() {
+    // 1. Limpiamos el ID oculto para que el sistema sepa que es un registro manual nuevo
+    const hiddenId = document.getElementById('m-candidato-id');
+    if(hiddenId) hiddenId.value = '';
+    
+    // 2. Reseteamos todos los campos del formulario
+    document.getElementById('m-nom').value = '';
+    document.getElementById('m-tel').value = '';
+    document.getElementById('m-zon').value = '';
+    document.getElementById('m-esp').value = '';
+    document.getElementById('m-pin').value = '';
+    document.getElementById('m-com').value = '15'; // Porcentaje por defecto
+    
+    // 3. Abrimos el modal visualmente
+    openModal('modal-candidato');
+}
+
+// Función para cerrar cualquier modal por su ID
+function closeOverlay(id) {
+    const modal = document.getElementById(id);
+    if(modal) modal.classList.remove('open');
+}
+
+// Función para abrir cualquier modal por su ID
+function openModal(id) {
+    const modal = document.getElementById(id);
+    if(modal) modal.classList.add('open');
+}
+
 // Registro y Gestión de Socios
 async function registrarSocio(){
   const nom=document.getElementById('m-nom').value.trim();
