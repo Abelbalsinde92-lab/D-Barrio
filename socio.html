@@ -254,18 +254,59 @@ async function renderActivas(){
     </div>`).join('');
 }
 
-async function finalizarTrabajo(id, cliente){
+async function finalizarTrabajo(id, cliente) {
   const mInput = document.getElementById(`monto-${id}`);
   const monto = parseFloat(mInput.value);
-  if(!monto || monto <= 0){ toast('⚠️ Ingresa el monto cobrado', true); return; }
+  
+  if (!monto || monto <= 0) { 
+    toast('⚠️ Ingresa el monto cobrado', true); 
+    return; 
+  }
+
+  // 1. Calculamos comisión y nueva deuda
   const comision = monto * (comisionSocio / 100);
   const nuevaDeuda = (socioData.deuda || 0) + comision;
-  await sb.from('solicitudes').update({estado:'completada', monto:monto, fecha_fin:new Date().toLocaleDateString()}).eq('id', id);
-  await sb.from('socios').update({deuda:nuevaDeuda, trabajos:(socioData.trabajos || 0) + 1}).eq('id', socioId);
-  const msg = `✅ TRABAJO TERMINADO\n\n👷 Socio: ${socioData.nombre}\n👤 Cliente: ${cliente}\n💰 Cobrado: $${monto}\n📉 Comisión: $${comision.toFixed(2)}\n📌 Deuda total: $${nuevaDeuda.toFixed(2)}`;
-  window.open(`https://wa.me/5355165641?text=${encodeURIComponent(msg)}`, '_blank');
-  toast('✅ Reporte enviado');
-  renderActivas();
+  const nuevoTotalTrabajos = (socioData.trabajos || 0) + 1;
+
+  // 2. Bloqueamos el botón para evitar doble envío (Conexión lenta Cuba)
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = "PROCESANDO...";
+
+  try {
+    // 3. Actualizamos la solicitud
+    await sb.from('solicitudes').update({
+      estado: 'completada', 
+      monto: monto, 
+      fecha_fin: new Date().toLocaleDateString('es-CU')
+    }).eq('id', id);
+
+    // 4. Actualizamos al socio (Deuda y contador de trabajos)
+    await sb.from('socios').update({
+      deuda: nuevaDeuda, 
+      trabajos: nuevoTotalTrabajos
+    }).eq('id', socioId);
+
+    // 5. Mensaje para Caramelo (Administración)
+    const msgAdmin = `✅ *TRABAJO TERMINADO*\n\n👷 Socio: ${socioData.nombre}\n👤 Cliente: ${cliente}\n💰 Cobrado: $${monto}\n📉 Comisión: $${comision.toFixed(2)}\n📌 Deuda total: $${nuevaDeuda.toFixed(2)}`;
+    
+    // 6. Mensaje para el Cliente (Valoración)
+    const msgCliente = `✅ *D'BARRIO - SERVICIO FINALIZADO*\n\nHola ${cliente}, su servicio ha concluido.\n\n⭐ *Valore mi trabajo aquí:* \nhttps://abelbalsinde92-lab.github.io/D-Barrio/index.html?id=DB-${id}\n\n¡Muchas gracias!`;
+
+    // Abrimos WhatsApp para notificar a Caramelo
+    window.open(`https://wa.me/5355165641?text=${encodeURIComponent(msgAdmin)}`, '_blank');
+    
+    // Mostramos el link de valoración para que el socio lo copie y envíe al cliente
+    alert(`¡TRABAJO GUARDADO!\n\nEnvía este mensaje a tu cliente para que te califique:\n\n${msgCliente}`);
+
+    toast('✅ Reporte enviado con éxito');
+    renderActivas();
+    
+  } catch (err) {
+    toast('❌ Error de conexión', true);
+    btn.disabled = false;
+    btn.textContent = "✅ REPORTAR TRABAJO";
+  }
 }
 
 async function renderHistorial(){
@@ -278,9 +319,10 @@ async function renderHistorial(){
   
   if(!sol || !sol.length){ c.innerHTML = '<p class="empty">No hay historial disponible</p>'; return; }
   
-  c.innerHTML = sol.map(o => {
+    c.innerHTML = sol.map(o => {
     const tieneG = o.codigo_garantia ? 'border-left: 5px solid var(--y)' : '';
-    const badgeG = o.codigo_garantia ? `<div style="margin-top:8px"><span class="badge" style="background:var(--y); color:#000; padding:4px 8px">🛡️ GARANTÍA: ${o.codigo_garantia}</span></div>` : '';
+    // Lógica de estrellas por cada trabajo
+    const estrellas = o.valoracion ? '⭐'.repeat(o.valoracion) : '<span style="color:var(--sub)">Sin calificar</span>';
 
     return `
     <div class="card" id="his-${o.id}" style="${tieneG}">
@@ -289,17 +331,19 @@ async function renderHistorial(){
           <div class="card-title">${o.cliente || '—'}</div>
           <div class="card-sub">${o.fecha_fin || '—'} · ${o.servicio}</div>
         </div>
-        <span class="arrow">▼</span>
+        <div style="text-align:right">
+           <div style="font-size:0.8rem">${estrellas}</div>
+           <span class="arrow">▼</span>
+        </div>
       </div>
       <div class="card-body">
         <div class="irow"><span class="ilbl">Monto Cobrado</span><span class="money">${money(o.monto)}</span></div>
         <div class="irow"><span class="ilbl">Comisión (${comisionSocio}%)</span><span class="ival">${money(o.monto * (comisionSocio/100))}</span></div>
-        <div class="irow"><span class="ilbl">Estado</span><span class="ival" style="color:var(--green)">COMPLETADO</span></div>
-        ${badgeG}
+        <div class="irow"><span class="ilbl">ID Servicio</span><span class="ival" style="font-family:monospace">DB-${o.id}</span></div>
+        ${o.codigo_garantia ? `<div style="margin-top:8px"><span class="badge" style="background:var(--y); color:#000; padding:4px 8px">🛡️ GARANTÍA ACTIVA</span></div>` : ''}
       </div>
     </div>`;
   }).join('');
-}
 
 async function renderFinanzas(){
   const {data:sol}=await sb.from('solicitudes').select('*').eq('socio_asignado',socioId).not('monto','is',null);
