@@ -217,6 +217,28 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
   </div>
   <div id="listaQuejas"><p class="empty">Cargando reportes...</p></div>
 </div>
+<div id="sec-config" class="sec">
+  <h2>⚙️ Configuración</h2>
+  
+  <div class="cfg-box">
+    <h3>Comisión de la Casa</h3>
+    <p style="color:var(--sub); font-size:0.8rem; margin-bottom:15px;">Define el % que se queda el negocio por defecto.</p>
+    <div class="fld">
+      <label>Porcentaje Global (%)</label>
+      <input type="number" id="cfg-com" value="15">
+    </div>
+    <button class="btn btn-y" onclick="guardarComision()">💾 GUARDAR COMISIÓN</button>
+  </div>
+
+  <div class="cfg-box">
+    <h3>Administración</h3>
+    <div class="fld">
+      <label>WhatsApp Admin (Notificaciones)</label>
+      <input type="tel" id="cfg-owner" placeholder="+34627493593">
+    </div>
+    <button class="btn btn-y" onclick="guardarNotif()">💾 GUARDAR TELÉFONO</button>
+  </div>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -671,10 +693,17 @@ function prepararEdicion(jsonStr) {
 
 // CONFIGURACIÓN Y OTROS
 async function cargarConfig(){
-  const{data:com}=await sb.from('config').select('*').eq('clave','comision_global').single();
-  if(com)document.getElementById('cfg-com').value=com.valor||15;
-  const{data:owner}=await sb.from('config').select('*').eq('clave','telefono_admin').single();
-  if(owner)document.getElementById('cfg-owner').value=owner.valor||'';
+  // Intentamos traer la comisión
+  const {data:com} = await sb.from('config').select('*').eq('clave','comision_global').single();
+  // Si existe la pone, si no, pone 15 por defecto
+  document.getElementById('cfg-com').value = com ? com.valor : 15;
+
+  // Intentamos traer el WhatsApp del Admin
+  const {data:owner} = await sb.from('config').select('*').eq('clave','telefono_admin').single();
+  // Si existe lo pone, si no, lo deja vacío para que tú lo escribas
+  document.getElementById('cfg-owner').value = owner ? owner.valor : "";
+  
+  console.log("Configuración cargada");
 }
 
 async function guardarComision(){
