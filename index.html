@@ -56,15 +56,32 @@ header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;widt
 </style>
 </head>
 <body>
-<header>
-  <div class="logo-mark">
-    <svg viewBox="0 0 180 60" xmlns="http://www.w3.org/2000/svg">
-      <text x="90" y="50" text-anchor="middle" font-family="Roboto Condensed,Impact" font-weight="900" font-size="52" fill="#000" letter-spacing="-2">D'BARRIO</text>
+<header style="text-align:center; padding: 45px 20px 25px; position:relative; z-index:1;">
+  <div style="margin-bottom: 12px;">
+    <svg width="90" height="90" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path d="M50 5 L90 27.5 L90 72.5 L50 95 L10 72.5 L10 27.5 Z" fill="#F9A825" stroke="#000" stroke-width="2"/>
+      <g stroke="#000" stroke-width="7" stroke-linecap="round">
+        <line x1="30" y1="35" x2="70" y2="65" />
+        <line x1="70" y1="35" x2="30" y2="65" />
+      </g>
+      <circle cx="30" cy="35" r="5" fill="#000"/>
+      <circle cx="70" cy="65" r="5" fill="#000"/>
+      <circle cx="70" cy="35" r="5" fill="#000"/>
+      <circle cx="30" cy="65" r="5" fill="#000"/>
+      <path d="M50 25 L42 48 L50 48 L46 72 L62 43 L54 43 L58 25 Z" fill="#000"/>
     </svg>
   </div>
-  <div class="tagline">Servicios Profesionales con Garantía</div>
-</header>
 
+  <h1 style="font-family:'Roboto Condensed',sans-serif; font-weight:900; font-size:3.2rem; color:#fff; letter-spacing:-2px; margin:0; line-height:0.9; text-shadow: 0 4px 10px rgba(0,0,0,0.5);">
+    D'BARRIO
+  </h1>
+
+  <div style="display:inline-block; margin-top:12px; background:#F9A825; padding:5px 18px; transform:skew(-15deg); border: 2px solid #000; box-shadow: 4px 4px 0 #000;">
+    <span style="display:block; transform:skew(15deg); font-weight:900; font-size:0.75rem; color:#000; letter-spacing:3px; text-transform:uppercase;">
+      Calidad Garantizada
+    </span>
+  </div>
+</header>
 <div class="menu">
   <button class="btn" onclick="openModal('m-filosofia')"><span>NUESTRA FILOSOFÍA</span><span class="icon">⚙️</span></button>
   <button class="btn btn-primary" onclick="openModal('m-servicio')"><span>SOLICITAR TÉCNICO</span><span class="icon">🔧</span></button>
