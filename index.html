@@ -70,6 +70,7 @@ header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;widt
   <button class="btn btn-primary" onclick="openModal('m-servicio')"><span>SOLICITAR TÉCNICO</span><span class="icon">🔧</span></button>
   <button class="btn" onclick="openModal('m-garantia')"><span>GARANTÍA 30 DÍAS</span><span class="icon">🛡️</span></button>
   <button class="btn" onclick="openModal('m-valorar')"><span>CALIFICAR SERVICIO</span><span class="icon">⭐</span></button>
+  <button class="btn" style="border-color: #ff4444; border-style: double;" onclick="openModal('m-queja')"><span>RECLAMACIONES</span><span class="icon">📢</span></button>
   <button class="btn" onclick="openModal('m-unirse')"><span>ÚNETE AL EQUIPO</span><span class="icon">⚡</span></button>
   <button class="btn btn-ghost" onclick="openModal('m-login')"><span>ACCESO PRIVADO</span><span class="icon">🔐</span></button>
 </div>
@@ -133,6 +134,23 @@ header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;widt
       </div>
       <p style="text-align:center;color:var(--y);font-weight:900;font-size:1.2rem;margin-bottom:16px" id="rating-text">Selecciona estrellas</p>
       <button class="submit-btn" id="btn-valorar" onclick="enviarValoracion()">📤 ENVIAR<span class="spinner"></span></button>
+    </div>
+  </div>
+</div>
+
+<div id="m-queja" class="modal">
+  <div class="modal-box" style="border-color: #ff4444;">
+    <div class="modal-top" style="background: #ff4444;">
+      <h2>📢 Buzón de Quejas</h2>
+      <button class="btn-close" onclick="closeModal('m-queja')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="error-box" id="error-queja"></div>
+      <p>Reporta cualquier problema. La administración revisará tu caso de inmediato.</p>
+      <div class="form-field"><label>Tu WhatsApp</label><input type="tel" id="q-tel" placeholder="+53..."></div>
+      <div class="form-field"><label>Código del Servicio</label><input type="text" id="q-cod" placeholder="ID del trabajo"></div>
+      <div class="form-field"><label>¿Qué sucedió?</label><textarea id="q-pro" rows="4" placeholder="Describe el problema..."></textarea></div>
+      <button class="submit-btn" id="btn-queja" style="background:#ff4444; color:white; box-shadow: 0 4px 0 #8b0000;" onclick="enviarQueja()">ENVIAR REPORTE<span class="spinner"></span></button>
     </div>
   </div>
 </div>
@@ -220,22 +238,54 @@ async function enviarGarantia(){
 function setRating(n){selectedRating=n;document.querySelectorAll('.star').forEach((s,i)=>s.classList.toggle('active',i<n));const txt=['Muy malo','Malo','Regular','Bueno','Excelente'];document.getElementById('rating-text').textContent=txt[n-1]||'Selecciona'}
 
 async function enviarValoracion(){
-  const cod=document.getElementById('v-cod').value.trim();
-  if(!cod||!selectedRating){showError('valorar','⚠️ Datos incompletos');return}
-  setLoading('btn-valorar',true);
-  const{data,error}=await sb.from('solicitudes').select('*').eq('codigo_garantia',cod).single();
-  if(error||!data){setLoading('btn-valorar',false);showError('valorar','⚠️ Código no encontrado');return}
-  await sb.from('solicitudes').update({valoracion:selectedRating}).eq('id',data.id);
+  const cod = document.getElementById('v-cod').value.trim();
+  if(!cod || !selectedRating){showError('valorar','⚠️ Datos incompletos'); return}
+  setLoading('btn-valorar', true);
+  const cleanId = cod.replace('DB-', '').trim();
+  const { data, error } = await sb.from('solicitudes').select('*').eq('id', cleanId).single();
+  if(error || !data){
+    setLoading('btn-valorar', false);
+    showError('valorar', '⚠️ Código de servicio no válido');
+    return;
+  }
+  await sb.from('solicitudes').update({ valoracion: selectedRating }).eq('id', data.id);
   if(data.socio_asignado){
-    const{data:soc}=await sb.from('socios').select('*').eq('id',data.socio_asignado).single();
+    const { data: soc } = await sb.from('socios').select('*').eq('id', data.socio_asignado).single();
     if(soc){
-      const trab=(soc.trabajos||0)+1;
-      const rat=soc.rating||0;
-      const newRat=((rat*(trab-1))+selectedRating)/trab;
-      await sb.from('socios').update({rating:newRat, trabajos:trab}).eq('id',data.socio_asignado)
+      const trab = (soc.trabajos || 0) + 1;
+      const rat = soc.rating || 0;
+      const newRat = ((rat * (trab - 1)) + selectedRating) / trab;
+      await sb.from('socios').update({ 
+        rating: parseFloat(newRat.toFixed(1)), 
+        trabajos: trab 
+      }).eq('id', data.socio_asignado);
     }
   }
-  setLoading('btn-valorar',false);alert('✅ Gracias por tu calificación');closeModal('m-valorar');
+  setLoading('btn-valorar', false);
+  alert('✅ ¡Gracias! Tu opinión es sagrada para nosotros.');
+  closeModal('m-valorar');
+}
+
+async function enviarQueja(){
+  const tel = document.getElementById('q-tel').value.trim();
+  const pro = document.getElementById('q-pro').value.trim();
+  const cod = document.getElementById('q-cod').value.trim();
+  if(!tel || !pro){ showError('queja','⚠️ WhatsApp y motivo son obligatorios'); return}
+  setLoading('btn-queja', true);
+  const { error } = await sb.from('quejas').insert({
+    telefono: tel,
+    codigo_servicio: cod,
+    mensaje: pro,
+    fecha: new Date().toLocaleString('es-CU'),
+    estado: 'pendiente'
+  });
+  setLoading('btn-queja', false);
+  if(error){ 
+    showError('queja','⚠️ Error de conexión'); 
+    return;
+  }
+  alert('✅ Reporte enviado. Revisaremos esto seriamente.');
+  closeModal('m-queja');
 }
 
 async function enviarPostulacion(){
