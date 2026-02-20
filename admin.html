@@ -165,7 +165,11 @@ header{text-align:center;padding:50px 20px 30px;position:relative;z-index:1;widt
       <div class="form-field"><label>PIN</label><input type="password" id="l-pin" maxlength="6" inputmode="numeric"></div>
       <button class="submit-btn" id="btn-login" onclick="login()">INGRESAR<span class="spinner"></span></button>
       <div id="loginError">⚠️ Usuario o PIN incorrecto</div>
-    <div id="m-quejas" class="modal">
+    </div>
+  </div>
+</div>
+
+<div id="m-quejas" class="modal">
   <div class="modal-box">
     <div class="modal-top"><h2>💬 QUEJAS</h2><button class="btn-close" onclick="closeModal('m-quejas')">✕</button></div>
     <div class="modal-body" id="form-quejas-body">
@@ -187,10 +191,17 @@ const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let selectedRating=0;
 
 function openModal(id){document.getElementById(id).classList.add('open');document.body.style.overflow='hidden'}
-function closeModal(id){document.getElementById(id).classList.remove('open');document.body.style.overflow='';if(id==='m-servicio')resetServicioForm();if(id==='m-unirse')resetUnirseForm()}
+function closeModal(id){
+document.getElementById(id).classList.remove('open');
+document.body.style.overflow='';
+  // Reseteos automáticos según el modal que se cierre
+  if(id==='m-servicio') resetServicioForm();
+  if(id==='m-unirse') resetUnirseForm();
+  if(id==='m-quejas') resetQuejasForm(); 
+}
+unirse')resetUnirseForm()}
 function showError(id,msg){const err=document.getElementById('error-'+id);err.textContent=msg;err.style.display='block';setTimeout(()=>err.style.display='none',5000)}
 function setLoading(btnId,loading){const btn=document.getElementById(btnId);if(loading){btn.classList.add('loading');btn.disabled=true}else{btn.classList.remove('loading');btn.disabled=false}}
-
 function resetServicioForm(){document.getElementById('form-servicio-body').innerHTML='<div class="error-box" id="error-servicio"></div><div class="form-field"><label>Tu Nombre</label><input type="text" id="s-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="s-tel" placeholder="+53..."></div><div class="form-field"><label>Dirección</label><input type="text" id="s-dir"></div><div class="form-field"><label>Servicio</label><select id="s-cat"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option></select></div><div class="form-field"><label>Problema</label><textarea id="s-pro" rows="3"></textarea></div><button class="submit-btn" id="btn-servicio" onclick="enviarSolicitud()">📤 ENVIAR<span class="spinner"></span></button>'}
 function resetUnirseForm(){document.getElementById('form-unirse-body').innerHTML='<div class="error-box" id="error-unirse"></div><div class="form-field"><label>Nombre</label><input type="text" id="p-nom"></div><div class="form-field"><label>WhatsApp</label><input type="tel" id="p-tel"></div><div class="form-field"><label>Especialidad</label><select id="p-esp"><option value="">Seleccionar...</option><option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option></select></div><div class="form-field"><label>Zona</label><input type="text" id="p-zon"></div><button class="submit-btn" id="btn-unirse" onclick="enviarPostulacion()">📤 ENVIAR<span class="spinner"></span></button>'}
 
@@ -312,6 +323,20 @@ async function login(){
 }
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+function resetQuejasForm(){
+  const b = document.getElementById('form-quejas-body');
+  if(b) {
+    b.innerHTML = `
+      <div class="error-box" id="error-quejas"></div>
+      <p>Tu opinión nos ayuda a mejorar. Cuéntanos qué sucedió con el servicio.</p>
+      <div class="form-field"><label>WhatsApp de contacto</label><input type="tel" id="q-tel" placeholder="+53..."></div>
+      <div class="form-field"><label>Código de Servicio (Opcional)</label><input type="text" id="q-cod" placeholder="DB-XXXX"></div>
+      <div class="form-field"><label>Tu Mensaje</label><textarea id="q-msg" rows="4" placeholder="Describe el inconveniente..."></textarea></div>
+      <button class="submit-btn" id="btn-queja" onclick="enviarQueja()">📤 ENVIAR REPORTE<span class="spinner"></span></button>
+    `;
+  }
+}
+
 </script>
 </body>
 </html>
