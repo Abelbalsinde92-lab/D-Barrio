@@ -319,9 +319,8 @@ async function renderHistorial(){
   
   if(!sol || !sol.length){ c.innerHTML = '<p class="empty">No hay historial disponible</p>'; return; }
   
-    c.innerHTML = sol.map(o => {
+  c.innerHTML = sol.map(o => {
     const tieneG = o.codigo_garantia ? 'border-left: 5px solid var(--y)' : '';
-    // Lógica de estrellas por cada trabajo
     const estrellas = o.valoracion ? '⭐'.repeat(o.valoracion) : '<span style="color:var(--sub)">Sin calificar</span>';
 
     return `
@@ -344,6 +343,33 @@ async function renderHistorial(){
       </div>
     </div>`;
   }).join('');
+} // <-- Aquí estaba el error principal
+
+async function renderFinanzas(){
+  const {data:sol}=await sb.from('solicitudes').select('*').eq('socio_asignado',socioId).not('monto','is',null);
+  let total=0, neto=0, count=0;
+  if(sol){
+    sol.forEach(o=>{
+      total+=o.monto;
+      neto+=(o.monto - (o.monto*(comisionSocio/100)));
+      count++;
+    });
+  }
+  document.getElementById('f-total').textContent=money(total);
+  document.getElementById('f-neto').textContent=money(neto);
+  document.getElementById('f-mes').textContent=money(socioData.deuda);
+  document.getElementById('f-prom').textContent=count>0?money(total/count):'$0';
+  document.getElementById('statsDetalle').innerHTML=`
+    <div class="card">
+      <div class="card-body" style="max-height:none; padding:15px">
+        <div class="irow"><span class="ilbl">Trabajos realizados</span><span class="ival">${count}</span></div>
+        <div class="irow"><span class="ilbl">Comisión pactada</span><span class="ival">${comisionSocio}%</span></div>
+        <div class="irow"><span class="ilbl">Deuda pendiente</span><span class="money">${money(socioData.deuda)}</span></div>
+      </div>
+    </div>`;
+}
+
+if('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(()=>{});
 
 async function renderFinanzas(){
   const {data:sol}=await sb.from('solicitudes').select('*').eq('socio_asignado',socioId).not('monto','is',null);
