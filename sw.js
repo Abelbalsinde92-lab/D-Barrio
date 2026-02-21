@@ -1,69 +1,133 @@
-const CACHE_NAME = 'dbarrio-v3';
-const STATIC_ASSETS = [
-  '/D-Barrio/',
-  '/D-Barrio/index.html',
-  '/D-Barrio/admin.html',
-  '/D-Barrio/socio.html',
-  '/D-Barrio/manifest.json',
-  'https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;900&display=swap'
+/* ========= D'BARRIO SERVICE WORKER (CUBA SAFE) ========= */
+const CACHE_VERSION = 4;
+const APP_CACHE = `dbarrio-app-v${CACHE_VERSION}`;
+const RUNTIME_CACHE = `dbarrio-rt-v${CACHE_VERSION}`;
+const FONT_CACHE = `dbarrio-fonts-v${CACHE_VERSION}`;
+
+// Ajusta esta BASE si tu repo cambia.
+// En GitHub Pages normalmente es "/D-Barrio/"
+const BASE = '/D-Barrio/';
+
+// Cachea SOLO assets locales (nada externo aquí)
+const APP_SHELL = [
+  `${BASE}`,
+  `${BASE}index.html`,
+  `${BASE}admin.html`,
+  `${BASE}socio.html`,
+  `${BASE}manifest.json`,
+  `${BASE}sw.js`
+  // Si tienes iconos, agrégalos aquí:
+  // `${BASE}icon-192.png`,
+  // `${BASE}icon-512.png`,
+  // `${BASE}offline.html`,
 ];
 
-// INSTALAR - cachear assets estáticos
-self.addEventListener('install', event => {
+// INSTALAR
+self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(STATIC_ASSETS))
+    caches.open(APP_CACHE)
+      .then((cache) => cache.addAll(APP_SHELL))
       .then(() => self.skipWaiting())
   );
 });
 
-// ACTIVAR - limpiar caches viejos
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
-    ).then(() => self.clients.claim())
-  );
+// ACTIVAR
+self.addEventListener('activate', (event) => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.map((k) => {
+      if (![APP_CACHE, RUNTIME_CACHE, FONT_CACHE].includes(k)) return caches.delete(k);
+    }));
+    await self.clients.claim();
+  })());
 });
 
-// FETCH - estrategia inteligente para Cuba
-self.addEventListener('fetch', event => {
-  const url = new URL(event.request.url);
+// Helpers
+function isSupabase(url) {
+  return url.hostname.includes('supabase.co') || url.hostname.includes('supabase.in');
+}
 
-  // Firebase: siempre red primero (datos frescos)
-  if (url.hostname.includes('firebase') || url.hostname.includes('firebaseio')) {
+function isHTMLRequest(req) {
+  return req.mode === 'navigate' ||
+    (req.headers.get('accept') || '').includes('text/html');
+}
+
+function stripSearch(request) {
+  // Para evitar cache duplicado por ?v=...
+  const url = new URL(request.url);
+  url.search = '';
+  return new Request(url.toString(), request);
+}
+
+// FETCH
+self.addEventListener('fetch', (event) => {
+  const req = event.request;
+  const url = new URL(req.url);
+
+  // 1) Supabase: SIEMPRE red (no cache) => datos frescos
+  if (isSupabase(url)) {
     event.respondWith(
-      fetch(event.request).catch(() => new Response('{}', {
-        headers: { 'Content-Type': 'application/json' }
-      }))
+      fetch(req).catch(() => new Response('{}', { headers: { 'Content-Type': 'application/json' } }))
     );
     return;
   }
 
-  // Google Fonts: cache primero
+  // 2) Google Fonts: stale-while-revalidate en cache aparte
   if (url.hostname.includes('fonts.googleapis') || url.hostname.includes('fonts.gstatic')) {
-    event.respondWith(
-      caches.match(event.request).then(cached =>
-        cached || fetch(event.request).then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-          return response;
-        })
-      )
-    );
+    event.respondWith((async () => {
+      const cache = await caches.open(FONT_CACHE);
+      const cached = await cache.match(req);
+      const fetchPromise = fetch(req).then((res) => {
+        // OJO: algunas respuestas serán opaque; igual se pueden guardar
+        cache.put(req, res.clone()).catch(() => {});
+        return res;
+      }).catch(() => cached);
+      return cached || fetchPromise;
+    })());
     return;
   }
 
-  // HTML/JS/CSS: red primero, caché como respaldo (ideal para conexiones inestables)
-  event.respondWith(
-    fetch(event.request)
-      .then(response => {
-        if (response.ok) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
-        }
-        return response;
-      })
-      .catch(() => caches.match(event.request))
-  );
+  // 3) Navegación (index/admin/socio): network-first con fallback a index
+  if (isHTMLRequest(req)) {
+    event.respondWith((async () => {
+      try {
+        const fresh = await fetch(req);
+        // cachear la versión sin query
+        const cache = await caches.open(APP_CACHE);
+        cache.put(stripSearch(req), fresh.clone()).catch(() => {});
+        return fresh;
+      } catch (e) {
+        // fallback: intenta la página pedida; si no, index
+        const cache = await caches.open(APP_CACHE);
+        const cachedPage = await cache.match(stripSearch(req));
+        return cachedPage || cache.match(`${BASE}index.html`);
+      }
+    })());
+    return;
+  }
+
+  // 4) Assets locales (JS/CSS/img): cache-first con actualización en background
+  event.respondWith((async () => {
+    const cacheReq = stripSearch(req);
+    const cache = await caches.open(RUNTIME_CACHE);
+    const cached = await cache.match(cacheReq);
+
+    if (cached) {
+      // revalidación en background
+      fetch(req).then((res) => {
+        if (res && res.ok) cache.put(cacheReq, res.clone()).catch(() => {});
+      }).catch(() => {});
+      return cached;
+    }
+
+    // si no hay cache, intenta red y guarda
+    try {
+      const res = await fetch(req);
+      if (res && res.ok) cache.put(cacheReq, res.clone()).catch(() => {});
+      return res;
+    } catch (e) {
+      // último recurso
+      return cached || new Response('', { status: 504 });
+    }
+  })());
 });
