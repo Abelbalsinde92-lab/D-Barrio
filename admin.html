@@ -584,7 +584,7 @@ async function renderOrdenes(){
     const socioAsignado=o.socio_asignado&&sociosCache[o.socio_asignado]?(sociosCache[o.socio_asignado].nombre||'Socio'):null;
     const opcs=socios?socios.map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.nombre||''}" ${o.socio_asignado===s.id?'selected':''}>${s.nombre||'-'} - ${s.especialidad||'-'}</option>`).join(''):'';
     
-        const txtG = o.tiempo_garantia || "No reportada";
+            const txtG = o.tiempo_garantia || "No reportada";
     const colG = o.tiempo_garantia ? "var(--y)" : "#ff4444";
 
     return `<div class="card hl" id="ord-${o.id}">
@@ -603,7 +603,7 @@ async function renderOrdenes(){
         <div class="irow"><span class="ilbl">Teléfono:</span><span class="ival">${o.telefono||'-'}</span></div>
         <div class="irow"><span class="ilbl">Socio:</span><span class="ival">${socioAsignado||'No asignado'}</span></div>
         
-        <button onclick="activarGarantiaAdmin('${o.id}')" style="width:100%; margin-top:10px; padding:12px; background:var(--y); color:#000; border:none; font-weight:900; cursor:pointer; text-transform:uppercase">
+        <button onclick="activarGarantiaAdmin('${o.id}')" style="width:100%; margin-top:15px; padding:12px; background:var(--y); color:#000; border:none; font-weight:900; cursor:pointer; text-transform:uppercase; border-radius:4px">
           ✅ ACTIVAR GARANTÍA Y ENVIAR
         </button>
       </div>
