@@ -234,7 +234,9 @@ async function cargarDatosSocio(){
 async function renderActivas(){
   const c = document.getElementById('listaActivas');
   const {data:sol} = await sb.from('solicitudes').select('*').eq('socio_asignado', socioId).eq('estado', 'pendiente').order('created_at', {ascending: false});
+  
   if(!sol || sol.length === 0){ c.innerHTML = '<p class="empty">No tienes órdenes activas</p>'; return; }
+  
   c.innerHTML = sol.map(o => `
     <div class="card hl open" id="ord-${o.id}">
       <div class="card-hdr">
@@ -244,14 +246,68 @@ async function renderActivas(){
       <div class="card-body">
         <div class="irow"><span class="ilbl">Dirección:</span><span class="ival">${o.direccion}</span></div>
         <div class="irow"><span class="ilbl">Teléfono:</span><span class="ival">${o.telefono}</span></div>
-        <button class="btn btn-g" onclick="window.open('https://wa.me/${ct(o.telefono)}','_blank')">💬 WHATSAPP CLIENTE</button>
+        
         <div class="fld" style="margin-top:15px">
           <label>MONTO TOTAL COBRADO ($)</label>
           <input type="number" id="monto-${o.id}" placeholder="0.00" inputmode="numeric">
         </div>
+
+        <div class="fld">
+          <label>TIEMPO DE GARANTÍA OFRECIDO</label>
+          <input type="text" id="garantia-${o.id}" placeholder="Ej: 15 días, 3 meses...">
+        </div>
+
         <button class="btn btn-y" onclick="finalizarTrabajo('${o.id}', '${(o.cliente||'').replace(/'/g,"")}')">✅ REPORTAR TRABAJO</button>
       </div>
     </div>`).join('');
+}
+
+async function finalizarTrabajo(id, cliente) {
+  const mInput = document.getElementById(`monto-${id}`);
+  const gInput = document.getElementById(`garantia-${id}`);
+  const monto = parseFloat(mInput.value);
+  const garantia = gInput.value.trim() || "Sin especificar";
+  
+  if (!monto || monto <= 0) { 
+    toast('⚠️ Ingresa el monto cobrado', true); 
+    return; 
+  }
+
+  const comision = monto * (comisionSocio / 100);
+  const nuevaDeuda = (socioData.deuda || 0) + comision;
+  const nuevoTotalTrabajos = (socioData.trabajos || 0) + 1;
+
+  const btn = event.target;
+  btn.disabled = true;
+  btn.textContent = "PROCESANDO...";
+
+  try {
+    // Actualizamos en Supabase
+    await sb.from('solicitudes').update({
+      estado: 'completada', 
+      monto: monto, 
+      tiempo_garantia: garantia,
+      fecha_fin: new Date().toLocaleDateString('es-CU')
+    }).eq('id', id);
+
+    await sb.from('socios').update({
+      deuda: nuevaDeuda, 
+      trabajos: nuevoTotalTrabajos
+    }).eq('id', socioId);
+
+    // Reporte para Caramelo por WhatsApp
+    const msgAdmin = `✅ *TRABAJO TERMINADO*\n\n👷 Socio: ${socioData.nombre}\n👤 Cliente: ${cliente}\n💰 Cobrado: $${monto}\n📉 Comisión: $${comision.toFixed(2)}\n🛡️ Garantía: ${garantia}\n📌 Deuda total: $${nuevaDeuda.toFixed(2)}`;
+    
+    window.open(`https://wa.me/5355165641?text=${encodeURIComponent(msgAdmin)}`, '_blank');
+    
+    toast('✅ Reporte enviado con éxito');
+    renderActivas();
+    
+  } catch (err) {
+    toast('❌ Error de conexión', true);
+    btn.disabled = false;
+    btn.textContent = "✅ REPORTAR TRABAJO";
+  }
 }
 
 async function finalizarTrabajo(id, cliente) {
@@ -309,7 +365,7 @@ async function finalizarTrabajo(id, cliente) {
   }
 }
 
-async function renderHistorial(){
+ async function renderHistorial(){
   const c = document.getElementById('listaHistorial');
   const {data:sol} = await sb.from('solicitudes')
     .select('*')
@@ -320,11 +376,10 @@ async function renderHistorial(){
   if(!sol || !sol.length){ c.innerHTML = '<p class="empty">No hay historial disponible</p>'; return; }
   
   c.innerHTML = sol.map(o => {
-    const tieneG = o.codigo_garantia ? 'border-left: 5px solid var(--y)' : '';
     const estrellas = o.valoracion ? '⭐'.repeat(o.valoracion) : '<span style="color:var(--sub)">Sin calificar</span>';
 
     return `
-    <div class="card" id="his-${o.id}" style="${tieneG}">
+    <div class="card" id="his-${o.id}">
       <div class="card-hdr" onclick="toggleCard('his-${o.id}')">
         <div>
           <div class="card-title">${o.cliente || '—'}</div>
@@ -338,12 +393,12 @@ async function renderHistorial(){
       <div class="card-body">
         <div class="irow"><span class="ilbl">Monto Cobrado</span><span class="money">${money(o.monto)}</span></div>
         <div class="irow"><span class="ilbl">Comisión (${comisionSocio}%)</span><span class="ival">${money(o.monto * (comisionSocio/100))}</span></div>
+        <div class="irow"><span class="ilbl">Garantía dada</span><span class="ival" style="color:var(--y)">${o.tiempo_garantia || 'No especificada'}</span></div>
         <div class="irow"><span class="ilbl">ID Servicio</span><span class="ival" style="font-family:monospace">DB-${o.id}</span></div>
-        ${o.codigo_garantia ? `<div style="margin-top:8px"><span class="badge" style="background:var(--y); color:#000; padding:4px 8px">🛡️ GARANTÍA ACTIVA</span></div>` : ''}
       </div>
     </div>`;
   }).join('');
-} // <-- Aquí estaba el error principal
+}
 
 async function renderFinanzas(){
   const {data:sol}=await sb.from('solicitudes').select('*').eq('socio_asignado',socioId).not('monto','is',null);
