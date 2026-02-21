@@ -244,656 +244,155 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 <script>
 const SUPABASE_URL='https://jtorpamexbjxnomngfwq.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0b3JwYW1leGJqeG5vbW5nZndxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjE2MjMsImV4cCI6MjA4Njk5NzYyM30.Tzun90wyUfPYb8K8WxmziwlKyJS8kY1K_zzrZNh7R-8';
-const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-if(!localStorage.getItem('db_admin'))window.location.href='index.html';
+if(!localStorage.getItem('db_admin')) location.href='index.html';
 
-let comisionGlobal=15,notifConfig={owner:''},sociosCache={},tabActual='dashboard';
+let sociosCache = {};
+let tabActual = 'dashboard';
+let contadorInterval = null;
 
-// Utilidades
-function ct(t){return(t||'').replace(/[\s\-\(\)\+]/g,'')}
-function money(n){return'$'+(parseFloat(n)||0).toFixed(2)}
-function enviarGarantiaCliente(cliente, telefono, servicio, codigo) {
-  const hoy = new Date();
-  const expira = new Date();
-  expira.setDate(hoy.getDate() + 30);
+/* ================= UTILIDADES ================= */
+const ct = t => (t||'').replace(/[\s\-\(\)\+]/g,'');
+const money = n => '$'+(Number(n)||0).toFixed(2);
 
-  const fechaExpira = expira.toLocaleDateString('es-ES', { 
-    day: '2-digit', 
-    month: '2-digit', 
-    year: 'numeric' 
-  });
-
-  const msg = `🔰 *GARANTÍA D'BARRIO*\n\n` +
-              `Estimado(a) *${cliente}*,\n` +
-              `Su servicio de *${servicio}* ha sido completado con éxito.\n\n` +
-              `📌 *Código de Garantía:* ${codigo}\n` +
-              `📅 *Vence el:* ${fechaExpira}\n\n` +
-              `Guarde este mensaje. Ante cualquier inconveniente, contáctenos con su código.`;
-
-  window.open(`https://wa.me/${ct(telefono)}?text=${encodeURIComponent(msg)}`, '_blank');
+function toast(msg,err=false){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast'+(err?' err':'');
+  t.style.display='block';
+  clearTimeout(t._t);
+  t._t=setTimeout(()=>t.style.display='none',3000);
 }
 
-async function eliminarArchivada(id) {
-  if(!confirm('¿Eliminar esta orden del archivo permanentemente?')) return;
-  const { error } = await sb.from('solicitudes').delete().eq('id', id);
-  if(error) { toast('Error al eliminar', true); }
-  else { toast('Orden eliminada'); renderArchivo(); }
+function toggleCard(id){
+  const c=document.getElementById(id);
+  if(!c) return;
+  const o=c.classList.contains('open');
+  document.querySelectorAll('.card.open').forEach(x=>x.classList.remove('open'));
+  if(!o) c.classList.add('open');
 }
 
-function toast(msg,err=false){const t=document.getElementById('toast');t.textContent=msg;t.className='toast'+(err?' err':'');t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',3000)}
-function toggleCard(id){const c=document.getElementById(id);if(!c)return;const wasOpen=c.classList.contains('open');document.querySelectorAll('.card.open').forEach(x=>{if(x.id!==id)x.classList.remove('open')});c.classList.toggle('open',!wasOpen)}
-function closeOverlay(id){document.getElementById(id).classList.remove('open')}
-function openModal(id){document.getElementById(id).classList.add('open')}
+const openModal=id=>document.getElementById(id)?.classList.add('open');
+const closeOverlay=id=>document.getElementById(id)?.classList.remove('open');
 
-// Navegación
+/* ================= NAVEGACIÓN ================= */
 function showTab(id){
   tabActual=id;
-
-if(id==='quejas') renderQuejas('pendiente');
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
   document.getElementById('sec-'+id).classList.add('on');
   document.getElementById('tab-'+id).classList.add('on');
-  if(id==='dashboard')renderDash();
-  if(id==='candidatos')renderCandidatos();
-  if(id==='ordenes')renderOrdenes();
-  if(id==='archivo')renderArchivo();
-  if(id==='deudas')renderDeudas();
-  if(id==='socios')renderSocios();
-  if(id==='config')cargarConfig();
+
+  ({
+    dashboard:renderDash,
+    candidatos:renderCandidatos,
+    ordenes:renderOrdenes,
+    archivo:renderArchivo,
+    deudas:renderDeudas,
+    socios:renderSocios,
+    config:cargarConfig,
+    quejas:()=>renderQuejas('pendiente')
+  })[id]?.();
 }
 
+/* ================= CONTADORES ================= */
 async function initContadores(){
-  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','pendiente');
-  const n=sol?sol.length:0;
-  document.getElementById('cnt-ord').textContent=n;
-  document.getElementById('cnt-ord').style.display=n>0?'flex':'none';
+  const [{data:o},{data:c},{data:q}] = await Promise.all([
+    sb.from('solicitudes').select('*').eq('estado','pendiente'),
+    sb.from('postulantes').select('*'),
+    sb.from('quejas').select('*').eq('estado','pendiente')
+  ]);
 
-const {data:qjs} = await sb.from('quejas').select('*').eq('estado','pendiente');
-const nQ = qjs ? qjs.length : 0;
-document.getElementById('cnt-quejas').textContent = nQ;
-document.getElementById('cnt-quejas').style.display = nQ > 0 ? 'flex' : 'none';
-  
-  const{data:post}=await sb.from('postulantes').select('*');
-  const cand=post?post.length:0;
-  document.getElementById('cnt-cand').textContent=cand;
-  document.getElementById('cnt-cand').style.display=cand>0?'flex':'none';
-  
-  setInterval(async()=>{
-    const{data:s2}=await sb.from('solicitudes').select('*').eq('estado','pendiente');
-    const m=s2?s2.length:0;
-    document.getElementById('cnt-ord').textContent=m;
-    document.getElementById('cnt-ord').style.display=m>0?'flex':'none';
-  },10000);
+  setBadge('cnt-ord',o?.length);
+  setBadge('cnt-cand',c?.length);
+  setBadge('cnt-quejas',q?.length);
+
+  if(contadorInterval) clearInterval(contadorInterval);
+  contadorInterval=setInterval(initContadores,15000);
 }
 
-// --- GESTIÓN DE MODALES DE SOCIOS ---
-
-function abrirModalNuevoSocio() {
-    // 1. Limpiamos el ID oculto para que el sistema sepa que es un registro manual nuevo
-    const hiddenId = document.getElementById('m-candidato-id');
-    if(hiddenId) hiddenId.value = '';
-    
-    // 2. Reseteamos todos los campos del formulario
-    document.getElementById('m-nom').value = '';
-    document.getElementById('m-tel').value = '';
-    document.getElementById('m-zon').value = '';
-    document.getElementById('m-esp').value = '';
-    document.getElementById('m-pin').value = '';
-    document.getElementById('m-com').value = '15'; // Porcentaje por defecto
-    
-    // 3. Abrimos el modal visualmente
-    openModal('modal-candidato');
+function setBadge(id,n){
+  const b=document.getElementById(id);
+  b.textContent=n||0;
+  b.style.display=n?'flex':'none';
 }
 
-// Función para cerrar cualquier modal por su ID
-function closeOverlay(id) {
-    const modal = document.getElementById(id);
-    if(modal) modal.classList.remove('open');
+/* ================= SOCIOS CACHE ================= */
+async function cargarSociosCache(){
+  sociosCache={};
+  const {data}=await sb.from('socios').select('*');
+  data?.forEach(s=>sociosCache[s.id]=s);
 }
 
-// Función para abrir cualquier modal por su ID
-function openModal(id) {
-    const modal = document.getElementById(id);
-    if(modal) modal.classList.add('open');
-}
-
-// Registro y Gestión de Socios
-async function registrarSocio(){
-  const nom=document.getElementById('m-nom').value.trim();
-  const tel=document.getElementById('m-tel').value.trim();
-  const zon=document.getElementById('m-zon').value.trim();
-  const esp=document.getElementById('m-esp').value;
-  const pin=document.getElementById('m-pin').value.trim();
-  const com=parseInt(document.getElementById('m-com').value)||15;
-  const candId = document.getElementById('m-candidato-id').value;
-
-  if(!nom||!tel||!pin||pin.length<4){toast('⚠️ Completa todos los campos',true);return}
-  
-  const{data,error}=await sb.from('socios').insert({nombre:nom,telefono:tel,zona:zon,especialidad:esp,pin:pin,comision:com,deuda:0}).select();
-  if(error){toast('⚠️ Error al registrar',true);return}
-  
-  if(candId) { await sb.from('postulantes').delete().eq('id', candId); }
-  
-  const link=`https://abelbalsinde92-lab.github.io/D-Barrio/socio.html?id=${data[0].id}`;
-  const msg=`🎉 Bienvenido a D'BARRIO, ${nom}!\n\n✅ Tu acceso:\n${link}\n\n🔐 Usuario: ${nom}\n🔑 PIN: ${pin}`;
-  window.open(`https://wa.me/${ct(tel)}?text=${encodeURIComponent(msg)}`,'_blank');
-  
-  closeOverlay('modal-candidato');
-  toast(`✅ ${nom} registrado con éxito`);
-  if(tabActual==='candidatos') renderCandidatos();
-  if(tabActual==='socios') renderSocios();
-  initContadores();
-}
-
+/* ================= ÓRDENES ================= */
 async function renderOrdenes(){
   const c=document.getElementById('listaOrdenes');
-  const{data:socios}=await sb.from('socios').select('*');
-  sociosCache={};
-  if(socios)socios.forEach(s=>sociosCache[s.id]=s);
-  
-  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','pendiente').order('created_at',{ascending:false});
-  
-  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';return}
-  
-  c.innerHTML=sol.map(o=>{
-    const tc=ct(o.telefono||'');
-    const socioAsignado=o.socio_asignado&&sociosCache[o.socio_asignado]?(sociosCache[o.socio_asignado].nombre||'Socio'):null;
-    const opcs=socios?socios.map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.nombre||''}" ${o.socio_asignado===s.id?'selected':''}>${s.nombre||'-'} - ${s.especialidad||'-'}</option>`).join(''):'';
-    
-    const txtG = o.tiempo_garantia || "No reportada";
-    const colG = o.tiempo_garantia ? "var(--y)" : "#ff4444";
+  await cargarSociosCache();
 
-    return `<div class="card hl" id="ord-${o.id}">
-      <div class="card-hdr" onclick="toggleCard('ord-${o.id}')">
-        <div>
-          <div class="card-title">${o.cliente||'-'}</div>
-          <div class="card-sub">${o.servicio||'-'} · ${o.municipio||'-'}</div>
-        </div>
-        <div style="text-align:right; min-width:80px; background:rgba(0,0,0,0.3); padding:4px 8px; border-radius:4px">
-          <div style="font-size:0.55rem; color:#aaa; text-transform:uppercase; font-weight:900">Garantía</div>
-          <div style="font-size:0.75rem; color:${colG}; font-weight:900">${txtG}</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="irow"><span class="ilbl">Dirección:</span><span class="ival">${o.direccion||'-'}</span></div>
-        <div class="irow"><span class="ilbl">Teléfono:</span><span class="ival">${o.telefono||'-'}</span></div>
-        
-        <div class="fld" style="margin-top:10px">
-          <label>Asignar Socio</label>
-          <select id="sel-${o.id}">${opcs}</select>
-        </div>
+  const {data:sol}=await sb.from('solicitudes')
+    .select('*')
+    .eq('estado','pendiente')
+    .order('created_at',{ascending:false});
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
-          <button class="btn btn-y" onclick="asignarSocio('${o.id}','${o.cliente}','${o.servicio}','${o.detalles||''}','${o.telefono}')">📲 ASIGNAR</button>
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 CLIENTE</button>
-        </div>
-
-        <button onclick="activarGarantiaAdmin('${o.id}')" style="width:100%; margin-top:15px; padding:12px; background:var(--y); color:#000; border:none; font-weight:900; cursor:pointer; text-transform:uppercase; border-radius:4px">
-          ✅ ACTIVAR GARANTÍA Y ENVIAR
-        </button>
-        
-        <button class="btn btn-r" style="margin-top:10px" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function prepararEdicionSocio(jsonStr) {
-  const s = JSON.parse(jsonStr);
-  document.getElementById('e-socio-id').value = s.id;
-  document.getElementById('e-nom').value = s.nom;
-  document.getElementById('e-tel').value = s.tel;
-  document.getElementById('e-zon').value = s.zon;
-  document.getElementById('e-esp').value = s.esp;
-  document.getElementById('e-pin').value = s.pin;
-  document.getElementById('e-com').value = s.com;
-  openModal('modal-edit-socio');
-}
-
-async function guardarEdicionSocio() {
-  const id = document.getElementById('e-socio-id').value;
-  const up = {
-    nombre: document.getElementById('e-nom').value,
-    telefono: document.getElementById('e-tel').value,
-    zona: document.getElementById('e-zon').value,
-    especialidad: document.getElementById('e-esp').value,
-    pin: document.getElementById('e-pin').value,
-    comision: parseFloat(document.getElementById('e-com').value)
-  };
-  const { error } = await sb.from('socios').update(up).eq('id', id);
-  if (error) { toast('Error al guardar', true); }
-  else { toast('✅ Socio actualizado'); closeOverlay('modal-edit-socio'); renderSocios(); }
-}
-
-async function eliminarSocio(id) {
-  if(!confirm('¿Eliminar socio?')) return;
-  await sb.from('socios').delete().eq('id', id);
-  toast('Socio eliminado');
-  renderSocios();
-}
-
-async function renderCandidatos(){
-  const c = document.getElementById('listaCandidatos');
-  // Importante: Que la tabla se llame 'postulantes' en tu Supabase
-  const { data: postulantes, error } = await sb.from('postulantes').select('*').order('created_at', {ascending:false});
-  
-  if(error) { 
-    console.error(error);
-    c.innerHTML = '<p class="empty" style="color:var(--red)">Error al conectar con la base de datos</p>'; 
-    return; 
-  }
-
-  if(!postulantes || postulantes.length === 0){
-    c.innerHTML = '<p class="empty">No hay solicitudes de nuevos socios por ahora.</p>';
+  if(!sol?.length){
+    c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';
     return;
   }
-  
-  c.innerHTML = postulantes.map(s => {
-    const tc = ct(s.telefono || '');
+
+  c.innerHTML=sol.map(o=>{
+    const opts=Object.values(sociosCache)
+      .map(s=>`<option value="${s.id}">${s.nombre} - ${s.especialidad||''}</option>`)
+      .join('');
+
     return `
-    <div class="card cand" id="cand-${s.id}">
-      <div class="card-hdr" onclick="toggleCard('cand-${s.id}')">
-        <div>
-          <div class="card-title">${s.nombre || 'Sin nombre'}</div>
-          <div class="card-sub">${s.oficio || '—'} · ${s.zona || '—'}</div>
-        </div>
-        <span class="arrow" style="color:#0088ff">▼</span>
-      </div>
-      <div class="card-body">
-        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono}</span></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
-          <button class="btn btn-y" onclick="prepararRegistro('${s.id}','${(s.nombre||'').replace(/'/g,"\\'")}','${s.telefono}','${(s.zona||'').replace(/'/g,"\\'")}','${s.oficio}')">✅ ACEPTAR</button>
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 HABLAR</button>
-        </div>
-        <button class="btn btn-r" onclick="eliminarCandidato('${s.id}')">🗑️ RECHAZAR</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function prepararRegistro(id, nom, tel, zon, esp) {
-    document.getElementById('m-candidato-id').value = id;
-    document.getElementById('m-nom').value = nom;
-    document.getElementById('m-tel').value = tel;
-    document.getElementById('m-zon').value = zon;
-    document.getElementById('m-esp').value = esp;
-    openModal('modal-candidato');
-}
-
-async function eliminarCandidato(id) {
-    if(!confirm('¿Eliminar esta postulación?')) return;
-    await sb.from('postulantes').delete().eq('id', id);
-    toast('Candidato eliminado');
-    renderCandidatos();
-    initContadores();
-}
-
-// DASHBOARD
-async function renderDash(){
-  const {data:sol} = await sb.from('solicitudes').select('*');
-  const total = sol ? sol.length : 0;
-  const pend = sol ? sol.filter(o => o.estado === 'pendiente').length : 0;
-  const comp = sol ? sol.filter(o => o.estado === 'completada').length : 0;
-  
-  document.getElementById('d-total').textContent = total;
-  document.getElementById('d-pend').textContent = pend;
-  document.getElementById('d-comp').textContent = comp;
-  
-  const {data:soc} = await sb.from('socios').select('*');
-  document.getElementById('d-socios').textContent = soc ? soc.length : 0;
-  
-  if(soc && soc.length){
-    // Mejorado para que no falle si 'trabajos' es null
-    const top = [...soc].sort((a, b) => (Number(b.trabajos) || 0) - (Number(a.trabajos) || 0)).slice(0, 5);
-    document.getElementById('topSocios').innerHTML = top.map((s, i) => `
-      <div class="card">
-        <div class="card-hdr" style="cursor:default">
-          <div style="display:flex;align-items:center;gap:12px">
-            <span class="rank">${i+1}</span>
-            <div>
-              <div class="card-title">${s.nombre || '—'}</div>
-              <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
-            </div>
-          </div>
-          <span style="color:var(--y)">${money(s.deuda)}</span>
-        </div>
-      </div>`).join('');
-  } else {
-    document.getElementById('topSocios').innerHTML = '<p class="empty">Sin socios registrados</p>';
-  }
-}
-
-// GESTIÓN DE ÓRDENES
-async function crearOrdenManual(){
-  const nom=document.getElementById('o-nom').value.trim();
-  const tel=document.getElementById('o-tel').value.trim();
-  const dir=document.getElementById('o-dir').value.trim();
-  const mun=document.getElementById('o-mun').value.trim();
-  const serv=document.getElementById('o-serv').value;
-  if(!nom||!tel||!dir||!serv){toast('⚠️ Completa los campos',true);return}
-  
-  await sb.from('solicitudes').insert({cliente:nom,telefono:tel,direccion:dir,municipio:mun,servicio:serv,detalles:document.getElementById('o-det').value,estado:'pendiente'});
-  
-  toast('✅ Orden creada');
-  closeOverlay('modal-orden');
-  document.getElementById('o-nom').value='';
-  document.getElementById('o-tel').value='';
-  document.getElementById('o-dir').value='';
-  document.getElementById('o-mun').value='';
-  document.getElementById('o-serv').value='';
-  document.getElementById('o-det').value='';
-  renderOrdenes();
-  initContadores();
-}
-
-async function renderOrdenes(){
-  const c=document.getElementById('listaOrdenes');
-  const{data:socios}=await sb.from('socios').select('*');
-  sociosCache={};
-  if(socios)socios.forEach(s=>sociosCache[s.id]=s);
-  
-  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','pendiente').order('created_at',{ascending:false});
-  
-  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';return}
-  
-    c.innerHTML=sol.map(o=>{
-    const tc=ct(o.telefono||'');
-    const socioAsignado=o.socio_asignado&&sociosCache[o.socio_asignado]?(sociosCache[o.socio_asignado].nombre||'Socio'):null;
-    const opcs=socios?socios.map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.nombre||''}" ${o.socio_asignado===s.id?'selected':''}>${s.nombre||'-'} - ${s.especialidad||'-'}</option>`).join(''):'';
-    
-            const txtG = o.tiempo_garantia || "No reportada";
-    const colG = o.tiempo_garantia ? "var(--y)" : "#ff4444";
-
-    return `<div class="card hl" id="ord-${o.id}">
+    <div class="card hl" id="ord-${o.id}">
       <div class="card-hdr" onclick="toggleCard('ord-${o.id}')">
         <div>
-          <div class="card-title">${o.cliente||'-'}</div>
-          <div class="card-sub">${o.servicio||'-'} · ${o.municipio||'-'}</div>
-        </div>
-        <div style="text-align:right; min-width:80px; background:rgba(0,0,0,0.3); padding:4px 8px; border-radius:4px">
-          <div style="font-size:0.55rem; color:#aaa; text-transform:uppercase; font-weight:900">Garantía</div>
-          <div style="font-size:0.75rem; color:${colG}; font-weight:900">${txtG}</div>
-        </div>
-      </div>
-      <div class="card-body">
-        <div class="irow"><span class="ilbl">Dirección:</span><span class="ival">${o.direccion||'-'}</span></div>
-        <div class="irow"><span class="ilbl">Teléfono:</span><span class="ival">${o.telefono||'-'}</span></div>
-        <div class="irow"><span class="ilbl">Socio:</span><span class="ival">${socioAsignado||'No asignado'}</span></div>
-        
-        <button onclick="activarGarantiaAdmin('${o.id}')" style="width:100%; margin-top:15px; padding:12px; background:var(--y); color:#000; border:none; font-weight:900; cursor:pointer; text-transform:uppercase; border-radius:4px">
-          ✅ ACTIVAR GARANTÍA Y ENVIAR
-        </button>
-      </div>
-    </div>`;
-
-async function asignarSocio(oid,cliente,servicio,detalles,telCli){
-  const sel=document.getElementById('sel-'+oid);
-  const sid=sel.value;
-  if(!sid){toast('⚠️ Selecciona socio',true);return}
-  const opt=sel.options[sel.selectedIndex];
-  const telSoc=ct(opt.dataset.tel||'');
-  const nomSoc=opt.dataset.nom||'Socio';
-  await sb.from('solicitudes').update({socio_asignado:sid}).eq('id',oid);
-  const msgSoc=`🔧 NUEVA ORDEN D'BARRIO\n\n👤 ${cliente}\n📞 ${telCli}\n🏷️ ${servicio}\n⚙️ ${detalles}\n\n✅ Asignado a ti.`;
-  window.open(`https://wa.me/${telSoc}?text=${encodeURIComponent(msgSoc)}`,'_blank');
-  toast(`✅ Asignado a ${nomSoc}`);
-  renderOrdenes();
-}
-
-async function completarOrden(id){
-  if(!confirm('¿Completar?'))return;
-  await sb.from('solicitudes').update({estado:'completada'}).eq('id',id);
-  toast('✅ Completada');
-  renderOrdenes();
-  initContadores();
-}
-
-async function eliminarOrden(id){
-  if(!confirm('¿Eliminar?'))return;
-  await sb.from('solicitudes').delete().eq('id',id);
-  toast('🗑️ Eliminada');
-  renderOrdenes();
-  initContadores();
-}
-
-// ARCHIVO, DEUDAS Y SOCIOS
-async function renderArchivo(){
-  const c = document.getElementById('listaArchivo');
-  const {data:sol} = await sb.from('solicitudes').select('*').eq('estado', 'completada').order('created_at', {ascending: false});
-
-  if(!sol || !sol.length){ c.innerHTML = '<p class="empty">Archivo vacío</p>'; return; }
-
-  c.innerHTML = sol.map(o => {
-    const codG = o.codigo_garantia || 'DB-' + o.id;
-    return `
-    <div class="card" id="arc-${o.id}">
-      <div class="card-hdr" onclick="toggleCard('arc-${o.id}')">
-        <div><div class="card-title">${o.cliente}</div><div class="card-sub">${o.servicio}</div></div>
-        <span class="badge badge-g">OK</span>
-      </div>
-      <div class="card-body">
-        <div class="irow"><span class="ilbl">Garantía</span><span class="ival" style="color:var(--y)">${codG}</span></div>
-        <button class="btn btn-y" onclick="enviarGarantiaCliente('${o.cliente}', '${o.telefono}', '${o.servicio}', '${codG}')">✉️ ENVIAR GARANTÍA</button>
-        <button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ BORRAR</button>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function renderDeudas(){
-  const c=document.getElementById('listaDeudas');
-  const{data:soc}=await sb.from('socios').select('*').gt('deuda', 0);
-  if(!soc||!soc.length){c.innerHTML='<p class="empty">No hay deudas pendientes</p>';return}
-  c.innerHTML=soc.map(s=>{
-    const tc=ct(s.telefono||'');
-    return`<div class="card" id="deu-${s.id}"><div class="card-hdr" onclick="toggleCard('deu-${s.id}')"><div><div class="card-title">${s.nombre||'—'}</div><div class="card-sub">${s.especialidad||'—'}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div><button class="btn btn-y" onclick="liquidar('${s.id}','${s.nombre||''}','${tc}',${s.deuda||0})">💰 LIQUIDAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button></div></div>`;
-  }).join('');
-}
-
-async function liquidar(sid,nom,tel,deuda){
-  if(!confirm('¿Liquidado?'))return;
-  await sb.from('socios').update({deuda:0}).eq('id',sid);
-  const msg=`💰 LIQUIDACIÓN D'BARRIO\n\nHola ${nom},\n\nTu deuda de ${money(deuda)} ha sido liquidada.\n\n✅ Cuenta saldada`;
-  window.open(`https://wa.me/${tel}?text=${encodeURIComponent(msg)}`,'_blank');
-  toast('✅ Liquidado');
-  renderDeudas();
-}
-
-async function renderSocios(){
-  const c = document.getElementById('listaSocios');
-  const {data:soc} = await sb.from('socios').select('*').order('nombre');
-  if(!soc || !soc.length){ c.innerHTML = '<p class="empty">Sin socios registrados</p>'; return; }
-  
-  c.innerHTML = soc.map(s => {
-    const params = JSON.stringify({
-      id: s.id, nom: s.nombre, tel: s.telefono, zon: s.zona, esp: s.especialidad, pin: s.pin, com: s.comision
-    }).replace(/"/g, '&quot;');
-
-    return `
-    <div class="card" id="soc-${s.id}">
-      <div class="card-hdr" onclick="toggleCard('soc-${s.id}')">
-        <div>
-          <div class="card-title">${s.nombre || '—'}</div>
-          <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+          <div class="card-title">${o.cliente}</div>
+          <div class="card-sub">${o.servicio} · ${o.municipio||''}</div>
         </div>
         <span class="arrow">▼</span>
       </div>
       <div class="card-body">
-        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
-        <div class="irow"><span class="ilbl">PIN</span><span class="ival" style="color:var(--y)">${s.pin || '—'}</span></div>
-        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision || 15}%</span></div>
-        <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
-          <button class="btn btn-g" onclick="window.location.href='tel:${s.telefono}'">📞 LLAMAR</button>
-          <button class="btn btn-orange" onclick="prepararEdicionSocio('${params}')">✏️ EDITAR</button>
-        </div>
-        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR SOCIO</button>
+        <div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion}</span></div>
+        <div class="fld"><label>Asignar socio</label><select id="sel-${o.id}">${opts}</select></div>
+        <button class="btn btn-y" onclick="asignarSocio('${o.id}','${o.cliente}','${o.servicio}','${o.telefono}')">📲 ASIGNAR</button>
+        <button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button>
       </div>
     </div>`;
   }).join('');
 }
 
-function prepararEdicion(jsonStr) {
-  const s = JSON.parse(jsonStr);
-  document.getElementById('edit-id').value = s.id;
-  document.getElementById('edit-nombre').value = s.nom;
-  document.getElementById('edit-telefono').value = s.tel;
-  document.getElementById('edit-zona').value = s.zon;
-  document.getElementById('edit-especialidad').value = s.esp;
-  document.getElementById('edit-pin').value = s.pin;
-  document.getElementById('edit-comision').value = s.com;
-  abrirModal('modalEditarSocio');
+async function asignarSocio(id,cli,serv,tel){
+  const sel=document.getElementById('sel-'+id);
+  if(!sel.value){toast('Selecciona socio',true);return;}
+  const s=sociosCache[sel.value];
+  await sb.from('solicitudes').update({socio_asignado:sel.value}).eq('id',id);
+  window.open(`https://wa.me/${ct(s.telefono)}?text=${encodeURIComponent(`🔧 NUEVA ORDEN\n${cli}\n${serv}\n${tel}`)}`,'_blank');
+  toast(`Asignado a ${s.nombre}`);
+  renderOrdenes();
 }
 
-async function guardarCambiosSocio() {
-  const id = document.getElementById('edit-id').value;
-  const up = {
-    nombre: document.getElementById('edit-nombre').value,
-    telefono: document.getElementById('edit-telefono').value,
-    zona: document.getElementById('edit-zona').value,
-    especialidad: document.getElementById('edit-especialidad').value,
-    pin: document.getElementById('edit-pin').value,
-    comision: parseFloat(document.getElementById('edit-comision').value)
-  };
-  const { error } = await sb.from('socios').update(up).eq('id', id);
-  if (error) { toast('Error al guardar', true); }
-  else { toast('Socio actualizado'); cerrarModal('modalEditarSocio'); renderSocios(); }
+/* ================= DASHBOARD ================= */
+async function renderDash(){
+  const {data:sol}=await sb.from('solicitudes').select('*');
+  const {data:soc}=await sb.from('socios').select('*');
+  document.getElementById('d-total').textContent=sol?.length||0;
+  document.getElementById('d-pend').textContent=sol?.filter(o=>o.estado==='pendiente').length||0;
+  document.getElementById('d-comp').textContent=sol?.filter(o=>o.estado==='completada').length||0;
+  document.getElementById('d-socios').textContent=soc?.length||0;
 }
 
-function prepararEdicion(jsonStr) {
-  const s = JSON.parse(jsonStr);
-  abrirEditarSocio(s.id, s.nom, s.tel, s.zon, s.esp, s.pin, s.com);
+function logout(){
+  localStorage.removeItem('db_admin');
+  location.href='index.html';
 }
-
-function prepararEdicion(jsonStr) {
-  const s = JSON.parse(jsonStr);
-  abrirEditarSocio(s.id, s.nom, s.tel, s.zon, s.esp, s.pin, s.com);
-}
-
-// CONFIGURACIÓN Y OTROS
-async function cargarConfig(){
-  // Intentamos traer la comisión
-  const {data:com} = await sb.from('config').select('*').eq('clave','comision_global').single();
-  // Si existe la pone, si no, pone 15 por defecto
-  document.getElementById('cfg-com').value = com ? com.valor : 15;
-
-  // Intentamos traer el WhatsApp del Admin
-  const {data:owner} = await sb.from('config').select('*').eq('clave','telefono_admin').single();
-  // Si existe lo pone, si no, lo deja vacío para que tú lo escribas
-  document.getElementById('cfg-owner').value = owner ? owner.valor : "";
-  
-  console.log("Configuración cargada");
-}
-
-async function guardarComision(){
-  const n=document.getElementById('cfg-com').value;
-  await sb.from('config').upsert({clave:'comision_global',valor:n.toString()});
-  toast('✅ Comisión guardada');
-}
-
-async function guardarNotif(){
-  const o=document.getElementById('cfg-owner').value.trim();
-  await sb.from('config').upsert({clave:'telefono_admin',valor:o});
-  toast('✅ WhatsApp Admin guardado');
-}
-
-async function renderQuejas(filtro = 'pendiente') {
-  const c = document.getElementById('listaQuejas');
-  c.innerHTML = '<p class="empty">Cargando reportes...</p>';
-  
-  let consulta = sb.from('quejas').select('*').order('created_at', { ascending: false });
-  if (filtro === 'pendiente') consulta = consulta.eq('estado', 'pendiente');
-  const { data: quejas } = await consulta;
-
-  if (!quejas || quejas.length === 0) {
-    c.innerHTML = `<p class="empty">No hay reportes ${filtro === 'pendiente' ? 'pendientes' : ''}</p>`;
-    return;
-  }
-
-  c.innerHTML = quejas.map(q => {
-    const isPendiente = q.estado === 'pendiente';
-    // Buscamos el nombre del socio en el caché que ya cargó el Admin
-    const nombreSocio = (q.socio_id && sociosCache[q.socio_id]) 
-                        ? sociosCache[q.socio_id].nombre 
-                        : "No identificado";
-
-    return `
-    <div class="card ${isPendiente ? 'hl' : ''}" id="queja-${q.id}">
-      <div class="card-hdr" onclick="toggleCard('queja-${q.id}')">
-        <div>
-          <div class="card-title">📞 ${q.telefono}</div>
-          <div class="card-sub">${new Date(q.created_at).toLocaleString('es-CU')}</div>
-        </div>
-        <span class="badge ${isPendiente ? 'badge-r pulse' : 'badge-g'}">${q.estado.toUpperCase()}</span>
-      </div>
-      <div class="card-body">
-        <div class="irow"><span class="ilbl">Socio Implicado</span><span class="ival" style="color:var(--y)">${nombreSocio}</span></div>
-        <div class="irow"><span class="ilbl">Código Serv.</span><span class="ival">${q.codigo_servicio || '—'}</span></div>
-        <div style="background: rgba(255,68,68,0.1); padding: 12px; margin: 10px 0; border-left: 4px solid var(--red); font-size: 0.9rem;">
-          "${q.mensaje}"
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
-          <button class="btn btn-g" onclick="window.open('https://wa.me/${ct(q.telefono)}','_blank')">💬 CONTACTAR</button>
-          ${isPendiente ? `<button class="btn btn-y" onclick="resolverQueja('${q.id}')">✅ RESOLVER</button>` : ''}
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-async function resolverQueja(id) {
-  const { data: queja } = await sb.from('quejas').select('*').eq('id', id).single();
-  if(!confirm('¿Marcar como resuelta y notificar al cliente?')) return;
-
-  const { error } = await sb.from('quejas').update({ estado: 'resuelta' }).eq('id', id);
-  if (error) { toast('⚠️ Error al actualizar', true); return; }
-
-  const msg = `✅ *REPORTE RESUELTO - D'BARRIO*\n\nHola, le informamos que su reporte ha sido procesado por nuestra administración. Gracias por ayudarnos a mejorar.\n\n🙏 Estamos a su disposición.`;
-  window.open(`https://wa.me/${ct(queja.telefono)}?text=${encodeURIComponent(msg)}`, '_blank');
-  
-  toast('✅ Queja resuelta');
-  renderQuejas('pendiente'); 
-  initContadores();
-}
-
-async function eliminarQueja(id) {
-  if(!confirm('¿Borrar permanentemente este reporte?')) return;
-  await sb.from('quejas').delete().eq('id', id);
-  toast('🗑️ Reporte eliminado');
-  renderQuejas();
-  initContadores();
-}
-
-function logout(){localStorage.removeItem('db_admin');window.location.href='index.html'}
 
 (async()=>{
   await initContadores();
   await renderDash();
 })();
-
-if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-async function activarGarantiaAdmin(id) {
-  const { data: o } = await sb.from('solicitudes').select('cliente, tiempo_garantia, telefono').eq('id', id).single();
-  const cod = 'DB-' + Math.random().toString(36).substr(2, 7).toUpperCase();
-
-  try {
-    await sb.from('solicitudes').update({
-      codigo_garantia: cod,
-      estado: 'completada'
-    }).eq('id', id);
-
-    const msg = `🛡️ *D'BARRIO - CERTIFICADO DE GARANTÍA*\n\nHola ${o.cliente}, su servicio cuenta con una garantía de: *${o.tiempo_garantia || 'Pactada con técnico'}*.\n\n📌 Código oficial: *${cod}*\n\nGracias por confiar en nosotros.`;
-    
-    window.open(`https://wa.me/${ct(o.telefono)}?text=${encodeURIComponent(msg)}`, '_blank');
-    
-    alert('Garantía Activada: ' + cod);
-    location.reload();
-  } catch (e) {
-    alert('Error al conectar');
-  }
-}
 </script>
 </body>
 </html>
