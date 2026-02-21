@@ -387,35 +387,54 @@ async function registrarSocio(){
   initContadores();
 }
 
-async function renderSocios(){
-  const c = document.getElementById('listaSocios');
-  const {data:soc} = await sb.from('socios').select('*').order('nombre');
-  if(!soc || !soc.length){ c.innerHTML = '<p class="empty">Sin socios registrados</p>'; return; }
+async function renderOrdenes(){
+  const c=document.getElementById('listaOrdenes');
+  const{data:socios}=await sb.from('socios').select('*');
+  sociosCache={};
+  if(socios)socios.forEach(s=>sociosCache[s.id]=s);
   
-  c.innerHTML = soc.map(s => {
-    const params = JSON.stringify({
-      id: s.id, nom: s.nombre, tel: s.telefono, zon: s.zona, esp: s.especialidad, pin: s.pin, com: s.comision
-    }).replace(/"/g, '&quot;');
+  const{data:sol}=await sb.from('solicitudes').select('*').eq('estado','pendiente').order('created_at',{ascending:false});
+  
+  if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';return}
+  
+  c.innerHTML=sol.map(o=>{
+    const tc=ct(o.telefono||'');
+    const socioAsignado=o.socio_asignado&&sociosCache[o.socio_asignado]?(sociosCache[o.socio_asignado].nombre||'Socio'):null;
+    const opcs=socios?socios.map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.nombre||''}" ${o.socio_asignado===s.id?'selected':''}>${s.nombre||'-'} - ${s.especialidad||'-'}</option>`).join(''):'';
+    
+    const txtG = o.tiempo_garantia || "No reportada";
+    const colG = o.tiempo_garantia ? "var(--y)" : "#ff4444";
 
-    return `
-    <div class="card" id="soc-${s.id}">
-      <div class="card-hdr" onclick="toggleCard('soc-${s.id}')">
+    return `<div class="card hl" id="ord-${o.id}">
+      <div class="card-hdr" onclick="toggleCard('ord-${o.id}')">
         <div>
-          <div class="card-title">${s.nombre || '—'}</div>
-          <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+          <div class="card-title">${o.cliente||'-'}</div>
+          <div class="card-sub">${o.servicio||'-'} · ${o.municipio||'-'}</div>
         </div>
-        <span class="arrow">▼</span>
+        <div style="text-align:right; min-width:80px; background:rgba(0,0,0,0.3); padding:4px 8px; border-radius:4px">
+          <div style="font-size:0.55rem; color:#aaa; text-transform:uppercase; font-weight:900">Garantía</div>
+          <div style="font-size:0.75rem; color:${colG}; font-weight:900">${txtG}</div>
+        </div>
       </div>
       <div class="card-body">
-        <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
-        <div class="irow"><span class="ilbl">PIN</span><span class="ival" style="color:var(--y)">${s.pin || '—'}</span></div>
-        <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${s.comision || 15}%</span></div>
-        <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
-          <button class="btn btn-g" onclick="window.location.href='tel:${s.telefono}'">📞 LLAMAR</button>
-          <button class="btn btn-orange" onclick="prepararEdicionSocio('${params}')">✏️ EDITAR</button>
+        <div class="irow"><span class="ilbl">Dirección:</span><span class="ival">${o.direccion||'-'}</span></div>
+        <div class="irow"><span class="ilbl">Teléfono:</span><span class="ival">${o.telefono||'-'}</span></div>
+        
+        <div class="fld" style="margin-top:10px">
+          <label>Asignar Socio</label>
+          <select id="sel-${o.id}">${opcs}</select>
         </div>
-        <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ ELIMINAR SOCIO</button>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+          <button class="btn btn-y" onclick="asignarSocio('${o.id}','${o.cliente}','${o.servicio}','${o.detalles||''}','${o.telefono}')">📲 ASIGNAR</button>
+          <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 CLIENTE</button>
+        </div>
+
+        <button onclick="activarGarantiaAdmin('${o.id}')" style="width:100%; margin-top:15px; padding:12px; background:var(--y); color:#000; border:none; font-weight:900; cursor:pointer; text-transform:uppercase; border-radius:4px">
+          ✅ ACTIVAR GARANTÍA Y ENVIAR
+        </button>
+        
+        <button class="btn btn-r" style="margin-top:10px" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button>
       </div>
     </div>`;
   }).join('');
