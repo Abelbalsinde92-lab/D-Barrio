@@ -579,14 +579,35 @@ async function renderOrdenes(){
   
   if(!sol||!sol.length){c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';return}
   
-  c.innerHTML=sol.map(o=>{
+    c.innerHTML=sol.map(o=>{
     const tc=ct(o.telefono||'');
     const socioAsignado=o.socio_asignado&&sociosCache[o.socio_asignado]?(sociosCache[o.socio_asignado].nombre||'Socio'):null;
-    const opcs=socios?socios.map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.nombre||''}" ${o.socio_asignado===s.id?'selected':''}>${s.nombre||'—'} — ${s.especialidad||'—'}</option>`).join(''):'';
+    const opcs=socios?socios.map(s=>`<option value="${s.id}" data-tel="${s.telefono||''}" data-nom="${s.nombre||''}" ${o.socio_asignado===s.id?'selected':''}>${s.nombre||'-'} - ${s.especialidad||'-'}</option>`).join(''):'';
     
-    return`<div class="card hl" id="ord-${o.id}"><div class="card-hdr" onclick="toggleCard('ord-${o.id}')"><div><div class="card-title">${o.cliente||'—'}</div><div class="card-sub">${o.servicio||'—'} · ${o.municipio||'—'}</div></div><div style="display:flex;align-items:center;gap:8px">${socioAsignado?`<span class="badge badge-o">ASIGNADO</span>`:`<span class="badge badge-r pulse">PEND</span>`}<span class="arrow">▼</span></div></div><div class="card-body"><div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion||'—'}</span></div><div class="irow"><span class="ilbl">Municipio</span><span class="ival">${o.municipio||'—'}</span></div><div class="irow"><span class="ilbl">Servicio</span><span class="ival">${o.servicio||'—'}</span></div><div class="irow"><span class="ilbl">Detalles</span><span class="ival">${o.detalles||'—'}</span></div><div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono||'—'}</span></div>${socioAsignado?`<div class="irow"><span class="ilbl">Asignado</span><span class="ival" style="color:var(--green)">✅ ${socioAsignado}</span></div>`:''}<hr class="sep"><div class="fld"><label>Asignar</label><select id="sel-${o.id}"><option value="">— Seleccionar —</option>${opcs}</select></div><button class="btn btn-y" onclick="asignarSocio('${o.id}','${(o.cliente||'').replace(/'/g,"\\'")}','${(o.servicio||'').replace(/'/g,"\\'")}','${(o.detalles||'').replace(/'/g,"\\'")}','${o.telefono||''}')">📤 ASIGNAR</button><button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Cliente</button><button class="btn btn-g" onclick="completarOrden('${o.id}')">✅ COMPLETAR</button><button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button></div></div>`;
-  }).join('');
-}
+        const txtG = o.tiempo_garantia || "No reportada";
+    const colG = o.tiempo_garantia ? "var(--y)" : "#ff4444";
+
+    return `<div class="card hl" id="ord-${o.id}">
+      <div class="card-hdr" onclick="toggleCard('ord-${o.id}')">
+        <div>
+          <div class="card-title">${o.cliente||'-'}</div>
+          <div class="card-sub">${o.servicio||'-'} · ${o.municipio||'-'}</div>
+        </div>
+        <div style="text-align:right; min-width:80px; background:rgba(0,0,0,0.3); padding:4px 8px; border-radius:4px">
+          <div style="font-size:0.55rem; color:#aaa; text-transform:uppercase; font-weight:900">Garantía</div>
+          <div style="font-size:0.75rem; color:${colG}; font-weight:900">${txtG}</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="irow"><span class="ilbl">Dirección:</span><span class="ival">${o.direccion||'-'}</span></div>
+        <div class="irow"><span class="ilbl">Teléfono:</span><span class="ival">${o.telefono||'-'}</span></div>
+        <div class="irow"><span class="ilbl">Socio:</span><span class="ival">${socioAsignado||'No asignado'}</span></div>
+        
+        <button onclick="activarGarantiaAdmin('${o.id}')" style="width:100%; margin-top:10px; padding:12px; background:var(--y); color:#000; border:none; font-weight:900; cursor:pointer; text-transform:uppercase">
+          ✅ ACTIVAR GARANTÍA Y ENVIAR
+        </button>
+      </div>
+    </div>`;
 
 async function asignarSocio(oid,cliente,servicio,detalles,telCli){
   const sel=document.getElementById('sel-'+oid);
@@ -834,6 +855,26 @@ function logout(){localStorage.removeItem('db_admin');window.location.href='inde
 })();
 
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+async function activarGarantiaAdmin(id) {
+  const { data: o } = await sb.from('solicitudes').select('cliente, tiempo_garantia, telefono').eq('id', id).single();
+  const cod = 'DB-' + Math.random().toString(36).substr(2, 7).toUpperCase();
+
+  try {
+    await sb.from('solicitudes').update({
+      codigo_garantia: cod,
+      estado: 'completada'
+    }).eq('id', id);
+
+    const msg = `🛡️ *D'BARRIO - CERTIFICADO DE GARANTÍA*\n\nHola ${o.cliente}, su servicio cuenta con una garantía de: *${o.tiempo_garantia || 'Pactada con técnico'}*.\n\n📌 Código oficial: *${cod}*\n\nGracias por confiar en nosotros.`;
+    
+    window.open(`https://wa.me/${ct(o.telefono)}?text=${encodeURIComponent(msg)}`, '_blank');
+    
+    alert('Garantía Activada: ' + cod);
+    location.reload();
+  } catch (e) {
+    alert('Error al conectar');
+  }
+}
 </script>
 </body>
 </html>
