@@ -1,44 +1,64 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>D'BARRIO ADMIN</title>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#F9A825">
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;700;900&display=swap" rel="stylesheet">
+
 <style>
 :root{--y:#F9A825;--yb:#FFD700;--bg:#000;--card:#111;--card2:#1a1a1a;--border:#2a2a2a;--text:#fff;--sub:#aaa;--red:#ff4444;--green:#00d856}
 *{margin:0;padding:0;box-sizing:border-box;font-family:'Roboto Condensed',sans-serif;-webkit-tap-highlight-color:transparent}
-body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:80px}
-.hdr{background:var(--card);border-bottom:3px solid var(--y);padding:14px 18px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center}
-.hdr-logo{font-size:1.2rem;font-weight:900;color:var(--y);text-transform:uppercase}
-.hdr-back{background:rgba(249,168,37,.15);border:2px solid var(--y);color:var(--y);padding:7px 14px;font-size:.75rem;font-weight:900;cursor:pointer;text-transform:uppercase;text-decoration:none}
-.tabs{background:var(--card);border-bottom:3px solid var(--border);display:flex;overflow-x:auto;position:sticky;top:55px;z-index:99;scrollbar-width:none}
+body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:90px}
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 18px,rgba(255,255,255,.015) 18px,rgba(255,255,255,.015) 20px);pointer-events:none;z-index:0}
+
+/* ===== HEADER PRIME ===== */
+.hdr{background:var(--card);border-bottom:3px solid var(--y);padding:14px 18px;position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;gap:12px}
+.hdr-back{background:rgba(249,168,37,.15);border:2px solid var(--y);color:var(--y);padding:7px 14px;font-size:.75rem;font-weight:900;cursor:pointer;text-transform:uppercase;text-decoration:none;border-radius:6px}
+.hdr-back:active{transform:translateY(1px)}
+.hdr-logo{display:flex;align-items:flex-end;gap:10px}
+.logo-db{font-size:2rem;font-weight:900;color:var(--y);letter-spacing:-3px;line-height:1}
+.logo-name{font-size:1.05rem;font-weight:900;color:#fff;letter-spacing:-.5px;line-height:1.05;text-transform:uppercase}
+.logo-panel{font-size:.62rem;color:#aaa;letter-spacing:2.5px;line-height:1;margin-left:2px;text-transform:uppercase}
+
+/* ===== TABS ===== */
+.tabs{background:var(--card);border-bottom:3px solid var(--border);display:flex;overflow-x:auto;position:sticky;top:58px;z-index:99;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
-.tab{padding:13px 8px;font-size:.65rem;font-weight:900;white-space:nowrap;text-transform:uppercase;color:var(--sub);border-bottom:3px solid transparent;cursor:pointer;flex:1;text-align:center;min-width:55px;position:relative}
+.tab{padding:13px 10px;font-size:.65rem;font-weight:900;white-space:nowrap;text-transform:uppercase;color:var(--sub);border-bottom:3px solid transparent;cursor:pointer;flex:1;text-align:center;min-width:72px;position:relative}
 .tab.on{color:var(--y);border-bottom-color:var(--y)}
-.tab .badge-count{position:absolute;top:6px;right:4px;background:var(--red);color:#fff;border-radius:50%;width:16px;height:16px;font-size:.55rem;display:flex;align-items:center;justify-content:center;font-weight:900}
-.content{padding:18px;max-width:1200px;margin:0 auto}
+.tab .badge-count{position:absolute;top:6px;right:6px;background:var(--red);color:#fff;border-radius:50%;width:18px;height:18px;font-size:.58rem;display:flex;align-items:center;justify-content:center;font-weight:900;display:none}
+
+/* ===== CONTENT ===== */
+.content{position:relative;z-index:1;padding:18px;max-width:1200px;margin:0 auto}
 .sec{display:none}.sec.on{display:block}
-h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;border-bottom:3px solid var(--y);padding-bottom:8px;margin-bottom:18px}
-.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:22px}
-@media(min-width:600px){.stats{grid-template-columns:repeat(4,1fr)}}
+h2{color:var(--y);font-size:1.25rem;font-weight:900;text-transform:uppercase;border-bottom:3px solid var(--y);padding-bottom:8px;margin-bottom:16px}
+
+/* ===== STATS PRIME ===== */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:18px}
+@media(min-width:650px){.stats{grid-template-columns:repeat(4,1fr)}}
 .stat{background:var(--card2);border:3px solid var(--border);padding:16px;text-align:center}
-.stat-val{font-size:2rem;font-weight:900;color:var(--y);line-height:1}
-.stat-lbl{font-size:.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:5px;font-weight:700}
-.card{background:var(--card);border:3px solid var(--border);margin-bottom:12px;box-shadow:0 4px 0 #000}
+.stat-val{font-size:1.85rem;font-weight:900;color:var(--y);line-height:1}
+.stat-lbl{font-size:.6rem;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-top:7px;font-weight:700}
+
+/* ===== CARDS ===== */
+.card{background:var(--card);border:3px solid var(--border);margin-bottom:12px;box-shadow:0 4px 0 #000;transition:transform .15s ease}
+.card:hover{transform:translateY(-3px)}
 .card.hl{border-color:var(--y);box-shadow:0 4px 0 #c17900}
 .card.cand{border-color:#0088ff;box-shadow:0 4px 0 #005cb2}
-.card-hdr{padding:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:10px}
+
+.card-hdr{padding:15px;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .card-hdr:active{background:#0a0a0a}
 .card-title{font-weight:900;font-size:.95rem;text-transform:uppercase;color:#fff}
 .card-sub{font-size:.7rem;color:var(--sub);margin-top:3px}
-.card-body{padding:0 15px;max-height:0;overflow:hidden;transition:max-height .4s ease,padding .3s ease}
-.card.open .card-body{padding:15px;max-height:5000px}
-.arrow{color:var(--y);font-size:.9rem;transition:transform .3s;flex-shrink:0}
+.card-body{padding:0 15px;max-height:0;overflow:hidden;transition:max-height .35s ease,padding .25s ease}
+.card.open .card-body{padding:15px;max-height:6000px}
+
+.arrow{color:var(--y);font-size:.9rem;transition:transform .25s;flex-shrink:0}
 .card.open .arrow{transform:rotate(180deg)}
-.badge{padding:4px 10px;font-size:.62rem;font-weight:900;text-transform:uppercase;flex-shrink:0}
+
+.badge{padding:4px 10px;font-size:.62rem;font-weight:900;text-transform:uppercase;flex-shrink:0;border-radius:6px}
 .badge-y{background:var(--y);color:#000}
 .badge-r{background:var(--red);color:#fff}
 .badge-g{background:var(--green);color:#000}
@@ -46,46 +66,62 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
 .badge-b{background:#0088ff;color:#fff}
 .pulse{animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+
+/* ===== FORMS + BUTTONS ===== */
 .fld{margin-bottom:12px}
 .fld label{display:block;font-size:.62rem;font-weight:900;color:var(--sub);text-transform:uppercase;letter-spacing:1px;margin-bottom:5px}
-.fld input,.fld select,.fld textarea{width:100%;background:#000;border:2px solid var(--border);color:#fff;padding:12px;font-family:'Roboto Condensed',sans-serif;font-size:.9rem;font-weight:700}
-.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--y)}
+.fld input,.fld select,.fld textarea{width:100%;background:#000;border:2px solid var(--border);color:#fff;padding:12px;font-size:.9rem;font-weight:700;border-radius:8px}
+.fld input:focus,.fld select:focus,.fld textarea:focus{outline:none;border-color:var(--y);box-shadow:0 0 0 3px rgba(249,168,37,.18)}
 .fld select option{background:#111;color:#fff}
-.btn{padding:12px 16px;border:none;font-family:'Roboto Condensed',sans-serif;font-weight:900;font-size:.85rem;cursor:pointer;text-transform:uppercase;display:block;width:100%;margin:5px 0}
+
+.btn{padding:12px 16px;border:none;font-weight:900;font-size:.85rem;cursor:pointer;text-transform:uppercase;display:block;width:100%;margin:6px 0;border-radius:8px}
 .btn-y{background:var(--y);color:#000;box-shadow:0 4px 0 #c17900}
 .btn-y:active{transform:translateY(4px);box-shadow:none}
 .btn-g{background:transparent;border:2px solid var(--green);color:var(--green)}
 .btn-b{background:transparent;border:2px solid #0088ff;color:#0088ff}
-.btn-r{background:rgba(255,68,68,.15);border:2px solid var(--red);color:var(--red)}
-.btn-orange{background:#ff9500;color:#000;border:none}
+.btn-r{background:rgba(255,68,68,.13);border:2px solid var(--red);color:var(--red)}
+.btn-orange{background:#ff9500;color:#000;border:none;box-shadow:0 4px 0 #8a5200}
+.btn-orange:active{transform:translateY(4px);box-shadow:none}
+.btn-back{background:rgba(249,168,37,.15);border:2px solid var(--y);color:var(--y);padding:10px 12px;font-size:.7rem;font-weight:900;cursor:pointer;text-transform:uppercase;border-radius:8px}
+
+/* ===== ROWS ===== */
 .irow{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--border);gap:10px}
 .irow:last-child{border:none}
 .ilbl{color:var(--sub);font-size:.78rem;font-weight:700;flex-shrink:0}
 .ival{color:#fff;font-weight:900;font-size:.85rem;text-align:right}
-.money{color:var(--y);font-weight:900;font-size:1.05rem}
-.sep{border:none;border-top:2px solid var(--border);margin:14px 0}
-.cfg-box{background:var(--card2);border:3px solid var(--y);padding:20px;margin-bottom:18px}
-.cfg-box h3{color:var(--y);font-size:1rem;text-transform:uppercase;margin-bottom:14px;font-weight:900}
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--y);color:#000;padding:13px 22px;font-weight:900;font-size:.9rem;z-index:9999;text-align:center;min-width:240px;pointer-events:none;display:none}
+.money{color:var(--y);font-weight:900;font-size:1.02rem}
+
+/* ===== CONFIG BOX ===== */
+.cfg-box{background:var(--card2);border:3px solid var(--y);padding:18px;border-radius:12px;margin-bottom:16px}
+.cfg-box h3{color:var(--y);font-size:1rem;text-transform:uppercase;margin-bottom:12px;font-weight:900}
+
+/* ===== TOAST ===== */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--y);color:#000;padding:13px 22px;font-weight:900;font-size:.9rem;z-index:9999;text-align:center;min-width:240px;pointer-events:none;display:none;border-radius:10px}
 .toast.err{background:var(--red);color:#fff}
 .empty{color:var(--sub);text-align:center;padding:35px 20px;font-size:.9rem}
-.rank{background:var(--y);color:#000;width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem;font-weight:900;flex-shrink:0}
+
+/* ===== MODALS OVERLAY ===== */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.97);z-index:600;display:none;align-items:flex-start;justify-content:center;overflow-y:auto;padding:20px}
 .modal-overlay.open{display:flex}
-.modal-box{background:var(--card);border:3px solid var(--y);width:100%;max-width:440px;margin:auto}
+.modal-box{background:var(--card);border:3px solid var(--y);width:100%;max-width:460px;margin:auto;border-radius:14px;overflow:hidden}
 .modal-top{background:var(--y);padding:14px 18px;display:flex;justify-content:space-between;align-items:center}
-.modal-top h3{font-size:1.1rem;font-weight:900;color:#000;text-transform:uppercase}
-.btn-close-modal{background:#000;border:none;color:var(--y);font-size:1.3rem;font-weight:900;cursor:pointer;padding:4px 12px}
-.modal-body{padding:20px}
+.modal-top h3{font-size:1.05rem;font-weight:900;color:#000;text-transform:uppercase}
+.btn-close-modal{background:#000;border:none;color:var(--y);font-size:1.25rem;font-weight:900;cursor:pointer;padding:4px 12px;border-radius:10px}
+.modal-body{padding:18px}
 </style>
 </head>
+
 <body>
 
 <div class="toast" id="toast"></div>
 
+<!-- ===== MODAL: REGISTRAR SOCIO ===== -->
 <div class="modal-overlay" id="modal-candidato">
   <div class="modal-box">
-    <div class="modal-top"><h3>👷 REGISTRAR SOCIO</h3><button class="btn-close-modal" onclick="closeOverlay('modal-candidato')">✕</button></div>
+    <div class="modal-top">
+      <h3>👷 Registrar Socio</h3>
+      <button class="btn-close-modal" onclick="closeOverlay('modal-candidato')">✕</button>
+    </div>
     <div class="modal-body">
       <div class="fld"><label>Nombre</label><input type="text" id="m-nom"></div>
       <div class="fld"><label>WhatsApp</label><input type="tel" id="m-tel"></div>
@@ -93,23 +129,28 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
       <div class="fld"><label>Especialidad</label>
         <select id="m-esp">
           <option value="">Seleccionar...</option>
-          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option>
+          <option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
         </select>
       </div>
-      <div class="fld"><label>PIN (4 dígitos)</label><input type="password" id="m-pin" maxlength="4" pattern="[0-9]{4}" inputmode="numeric"></div>
+      <div class="fld"><label>PIN (4 dígitos)</label><input type="password" id="m-pin" maxlength="4" inputmode="numeric"></div>
       <div class="fld"><label>Comisión (%)</label><input type="number" id="m-com" min="0" max="100" value="15"></div>
       <input type="hidden" id="m-candidato-id">
-      <button class="btn btn-y" onclick="registrarSocio()">✅ REGISTRAR</button>
-      <button class="btn btn-r" onclick="closeOverlay('modal-candidato')">CANCELAR</button>
+      <button class="btn btn-y" onclick="registrarSocio()">✅ Registrar</button>
+      <button class="btn btn-r" onclick="closeOverlay('modal-candidato')">Cancelar</button>
     </div>
   </div>
 </div>
 
+<!-- ===== MODAL: ORDEN MANUAL ===== -->
 <div class="modal-overlay" id="modal-orden">
   <div class="modal-box">
-    <div class="modal-top"><h3>📝 ORDEN MANUAL</h3><button class="btn-close-modal" onclick="closeOverlay('modal-orden')">✕</button></div>
+    <div class="modal-top">
+      <h3>📝 Orden Manual</h3>
+      <button class="btn-close-modal" onclick="closeOverlay('modal-orden')">✕</button>
+    </div>
     <div class="modal-body">
-      <p style="color:var(--sub);font-size:.85rem;margin-bottom:16px">Crea orden manualmente (llamada, visita, etc.)</p>
+      <p style="color:var(--sub);font-size:.85rem;margin-bottom:14px">Crea orden manualmente (llamada, visita, etc.).</p>
       <div class="fld"><label>Cliente</label><input type="text" id="o-nom"></div>
       <div class="fld"><label>WhatsApp</label><input type="tel" id="o-tel" placeholder="+53..."></div>
       <div class="fld"><label>Dirección</label><input type="text" id="o-dir"></div>
@@ -117,19 +158,24 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
       <div class="fld"><label>Servicio</label>
         <select id="o-serv">
           <option value="">Seleccionar...</option>
-          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option>
+          <option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Otro</option>
         </select>
       </div>
       <div class="fld"><label>Detalles</label><textarea id="o-det" rows="3"></textarea></div>
-      <button class="btn btn-y" onclick="crearOrdenManual()">💾 CREAR</button>
-      <button class="btn btn-r" onclick="closeOverlay('modal-orden')">CANCELAR</button>
+      <button class="btn btn-y" onclick="crearOrdenManual()">💾 Crear</button>
+      <button class="btn btn-r" onclick="closeOverlay('modal-orden')">Cancelar</button>
     </div>
   </div>
 </div>
 
+<!-- ===== MODAL: EDITAR SOCIO ===== -->
 <div class="modal-overlay" id="modal-edit-socio">
   <div class="modal-box">
-    <div class="modal-top"><h3>✏️ EDITAR SOCIO</h3><button class="btn-close-modal" onclick="closeOverlay('modal-edit-socio')">✕</button></div>
+    <div class="modal-top">
+      <h3>✏️ Editar Socio</h3>
+      <button class="btn-close-modal" onclick="closeOverlay('modal-edit-socio')">✕</button>
+    </div>
     <div class="modal-body">
       <div class="fld"><label>Nombre</label><input type="text" id="e-nom"></div>
       <div class="fld"><label>WhatsApp</label><input type="tel" id="e-tel"></div>
@@ -137,262 +183,1053 @@ h2{color:var(--y);font-size:1.3rem;font-weight:900;text-transform:uppercase;bord
       <div class="fld"><label>Especialidad</label>
         <select id="e-esp">
           <option value="">Seleccionar...</option>
-          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option><option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
+          <option>🚰 Plomería</option><option>⚡ Electricidad</option><option>🔨 Carpintería</option><option>🧱 Albañilería</option>
+          <option>🎨 Pintura</option><option>❄️ Refrigeración</option><option>🔑 Cerrajería</option><option>💻 Tecnología</option><option>🔧 Multiservicios</option>
         </select>
       </div>
-      <div class="fld"><label>PIN</label><input type="password" id="e-pin" maxlength="4" pattern="[0-9]{4}" inputmode="numeric"></div>
+      <div class="fld"><label>PIN</label><input type="password" id="e-pin" maxlength="4" inputmode="numeric"></div>
       <div class="fld"><label>Comisión (%)</label><input type="number" id="e-com" min="0" max="100"></div>
       <input type="hidden" id="e-socio-id">
-      <button class="btn btn-y" onclick="guardarEdicionSocio()">💾 GUARDAR</button>
-      <button class="btn btn-r" onclick="closeOverlay('modal-edit-socio')">CANCELAR</button>
+      <button class="btn btn-y" onclick="guardarEdicionSocio()">💾 Guardar</button>
+      <button class="btn btn-r" onclick="closeOverlay('modal-edit-socio')">Cancelar</button>
     </div>
   </div>
 </div>
 
+<!-- ===== HEADER ===== -->
 <div class="hdr">
-  <button class="hdr-back" onclick="logout()">← SALIR</button>
-  <div class="hdr-logo">D'BARRIO ADMIN</div>
-  <div style="width:72px"></div>
+  <div class="hdr-logo" aria-label="D'BARRIO ADMIN PRIME">
+    <span class="logo-db">DB</span>
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span class="logo-name">D’BARRIO</span>
+      <span class="logo-panel">Admin Prime</span>
+    </div>
+  </div>
+  <button class="hdr-back" onclick="logout()">Salir</button>
 </div>
 
+<!-- ===== TABS ===== -->
 <div class="tabs">
-  <div class="tab on" id="tab-dashboard" onclick="showTab('dashboard')">📊 DASH</div>
-  <div class="tab" id="tab-candidatos" onclick="showTab('candidatos')">👷 CAND<span class="badge-count" id="cnt-cand" style="display:none">0</span></div>
-  <div class="tab" id="tab-ordenes" onclick="showTab('ordenes')">📋 ÓRDS<span class="badge-count" id="cnt-ord" style="display:none">0</span></div>
-  <div class="tab" id="tab-archivo" onclick="showTab('archivo')">📦 ARCH</div>
-  <div class="tab" id="tab-deudas" onclick="showTab('deudas')">💰 DEU</div>
-  <div class="tab" id="tab-socios" onclick="showTab('socios')">👥 SOC</div>
-  <div class="tab" id="tab-config" onclick="showTab('config')">⚙️ CFG</div>
-<div class="tab" id="tab-quejas" onclick="showTab('quejas')">💬 QUEJAS<span class="badge-count" id="cnt-quejas" style="display:none">0</span></div>
+  <div class="tab" id="tab-dashboard" onclick="showTab('dashboard')">📊 Dash</div>
+  <div class="tab" id="tab-ordenes" onclick="showTab('ordenes')">📋 Órds <span class="badge-count" id="cnt-ord">0</span></div>
+  <div class="tab" id="tab-archivo" onclick="showTab('archivo')">📦 Arch</div>
+  <div class="tab" id="tab-deudas" onclick="showTab('deudas')">💰 Deu</div>
+  <div class="tab" id="tab-socios" onclick="showTab('socios')">👥 Soc</div>
+  <div class="tab" id="tab-candidatos" onclick="showTab('candidatos')">👷 Cand <span class="badge-count" id="cnt-cand">0</span></div>
+  <div class="tab" id="tab-quejas" onclick="showTab('quejas')">💬 Quejas <span class="badge-count" id="cnt-quejas">0</span></div>
+  <div class="tab" id="tab-config" onclick="showTab('config')">⚙️ Cfg</div>
 </div>
 
 <div class="content">
-  <div id="sec-dashboard" class="sec on">
-    <h2>📊 Dashboard</h2>
+
+  <!-- ===== DASH PRIME ===== -->
+  <div id="sec-dashboard" class="sec">
+    <h2>📊 Control Operativo</h2>
     <div class="stats">
-      <div class="stat"><div class="stat-val" id="d-total">—</div><div class="stat-lbl">Órdenes</div></div>
       <div class="stat"><div class="stat-val" id="d-pend" style="color:var(--red)">—</div><div class="stat-lbl">Pendientes</div></div>
-      <div class="stat"><div class="stat-val" id="d-socios">—</div><div class="stat-lbl">Socios</div></div>
-      <div class="stat"><div class="stat-val" id="d-comp">—</div><div class="stat-lbl">Completadas</div></div>
+      <div class="stat"><div class="stat-val" id="d-hoy" style="color:var(--green)">—</div><div class="stat-lbl">Completadas Hoy</div></div>
+      <div class="stat"><div class="stat-val" id="d-income" style="color:var(--y)">—</div><div class="stat-lbl">Ingreso Total</div></div>
+      <div class="stat"><div class="stat-val" id="d-quejas" style="color:var(--red)">—</div><div class="stat-lbl">Quejas Activas</div></div>
     </div>
-    <h2>⭐ Top Socios</h2>
+
+    <h2>👑 Top Rendimiento</h2>
     <div id="topSocios"><p class="empty">Cargando...</p></div>
   </div>
 
-  <div id="sec-candidatos" class="sec">
-  <h2>👷 Candidatos Nuevos</h2>
-  <button class="btn btn-orange" style="margin-bottom:16px" onclick="abrirModalNuevoSocio()">➕ REGISTRAR MANUAL</button>
-  <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Personas que quieren unirse al equipo.</p>
-  <div id="listaCandidatos"><p class="empty">Buscando postulantes...</p></div>
-</div>
-
+  <!-- ===== ORDENES ===== -->
   <div id="sec-ordenes" class="sec">
     <h2>📋 Órdenes</h2>
-    <button class="btn btn-orange" style="margin-bottom:16px" onclick="openModal('modal-orden')">➕ CREAR MANUAL</button>
-    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">⚠️ Asigna socio y envía notificación por WhatsApp.</p>
+    <button class="btn btn-orange" style="margin-bottom:12px" onclick="openOverlay('modal-orden')">➕ Crear Manual</button>
+
+    <div style="margin-bottom:12px">
+      <input
+        type="text"
+        id="filtroOrden"
+        placeholder="Buscar cliente, teléfono o servicio..."
+        style="width:100%; padding:12px; background:#000; border:2px solid var(--border); color:#fff; font-weight:700; border-radius:10px"
+        oninput="filtrarOrdenes()"
+      >
+    </div>
+
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:14px">Asigna socio, contacta rápido y cierra garantía.</p>
     <div id="listaOrdenes"><p class="empty">Cargando...</p></div>
   </div>
 
+  <!-- ===== ARCHIVO ===== -->
   <div id="sec-archivo" class="sec">
     <h2>📦 Archivo</h2>
-    <p style="color:var(--sub);font-size:.85rem;margin-bottom:18px">Órdenes completadas.</p>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:14px">Órdenes completadas.</p>
     <div id="listaArchivo"><p class="empty">Cargando...</p></div>
   </div>
 
+  <!-- ===== DEUDAS ===== -->
   <div id="sec-deudas" class="sec">
     <h2>💰 Deudas</h2>
     <div id="listaDeudas"><p class="empty">Cargando...</p></div>
   </div>
 
+  <!-- ===== SOCIOS ===== -->
   <div id="sec-socios" class="sec">
     <h2>👥 Socios</h2>
     <div id="listaSocios"><p class="empty">Cargando...</p></div>
   </div>
 
-<div id="sec-quejas" class="sec">
-  <h2>💬 Buzón de Quejas</h2>
-  <div style="display: flex; gap: 8px; margin-bottom: 18px;">
-    <button class="btn-back" style="flex: 1; font-size: 0.65rem; padding: 8px;" onclick="renderQuejas('pendiente')">🔴 PENDIENTES</button>
-    <button class="btn-back" style="flex: 1; font-size: 0.65rem; padding: 8px; border-color: var(--sub); color: var(--sub);" onclick="renderQuejas('todos')">👁️ VER TODAS</button>
-  </div>
-  <div id="listaQuejas"><p class="empty">Cargando reportes...</p></div>
-</div>
-<div id="sec-config" class="sec">
-  <h2>⚙️ Configuración</h2>
-  
-  <div class="cfg-box">
-    <h3>Comisión de la Casa</h3>
-    <p style="color:var(--sub); font-size:0.8rem; margin-bottom:15px;">Define el % que se queda el negocio por defecto.</p>
-    <div class="fld">
-      <label>Porcentaje Global (%)</label>
-      <input type="number" id="cfg-com" value="15">
-    </div>
-    <button class="btn btn-y" onclick="guardarComision()">💾 GUARDAR COMISIÓN</button>
+  <!-- ===== CANDIDATOS ===== -->
+  <div id="sec-candidatos" class="sec">
+    <h2>👷 Candidatos</h2>
+    <button class="btn btn-orange" style="margin-bottom:12px" onclick="abrirModalNuevoSocio()">➕ Registrar Manual</button>
+    <p style="color:var(--sub);font-size:.85rem;margin-bottom:14px">Personas que quieren unirse al equipo.</p>
+    <div id="listaCandidatos"><p class="empty">Buscando postulantes...</p></div>
   </div>
 
-  <div class="cfg-box">
-    <h3>Administración</h3>
-    <div class="fld">
-      <label>WhatsApp Admin (Notificaciones)</label>
-      <input type="tel" id="cfg-owner" placeholder="+34627493593">
+  <!-- ===== QUEJAS ===== -->
+  <div id="sec-quejas" class="sec">
+    <h2>💬 Quejas</h2>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn-back" style="flex:1" onclick="renderQuejas('pendiente')">🔴 Pendientes</button>
+      <button class="btn-back" style="flex:1;border-color:var(--sub);color:var(--sub)" onclick="renderQuejas('todos')">👁️ Ver Todas</button>
     </div>
-    <button class="btn btn-y" onclick="guardarNotif()">💾 GUARDAR TELÉFONO</button>
+    <div id="listaQuejas"><p class="empty">Cargando...</p></div>
   </div>
+
+  <!-- ===== CONFIG ===== -->
+  <div id="sec-config" class="sec">
+    <h2>⚙️ Configuración</h2>
+
+    <div class="cfg-box">
+      <h3>Comisión de la Casa</h3>
+      <p style="color:var(--sub); font-size:0.8rem; margin-bottom:12px;">Define el % por defecto.</p>
+      <div class="fld">
+        <label>Porcentaje Global (%)</label>
+        <input type="number" id="cfg-com" value="15">
+      </div>
+      <button class="btn btn-y" onclick="guardarComision()">💾 Guardar</button>
+    </div>
+
+    <div class="cfg-box">
+      <h3>Administración</h3>
+      <div class="fld">
+        <label>WhatsApp Admin (Notificaciones)</label>
+        <input type="tel" id="cfg-owner" placeholder="+53...">
+      </div>
+      <button class="btn btn-y" onclick="guardarNotif()">💾 Guardar</button>
+    </div>
+  </div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const SUPABASE_URL='https://jtorpamexbjxnomngfwq.supabase.co';
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0b3JwYW1leGJqeG5vbW5nZndxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjE2MjMsImV4cCI6MjA4Njk5NzYyM30.Tzun90wyUfPYb8K8WxmziwlKyJS8kY1K_zzrZNh7R-8';
+/* ===================== SUPABASE ===================== */
+const SUPABASE_URL = 'https://jtorpamexbjxnomngfwq.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0b3JwYW1leGJqeG5vbW5nZndxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE0MjE2MjMsImV4cCI6MjA4Njk5NzYyM30.Tzun90wyUfPYb8K8WxmziwlKyJS8kY1K_zzrZNh7R-8';
 const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-if(!localStorage.getItem('db_admin')) location.href='index.html';
+/* ===================== GUARDIA LOGIN ===================== */
+if (!localStorage.getItem('db_admin')) window.location.href = 'index.html';
 
+/* ===================== ESTADO GLOBAL ===================== */
 let sociosCache = {};
-let tabActual = 'dashboard';
-let contadorInterval = null;
+let tabActual = 'ordenes';
+let counterTimer = null;
 
-/* ================= UTILIDADES ================= */
-const ct = t => (t||'').replace(/[\s\-\(\)\+]/g,'');
-const money = n => '$'+(Number(n)||0).toFixed(2);
+/* ===================== UTILIDADES ===================== */
+const ct = (t) => (t || '').toString().replace(/\D/g, ''); // solo dígitos
+const money = (n) => '$' + (Number(n) || 0).toFixed(2);
 
-function toast(msg,err=false){
-  const t=document.getElementById('toast');
-  t.textContent=msg;
-  t.className='toast'+(err?' err':'');
-  t.style.display='block';
+function toast(msg, err = false) {
+  const t = document.getElementById('toast');
+  if (!t) return alert(msg);
+  t.textContent = msg;
+  t.className = 'toast' + (err ? ' err' : '');
+  t.style.display = 'block';
   clearTimeout(t._t);
-  t._t=setTimeout(()=>t.style.display='none',3000);
+  t._t = setTimeout(() => (t.style.display = 'none'), 3000);
 }
 
-function toggleCard(id){
-  const c=document.getElementById(id);
-  if(!c) return;
-  const o=c.classList.contains('open');
-  document.querySelectorAll('.card.open').forEach(x=>x.classList.remove('open'));
-  if(!o) c.classList.add('open');
+function toggleCard(id) {
+  const c = document.getElementById(id);
+  if (!c) return;
+  const wasOpen = c.classList.contains('open');
+  document.querySelectorAll('.card.open').forEach((x) => { if (x.id !== id) x.classList.remove('open'); });
+  c.classList.toggle('open', !wasOpen);
 }
 
-const openModal=id=>document.getElementById(id)?.classList.add('open');
-const closeOverlay=id=>document.getElementById(id)?.classList.remove('open');
-
-/* ================= NAVEGACIÓN ================= */
-function showTab(id){
-  tabActual=id;
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.getElementById('sec-'+id).classList.add('on');
-  document.getElementById('tab-'+id).classList.add('on');
-
-  ({
-    dashboard:renderDash,
-    candidatos:renderCandidatos,
-    ordenes:renderOrdenes,
-    archivo:renderArchivo,
-    deudas:renderDeudas,
-    socios:renderSocios,
-    config:cargarConfig,
-    quejas:()=>renderQuejas('pendiente')
-  })[id]?.();
+function openOverlay(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.add('open');
+}
+function closeOverlay(id) {
+  const m = document.getElementById(id);
+  if (m) m.classList.remove('open');
 }
 
-/* ================= CONTADORES ================= */
-async function initContadores(){
-  const [{data:o},{data:c},{data:q}] = await Promise.all([
-    sb.from('solicitudes').select('*').eq('estado','pendiente'),
-    sb.from('postulantes').select('*'),
-    sb.from('quejas').select('*').eq('estado','pendiente')
+/* ===================== AUDIO / ALARMAS ===================== */
+let _admCooldown = 0;
+let _admLastPend = 0;
+let _admLastTerminadas = new Set();
+let _admLastCand = 0;
+let _admLastQuejas = 0;
+
+function beepAdmin(ms = 140, freq = 900){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "square";
+    o.frequency.value = freq;
+    o.connect(g);
+    g.connect(ctx.destination);
+    g.gain.value = 0.07;
+    o.start();
+    setTimeout(()=>{ o.stop(); ctx.close(); }, ms);
+  }catch(e){}
+}
+function vibrarAdmin(){
+  if(navigator.vibrate) navigator.vibrate([120,70,120]);
+}
+function alarmaAdmin(msg){
+  const now = Date.now();
+  if(now < _admCooldown) return;
+  _admCooldown = now + 4000;
+  beepAdmin(140,900);
+  vibrarAdmin();
+  toast(msg || 'Nueva actividad detectada');
+}
+
+/* ===================== NAVEGACIÓN ===================== */
+function showTab(id) {
+  tabActual = id;
+  document.querySelectorAll('.sec').forEach((s) => s.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach((t) => t.classList.remove('on'));
+
+  const sec = document.getElementById('sec-' + id);
+  const tab = document.getElementById('tab-' + id);
+  if (sec) sec.classList.add('on');
+  if (tab) tab.classList.add('on');
+
+  if (id === 'dashboard') renderDash();
+  if (id === 'candidatos') renderCandidatos();
+  if (id === 'ordenes') renderOrdenes();
+  if (id === 'archivo') renderArchivo();
+  if (id === 'deudas') renderDeudas();
+  if (id === 'socios') renderSocios();
+  if (id === 'config') cargarConfig();
+  if (id === 'quejas') renderQuejas('pendiente');
+}
+
+/* ===================== CONTADORES ===================== */
+function setBadge(id, n) {
+  const b = document.getElementById(id);
+  if (!b) return;
+  b.textContent = n || 0;
+  b.style.display = (n > 0) ? 'flex' : 'none';
+}
+
+async function initContadores() {
+  const [ord, cand, qjs] = await Promise.all([
+    sb.from('solicitudes').select('*', { count: 'exact', head: true }).eq('estado', 'pendiente'),
+    sb.from('postulantes').select('*', { count: 'exact', head: true }),
+    sb.from('quejas').select('*', { count: 'exact', head: true }).eq('estado', 'pendiente')
   ]);
 
-  setBadge('cnt-ord',o?.length);
-  setBadge('cnt-cand',c?.length);
-  setBadge('cnt-quejas',q?.length);
+  const nOrd = ord.count || 0;
+  const nCand = cand.count || 0;
+  const nQ = qjs.count || 0;
 
-  if(contadorInterval) clearInterval(contadorInterval);
-  contadorInterval=setInterval(initContadores,15000);
+  setBadge('cnt-ord', nOrd);
+  setBadge('cnt-cand', nCand);
+  setBadge('cnt-quejas', nQ);
+
+  if (counterTimer) clearTimeout(counterTimer);
+  counterTimer = setTimeout(initContadores, 15000);
 }
 
-function setBadge(id,n){
-  const b=document.getElementById(id);
-  b.textContent=n||0;
-  b.style.display=n?'flex':'none';
+/* ===================== CACHE SOCIOS ===================== */
+async function cargarSociosCache() {
+  sociosCache = {};
+  const { data, error } = await sb.from('socios').select('*');
+  if (error) { console.error(error); return; }
+  (data || []).forEach((s) => (sociosCache[s.id] = s));
 }
 
-/* ================= SOCIOS CACHE ================= */
-async function cargarSociosCache(){
-  sociosCache={};
-  const {data}=await sb.from('socios').select('*');
-  data?.forEach(s=>sociosCache[s.id]=s);
-}
+/* ===================== DASH PRIME ===================== */
+async function renderDash(){
+  const hoyStr = new Date().toLocaleDateString('es-CU');
 
-/* ================= ÓRDENES ================= */
-async function renderOrdenes(){
-  const c=document.getElementById('listaOrdenes');
-  await cargarSociosCache();
+  const [
+    { data: sol },
+    { data: quej },
+    { data: soc }
+  ] = await Promise.all([
+    sb.from('solicitudes').select('estado,monto,fecha_inicio,created_at'),
+    sb.from('quejas').select('id').eq('estado','pendiente'),
+    sb.from('socios').select('nombre,trabajos,deuda,especialidad,zona')
+  ]);
 
-  const {data:sol}=await sb.from('solicitudes')
-    .select('*')
-    .eq('estado','pendiente')
-    .order('created_at',{ascending:false});
+  const pendientes = (sol || []).filter(o=>o.estado==='pendiente').length;
 
-  if(!sol?.length){
-    c.innerHTML='<p class="empty">Sin órdenes 🎉</p>';
-    return;
-  }
+  const completadasHoy = (sol || []).filter(o=>{
+    if(o.estado!=='completada') return false;
+    // si no tienes fecha_fin guardada, usamos fecha_inicio como “marca”
+    return (o.fecha_inicio === hoyStr);
+  }).length;
 
-  c.innerHTML=sol.map(o=>{
-    const opts=Object.values(sociosCache)
-      .map(s=>`<option value="${s.id}">${s.nombre} - ${s.especialidad||''}</option>`)
-      .join('');
+  const ingresoTotal = (sol || [])
+    .filter(o=>o.estado==='completada')
+    .reduce((a,b)=>a+(Number(b.monto)||0),0);
 
-    return `
-    <div class="card hl" id="ord-${o.id}">
-      <div class="card-hdr" onclick="toggleCard('ord-${o.id}')">
-        <div>
-          <div class="card-title">${o.cliente}</div>
-          <div class="card-sub">${o.servicio} · ${o.municipio||''}</div>
+  const elPend = document.getElementById('d-pend');
+  const elHoy = document.getElementById('d-hoy');
+  const elInc = document.getElementById('d-income');
+  const elQ = document.getElementById('d-quejas');
+
+  if(elPend) elPend.textContent = pendientes;
+  if(elHoy) elHoy.textContent = completadasHoy;
+  if(elInc) elInc.textContent = '$' + ingresoTotal.toFixed(2);
+  if(elQ) elQ.textContent = (quej || []).length;
+
+  const top = document.getElementById('topSocios');
+  if(!top) return;
+
+  if(soc && soc.length){
+    const sorted = [...soc]
+      .sort((a,b)=>(Number(b.trabajos)||0)-(Number(a.trabajos)||0))
+      .slice(0,5);
+
+    top.innerHTML = sorted.map((s,i)=>`
+      <div class="card">
+        <div class="card-hdr" style="cursor:default">
+          <div>
+            <div class="card-title">${i+1}. ${s.nombre || '—'}</div>
+            <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'} · ${s.trabajos || 0} trabajos</div>
+          </div>
+          <span class="money">${money(s.deuda)}</span>
         </div>
-        <span class="arrow">▼</span>
       </div>
-      <div class="card-body">
-        <div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion}</span></div>
-        <div class="fld"><label>Asignar socio</label><select id="sel-${o.id}">${opts}</select></div>
-        <button class="btn btn-y" onclick="asignarSocio('${o.id}','${o.cliente}','${o.servicio}','${o.telefono}')">📲 ASIGNAR</button>
-        <button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ ELIMINAR</button>
-      </div>
-    </div>`;
+    `).join('');
+  } else {
+    top.innerHTML = '<p class="empty">Sin socios registrados</p>';
+  }
+}
+
+/* ===================== FILTRO ORDENES ===================== */
+function filtrarOrdenes(){
+  const val = (document.getElementById('filtroOrden')?.value || '').toLowerCase();
+  document.querySelectorAll('#listaOrdenes .card').forEach(c=>{
+    c.style.display = c.innerText.toLowerCase().includes(val) ? 'block' : 'none';
+  });
+}
+
+/* ===================== CANDIDATOS ===================== */
+function abrirModalNuevoSocio() {
+  const hiddenId = document.getElementById('m-candidato-id');
+  if (hiddenId) hiddenId.value = '';
+  document.getElementById('m-nom').value = '';
+  document.getElementById('m-tel').value = '';
+  document.getElementById('m-zon').value = '';
+  document.getElementById('m-esp').value = '';
+  document.getElementById('m-pin').value = '';
+  document.getElementById('m-com').value = '15';
+  openOverlay('modal-candidato');
+}
+
+function prepararRegistro(id, nom, tel, zon, esp) {
+  document.getElementById('m-candidato-id').value = id || '';
+  document.getElementById('m-nom').value = nom || '';
+  document.getElementById('m-tel').value = tel || '';
+  document.getElementById('m-zon').value = zon || '';
+  document.getElementById('m-esp').value = esp || '';
+  openOverlay('modal-candidato');
+}
+
+async function renderCandidatos() {
+  const c = document.getElementById('listaCandidatos');
+  if (!c) return;
+  const { data, error } = await sb.from('postulantes').select('*').order('created_at', { ascending: false });
+  if (error) { console.error(error); c.innerHTML = '<p class="empty" style="color:var(--red)">Error al cargar</p>'; return; }
+  if (!data || !data.length) { c.innerHTML = '<p class="empty">No hay candidatos por ahora.</p>'; return; }
+
+  c.innerHTML = data.map((s) => {
+    const tc = ct(s.telefono || '');
+    const safeNom = (s.nombre || '').replace(/'/g, "\\'");
+    const safeZon = (s.zona || '').replace(/'/g, "\\'");
+    const safeOfi = (s.oficio || '').replace(/'/g, "\\'");
+    return `
+      <div class="card cand" id="cand-${s.id}">
+        <div class="card-hdr" onclick="toggleCard('cand-${s.id}')">
+          <div>
+            <div class="card-title">${s.nombre || 'Sin nombre'}</div>
+            <div class="card-sub">${s.oficio || '—'} · ${s.zona || '—'}</div>
+          </div>
+          <span class="arrow" style="color:#0088ff">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+            <button class="btn btn-y" onclick="prepararRegistro('${s.id}','${safeNom}','${s.telefono || ''}','${safeZon}','${safeOfi}')">✅ Aceptar</button>
+            <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Hablar</button>
+          </div>
+          <button class="btn btn-r" onclick="eliminarCandidato('${s.id}')">🗑️ Rechazar</button>
+        </div>
+      </div>`;
   }).join('');
 }
 
-async function asignarSocio(id,cli,serv,tel){
-  const sel=document.getElementById('sel-'+id);
-  if(!sel.value){toast('Selecciona socio',true);return;}
-  const s=sociosCache[sel.value];
-  await sb.from('solicitudes').update({socio_asignado:sel.value}).eq('id',id);
-  window.open(`https://wa.me/${ct(s.telefono)}?text=${encodeURIComponent(`🔧 NUEVA ORDEN\n${cli}\n${serv}\n${tel}`)}`,'_blank');
-  toast(`Asignado a ${s.nombre}`);
+async function eliminarCandidato(id) {
+  if (!confirm('¿Eliminar esta postulación?')) return;
+  const { error } = await sb.from('postulantes').delete().eq('id', id);
+  if (error) { console.error(error); toast('Error al eliminar', true); return; }
+  toast('Candidato eliminado');
+  renderCandidatos();
+  initContadores();
+}
+
+/* ===================== REGISTRO SOCIO ===================== */
+async function registrarSocio() {
+  const nom = document.getElementById('m-nom').value.trim();
+  const tel = document.getElementById('m-tel').value.trim();
+  const zon = document.getElementById('m-zon').value.trim();
+  const esp = document.getElementById('m-esp').value;
+  const pin = document.getElementById('m-pin').value.trim();
+  const com = parseInt(document.getElementById('m-com').value, 10) || 15;
+  const candId = document.getElementById('m-candidato-id').value;
+
+  if (!nom || !tel || !pin || pin.length < 4) { toast('⚠️ Completa Nombre / Tel / PIN (4)', true); return; }
+
+  const { data, error } = await sb.from('socios').insert({
+    nombre: nom,
+    telefono: tel,
+    zona: zon,
+    especialidad: esp,
+    pin: pin,
+    comision: com,
+    deuda: 0,
+    trabajos: 0,
+    admitido: true
+  }).select();
+
+  if (error) { console.error(error); toast('⚠️ Error al registrar', true); return; }
+
+  if (candId) await sb.from('postulantes').delete().eq('id', candId);
+
+  const link = `https://abelbalsinde92-lab.github.io/D-Barrio/socio.html?id=${data[0].id}`;
+  const msg =
+`🎉 Bienvenido a D'BARRIO, ${nom}!
+
+✅ Tu acceso:
+${link}
+
+🔑 PIN: ${pin}`;
+
+  window.open(`https://wa.me/${ct(tel)}?text=${encodeURIComponent(msg)}`, '_blank');
+  closeOverlay('modal-candidato');
+  toast(`✅ ${nom} registrado`);
+
+  if (tabActual === 'candidatos') renderCandidatos();
+  if (tabActual === 'socios') renderSocios();
+  initContadores();
+}
+
+/* ===================== SOCIOS ===================== */
+async function renderSocios() {
+  const c = document.getElementById('listaSocios');
+  if (!c) return;
+  const { data, error } = await sb.from('socios').select('*').order('nombre', { ascending: true });
+  if (error) { console.error(error); c.innerHTML = '<p class="empty" style="color:var(--red)">Error cargando socios</p>'; return; }
+  if (!data || !data.length) { c.innerHTML = '<p class="empty">Sin socios registrados</p>'; return; }
+
+  c.innerHTML = data.map((s) => {
+    const tc = ct(s.telefono || '');
+    const params = JSON.stringify({
+      id: s.id, nom: s.nombre || '', tel: s.telefono || '', zon: s.zona || '',
+      esp: s.especialidad || '', pin: s.pin || '', com: (s.comision ?? 15)
+    }).replace(/"/g, '&quot;');
+
+    return `
+      <div class="card" id="soc-${s.id}">
+        <div class="card-hdr" onclick="toggleCard('soc-${s.id}')">
+          <div>
+            <div class="card-title">${s.nombre || '—'}</div>
+            <div class="card-sub">${s.especialidad || '—'} · ${s.zona || '—'}</div>
+          </div>
+          <span class="arrow">▼</span>
+        </div>
+        <div class="card-body">
+          <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${s.telefono || '—'}</span></div>
+          <div class="irow"><span class="ilbl">PIN</span><span class="ival" style="color:var(--y)">${s.pin || '—'}</span></div>
+          <div class="irow"><span class="ilbl">Comisión</span><span class="ival">${(s.comision ?? 15)}%</span></div>
+          <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+            <button class="btn btn-g" onclick="window.location.href='tel:${tc}'">📞 Llamar</button>
+            <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button>
+          </div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+            <button class="btn btn-orange" onclick="prepararEdicionSocio('${params}')">✏️ Editar</button>
+            <button class="btn btn-r" onclick="eliminarSocio('${s.id}')">🗑️ Eliminar</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function prepararEdicionSocio(jsonStr) {
+  const s = JSON.parse(jsonStr);
+  document.getElementById('e-socio-id').value = s.id;
+  document.getElementById('e-nom').value = s.nom;
+  document.getElementById('e-tel').value = s.tel;
+  document.getElementById('e-zon').value = s.zon;
+  document.getElementById('e-esp').value = s.esp;
+  document.getElementById('e-pin').value = s.pin;
+  document.getElementById('e-com').value = s.com;
+  openOverlay('modal-edit-socio');
+}
+
+async function guardarEdicionSocio() {
+  const id = document.getElementById('e-socio-id').value;
+  const up = {
+    nombre: document.getElementById('e-nom').value.trim(),
+    telefono: document.getElementById('e-tel').value.trim(),
+    zona: document.getElementById('e-zon').value.trim(),
+    especialidad: document.getElementById('e-esp').value,
+    pin: document.getElementById('e-pin').value.trim(),
+    comision: parseFloat(document.getElementById('e-com').value) || 15
+  };
+  const { error } = await sb.from('socios').update(up).eq('id', id);
+  if (error) { console.error(error); toast('Error al guardar', true); return; }
+  toast('✅ Socio actualizado');
+  closeOverlay('modal-edit-socio');
+  renderSocios();
+}
+
+async function eliminarSocio(id) {
+  if (!confirm('¿Eliminar socio?')) return;
+  const { error } = await sb.from('socios').delete().eq('id', id);
+  if (error) { console.error(error); toast('Error al eliminar', true); return; }
+  toast('Socio eliminado');
+  renderSocios();
+}
+
+/* ===================== ÓRDENES ===================== */
+async function crearOrdenManual() {
+  const nom = document.getElementById('o-nom').value.trim();
+  const tel = document.getElementById('o-tel').value.trim();
+  const dir = document.getElementById('o-dir').value.trim();
+  const mun = document.getElementById('o-mun').value.trim();
+  const serv = document.getElementById('o-serv').value;
+  const det = document.getElementById('o-det').value.trim();
+
+  if (!nom || !tel || !dir || !serv) { toast('⚠️ Completa los campos', true); return; }
+
+  const { error } = await sb.from('solicitudes').insert({
+    cliente: nom, telefono: tel, direccion: dir, municipio: mun,
+    servicio: serv, detalles: det,
+    estado: 'pendiente',
+    fecha_inicio: new Date().toLocaleDateString('es-CU'),
+    fecha_ts: Date.now(),
+    monto: null,
+    valoracion: null,
+    terminado_por_socio: false
+  });
+
+  if (error) { console.error(error); toast('Error al crear', true); return; }
+
+  toast('✅ Orden creada');
+  closeOverlay('modal-orden');
+
+  document.getElementById('o-nom').value = '';
+  document.getElementById('o-tel').value = '';
+  document.getElementById('o-dir').value = '';
+  document.getElementById('o-mun').value = '';
+  document.getElementById('o-serv').value = '';
+  document.getElementById('o-det').value = '';
+
   renderOrdenes();
+  initContadores();
 }
 
-/* ================= DASHBOARD ================= */
-async function renderDash(){
-  const {data:sol}=await sb.from('solicitudes').select('*');
-  const {data:soc}=await sb.from('socios').select('*');
-  document.getElementById('d-total').textContent=sol?.length||0;
-  document.getElementById('d-pend').textContent=sol?.filter(o=>o.estado==='pendiente').length||0;
-  document.getElementById('d-comp').textContent=sol?.filter(o=>o.estado==='completada').length||0;
-  document.getElementById('d-socios').textContent=soc?.length||0;
+async function renderOrdenes() {
+  const c = document.getElementById('listaOrdenes');
+  if (!c) return;
+
+  await cargarSociosCache();
+
+  const { data: sol, error } = await sb
+    .from('solicitudes')
+    .select('*')
+    .eq('estado', 'pendiente')
+    .order('created_at', { ascending: false });
+
+  if (error) { console.error(error); c.innerHTML = '<p class="empty" style="color:var(--red)">Error cargando órdenes</p>'; return; }
+  if (!sol || !sol.length) { c.innerHTML = '<p class="empty">Sin órdenes 🎉</p>'; return; }
+
+  const socios = Object.values(sociosCache || {});
+
+  c.innerHTML = sol.map((o) => {
+    const tcCli = ct(o.telefono || '');
+
+    const socioObj = (o.socio_asignado && sociosCache[o.socio_asignado]) ? sociosCache[o.socio_asignado] : null;
+    const socioAsignado = socioObj ? (socioObj.nombre || 'Socio') : null;
+    const tcSoc = socioObj ? ct(socioObj.telefono || '') : '';
+
+    const opcs = socios.length
+      ? socios.map((s) => `
+          <option value="${s.id}" data-tel="${s.telefono || ''}" data-nom="${(s.nombre || '')}"
+            ${o.socio_asignado === s.id ? 'selected' : ''}>
+            ${s.nombre || '-'} - ${s.especialidad || '-'}
+          </option>`).join('')
+      : `<option value="">Sin socios</option>`;
+
+    const txtG = o.tiempo_garantia || 'No reportada';
+    const colG = o.tiempo_garantia ? 'var(--y)' : '#ff4444';
+
+    const terminado = !!o.terminado_por_socio;
+    const badgeTerm = terminado
+      ? `<span class="badge badge-b" style="margin-left:8px">LISTA</span>`
+      : `<span class="badge badge-o" style="margin-left:8px">EN PROCESO</span>`;
+
+    const montoTxt = (o.monto != null && !isNaN(Number(o.monto))) ? `$${Number(o.monto).toFixed(2)}` : '—';
+    const montoColor = (o.monto != null) ? 'var(--y)' : '#aaa';
+
+    const safeCliente = (o.cliente || '').replace(/'/g, "\\'");
+    const safeServ = (o.servicio || '').replace(/'/g, "\\'");
+    const safeDet = (o.detalles || '').replace(/'/g, "\\'");
+    const safeTel = (o.telefono || '').replace(/'/g, "\\'");
+
+    return `
+      <div class="card hl" id="ord-${o.id}">
+        <div class="card-hdr" onclick="toggleCard('ord-${o.id}')">
+          <div>
+            <div class="card-title">${o.cliente || '-'} ${badgeTerm}</div>
+            <div class="card-sub">${o.servicio || '-'} · ${o.municipio || '-'}</div>
+          </div>
+
+          <div style="text-align:right; min-width:110px; background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:10px">
+            <div style="font-size:0.55rem; color:#aaa; text-transform:uppercase; font-weight:900">Garantía</div>
+            <div style="font-size:0.75rem; color:${colG}; font-weight:900">${txtG}</div>
+
+            <div style="margin-top:7px; font-size:0.55rem; color:#aaa; text-transform:uppercase; font-weight:900">Monto</div>
+            <div style="font-size:0.75rem; color:${montoColor}; font-weight:900">${montoTxt}</div>
+          </div>
+        </div>
+
+        <div class="card-body">
+          <div class="irow"><span class="ilbl">Dirección</span><span class="ival">${o.direccion || '-'}</span></div>
+          <div class="irow"><span class="ilbl">Teléfono</span><span class="ival">${o.telefono || '-'}</span></div>
+          <div class="irow"><span class="ilbl">Socio</span><span class="ival">${socioAsignado || 'No asignado'}</span></div>
+          <div class="irow"><span class="ilbl">ID Servicio</span><span class="ival" style="font-family:monospace">DB-${o.id}</span></div>
+
+          <div class="fld" style="margin-top:10px">
+            <label>Asignar Socio</label>
+            <select id="sel-${o.id}">${opcs}</select>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px">
+            <button class="btn btn-y" onclick="asignarSocio('${o.id}','${safeCliente}','${safeServ}','${safeDet}','${safeTel}')">📲 Asignar</button>
+            <button class="btn btn-g" onclick="window.open('https://wa.me/${tcCli}','_blank')">💬 Cliente</button>
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px">
+            <button class="btn btn-b" ${tcSoc ? '' : 'disabled style="opacity:.4"'}
+              onclick="${tcSoc ? `window.open('https://wa.me/${tcSoc}','_blank')` : ''}">
+              💬 Socio
+            </button>
+            <button class="btn btn-g" ${tcSoc ? '' : 'disabled style="opacity:.4"'}
+              onclick="${tcSoc ? `window.location.href='tel:${tcSoc}'` : ''}">
+              📞 Socio
+            </button>
+          </div>
+
+          <button class="btn btn-y" style="margin-top:10px" onclick="activarGarantiaAdmin('${o.id}')">✅ Activar Garantía y Enviar</button>
+
+          <button class="btn btn-r" onclick="eliminarOrden('${o.id}')">🗑️ Eliminar</button>
+        </div>
+      </div>`;
+  }).join('');
+
+  filtrarOrdenes();
 }
 
-function logout(){
+async function asignarSocio(oid, cliente, servicio, detalles, telCli) {
+  const sel = document.getElementById('sel-' + oid);
+  const sid = sel.value;
+  if (!sid) { toast('⚠️ Selecciona socio', true); return; }
+
+  const opt = sel.options[sel.selectedIndex];
+  const telSoc = ct(opt.dataset.tel || '');
+  const nomSoc = opt.dataset.nom || 'Socio';
+
+  const { error } = await sb.from('solicitudes').update({ socio_asignado: sid }).eq('id', oid);
+  if (error) { console.error(error); toast('Error asignando', true); return; }
+
+  const msg =
+`🔧 NUEVA ORDEN D'BARRIO
+
+👤 ${cliente}
+📞 ${telCli}
+🏷️ ${servicio}
+⚙️ ${detalles}
+
+✅ Asignado a ti.`;
+
+  if(telSoc) window.open(\`https://wa.me/\${telSoc}?text=\${encodeURIComponent(msg)}\`, '_blank');
+  toast(\`✅ Asignado a \${nomSoc}\`);
+  renderOrdenes();
+  initContadores();
+}
+
+async function eliminarOrden(id) {
+  if (!confirm('¿Eliminar esta orden?')) return;
+  const { error } = await sb.from('solicitudes').delete().eq('id', id);
+  if (error) { console.error(error); toast('Error al eliminar', true); return; }
+  toast('🗑️ Eliminada');
+  renderOrdenes();
+  initContadores();
+}
+
+/* ===================== GARANTÍAS ===================== */
+function enviarGarantiaCliente(cliente, telefono, servicio, codigo) {
+  const hoy = new Date();
+  const expira = new Date();
+  expira.setDate(hoy.getDate() + 30);
+  const fechaExpira = expira.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+  const msg =
+`🔰 *GARANTÍA D'BARRIO*
+
+Estimado(a) *${cliente}*,
+Su servicio de *${servicio}* ha sido completado con éxito.
+
+📌 *Código de Garantía:* ${codigo}
+📅 *Vence el:* ${fechaExpira}
+
+Guarde este mensaje. Ante cualquier inconveniente, contáctenos con su código.`;
+
+  window.open(\`https://wa.me/\${ct(telefono)}?text=\${encodeURIComponent(msg)}\`, '_blank');
+}
+
+async function activarGarantiaAdmin(id) {
+  const { data: o, error } = await sb.from('solicitudes').select('*').eq('id', id).single();
+  if (error || !o) { console.error(error); toast('Error cargando orden', true); return; }
+
+  const cod = 'DB-' + String(o.id); // usamos el id real para consistencia
+
+  const { error: e2 } = await sb.from('solicitudes').update({
+    codigo_garantia: cod,
+    estado: 'completada'
+  }).eq('id', id);
+
+  if (e2) { console.error(e2); toast('Error activando garantía', true); return; }
+
+  const msg =
+`🛡️ *D'BARRIO - CERTIFICADO DE GARANTÍA*
+
+Hola ${o.cliente || ''}, su servicio cuenta con garantía: *${o.tiempo_garantia || 'Pactada con técnico'}*.
+
+📌 Código oficial: *${cod}*
+
+Gracias por confiar en nosotros.`;
+
+  window.open(\`https://wa.me/\${ct(o.telefono)}?text=\${encodeURIComponent(msg)}\`, '_blank');
+  toast('✅ Garantía activada');
+  renderOrdenes();
+  initContadores();
+}
+
+/* ===================== ARCHIVO ===================== */
+async function renderArchivo() {
+  const c = document.getElementById('listaArchivo');
+  if (!c) return;
+  const { data, error } = await sb.from('solicitudes').select('*').eq('estado', 'completada').order('created_at', { ascending: false });
+  if (error) { console.error(error); c.innerHTML = '<p class="empty" style="color:var(--red)">Error cargando archivo</p>'; return; }
+  if (!data || !data.length) { c.innerHTML = '<p class="empty">Archivo vacío</p>'; return; }
+
+  c.innerHTML = data.map((o) => {
+    const codG = o.codigo_garantia || ('DB-' + o.id);
+    const safeCli = (o.cliente || '').replace(/'/g, "\\'");
+    const safeTel = (o.telefono || '').replace(/'/g, "\\'");
+    const safeSrv = (o.servicio || '').replace(/'/g, "\\'");
+    const safeCod = (codG || '').replace(/'/g, "\\'");
+    return `
+      <div class="card" id="arc-${o.id}">
+        <div class="card-hdr" onclick="toggleCard('arc-${o.id}')">
+          <div><div class="card-title">${o.cliente || '-'}</div><div class="card-sub">${o.servicio || '-'}</div></div>
+          <span class="badge badge-g">OK</span>
+        </div>
+        <div class="card-body">
+          <div class="irow"><span class="ilbl">Garantía</span><span class="ival" style="color:var(--y)">${codG}</span></div>
+          <button class="btn btn-y" onclick="enviarGarantiaCliente('${safeCli}','${safeTel}','${safeSrv}','${safeCod}')">✉️ Enviar Garantía</button>
+          <button class="btn btn-r" onclick="eliminarArchivada('${o.id}')">🗑️ Borrar</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function eliminarArchivada(id) {
+  if (!confirm('¿Eliminar permanentemente del archivo?')) return;
+  const { error } = await sb.from('solicitudes').delete().eq('id', id);
+  if (error) { console.error(error); toast('Error al eliminar', true); return; }
+  toast('Orden eliminada');
+  renderArchivo();
+  initContadores();
+}
+
+/* ===================== DEUDAS ===================== */
+async function renderDeudas() {
+  const c = document.getElementById('listaDeudas');
+  if (!c) return;
+  const { data, error } = await sb.from('socios').select('*').gt('deuda', 0).order('deuda', { ascending: false });
+  if (error) { console.error(error); c.innerHTML = '<p class="empty" style="color:var(--red)">Error cargando deudas</p>'; return; }
+  if (!data || !data.length) { c.innerHTML = '<p class="empty">No hay deudas pendientes</p>'; return; }
+
+  c.innerHTML = data.map((s) => {
+    const tc = ct(s.telefono || '');
+    const safeNom = (s.nombre || '').replace(/'/g, "\\'");
+    return `
+      <div class="card" id="deu-${s.id}">
+        <div class="card-hdr" onclick="toggleCard('deu-${s.id}')">
+          <div>
+            <div class="card-title">${s.nombre || '—'}</div>
+            <div class="card-sub">${s.especialidad || '—'}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge badge-y">${money(s.deuda)}</span><span class="arrow">▼</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="irow"><span class="ilbl">Deuda</span><span class="money">${money(s.deuda)}</span></div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:10px">
+            <button class="btn btn-y" onclick="liquidar('${s.id}','${safeNom}','${tc}',${Number(s.deuda)||0})">💰 Liquidar</button>
+            <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 WhatsApp</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function liquidar(sid, nom, tel, deuda) {
+  if (!confirm('¿Marcar deuda como liquidada?')) return;
+  const { error } = await sb.from('socios').update({ deuda: 0 }).eq('id', sid);
+  if (error) { console.error(error); toast('Error liquidando', true); return; }
+
+  const msg =
+`💰 LIQUIDACIÓN D'BARRIO
+
+Hola ${nom},
+
+Tu deuda de ${money(deuda)} ha sido liquidada.
+
+✅ Cuenta saldada.`;
+
+  window.open(\`https://wa.me/\${tel}?text=\${encodeURIComponent(msg)}\`, '_blank');
+  toast('✅ Liquidado');
+  renderDeudas();
+}
+
+/* ===================== CONFIG ===================== */
+async function cargarConfig() {
+  const { data: com } = await sb.from('config').select('*').eq('clave', 'comision_global').single();
+  const { data: owner } = await sb.from('config').select('*').eq('clave', 'telefono_admin').single();
+  const comEl = document.getElementById('cfg-com');
+  const ownEl = document.getElementById('cfg-owner');
+  if (comEl) comEl.value = com ? com.valor : 15;
+  if (ownEl) ownEl.value = owner ? owner.valor : '';
+}
+
+async function guardarComision() {
+  const n = document.getElementById('cfg-com').value;
+  await sb.from('config').upsert({ clave: 'comision_global', valor: (n || '15').toString() });
+  toast('✅ Comisión guardada');
+}
+async function guardarNotif() {
+  const o = document.getElementById('cfg-owner').value.trim();
+  await sb.from('config').upsert({ clave: 'telefono_admin', valor: o });
+  toast('✅ WhatsApp Admin guardado');
+}
+
+/* ===================== QUEJAS ===================== */
+async function renderQuejas(filtro = 'pendiente') {
+  const c = document.getElementById('listaQuejas');
+  if (!c) return;
+  c.innerHTML = '<p class="empty">Cargando...</p>';
+
+  await cargarSociosCache();
+
+  let q = sb.from('quejas').select('*').order('created_at', { ascending: false });
+  if (filtro === 'pendiente') q = q.eq('estado', 'pendiente');
+
+  const { data, error } = await q;
+  if (error) { console.error(error); c.innerHTML = '<p class="empty" style="color:var(--red)">Error cargando</p>'; return; }
+  if (!data || !data.length) { c.innerHTML = `<p class="empty">No hay reportes ${filtro === 'pendiente' ? 'pendientes' : ''}</p>`; return; }
+
+  c.innerHTML = data.map((qq) => {
+    const isPend = qq.estado === 'pendiente';
+    const nombreSocio = (qq.socio_id && sociosCache[qq.socio_id]) ? sociosCache[qq.socio_id].nombre : 'No identificado';
+    const tc = ct(qq.telefono || '');
+    return `
+      <div class="card ${isPend ? 'hl' : ''}" id="queja-${qq.id}">
+        <div class="card-hdr" onclick="toggleCard('queja-${qq.id}')">
+          <div>
+            <div class="card-title">📞 ${qq.telefono || '—'}</div>
+            <div class="card-sub">${qq.created_at ? new Date(qq.created_at).toLocaleString('es-CU') : ''}</div>
+          </div>
+          <span class="badge ${isPend ? 'badge-r pulse' : 'badge-g'}">${(qq.estado || '').toUpperCase()}</span>
+        </div>
+        <div class="card-body">
+          <div class="irow"><span class="ilbl">Socio Implicado</span><span class="ival" style="color:var(--y)">${nombreSocio}</span></div>
+          <div class="irow"><span class="ilbl">Código</span><span class="ival">${qq.codigo_servicio || '—'}</span></div>
+          <div style="background: rgba(255,68,68,0.10); padding:12px; margin: 10px 0; border-left:4px solid var(--red); border-radius:10px; font-size:.9rem;">
+            "${(qq.mensaje || '').toString().replace(/</g,'&lt;').replace(/>/g,'&gt;')}"
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px">
+            <button class="btn btn-g" onclick="window.open('https://wa.me/${tc}','_blank')">💬 Contactar</button>
+            ${isPend ? `<button class="btn btn-y" onclick="resolverQueja('${qq.id}')">✅ Resolver</button>` : `<button class="btn btn-r" onclick="eliminarQueja('${qq.id}')">🗑️ Borrar</button>`}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+async function resolverQueja(id) {
+  const { data: q, error: e1 } = await sb.from('quejas').select('*').eq('id', id).single();
+  if (e1 || !q) { console.error(e1); toast('Error leyendo queja', true); return; }
+  if (!confirm('¿Marcar como resuelta y notificar al cliente?')) return;
+
+  const { error } = await sb.from('quejas').update({ estado: 'resuelta' }).eq('id', id);
+  if (error) { console.error(error); toast('Error al actualizar', true); return; }
+
+  const msg =
+`✅ *REPORTE RESUELTO - D'BARRIO*
+
+Hola, su reporte fue procesado por nuestra administración.
+
+🙏 Gracias por ayudarnos a mejorar.`;
+
+  window.open(\`https://wa.me/\${ct(q.telefono)}?text=\${encodeURIComponent(msg)}\`, '_blank');
+
+  toast('✅ Queja resuelta');
+  renderQuejas('pendiente');
+  initContadores();
+}
+
+async function eliminarQueja(id) {
+  if (!confirm('¿Borrar permanentemente este reporte?')) return;
+  const { error } = await sb.from('quejas').delete().eq('id', id);
+  if (error) { console.error(error); toast('Error al borrar', true); return; }
+  toast('🗑️ Reporte eliminado');
+  renderQuejas('pendiente');
+  initContadores();
+}
+
+/* ===================== REALTIME + POLLING SAFE ===================== */
+async function initAlarmasAdmin(){
+
+  // seed inicial
+  const [{data:pend},{data:cand},{data:quej}] = await Promise.all([
+    sb.from('solicitudes').select('id,terminado_por_socio').eq('estado','pendiente'),
+    sb.from('postulantes').select('id'),
+    sb.from('quejas').select('id').eq('estado','pendiente')
+  ]);
+
+  _admLastPend = pend?.length || 0;
+  _admLastCand = cand?.length || 0;
+  _admLastQuejas = quej?.length || 0;
+
+  _admLastTerminadas = new Set(
+    (pend||[]).filter(x=>x.terminado_por_socio).map(x=>x.id)
+  );
+
+  // realtime (si está activo en tu supabase)
+  try{
+    sb.channel('rt-admin-prime')
+      .on('postgres_changes',{ event:'*', schema:'public', table:'solicitudes' }, payload=>{
+        const row = payload.new;
+        if(!row) return;
+
+        if(row.estado === 'pendiente'){
+          alarmaAdmin('📋 Nueva orden');
+          if(tabActual==='ordenes') renderOrdenes();
+          initContadores();
+        }
+
+        if(row.terminado_por_socio === true){
+          alarmaAdmin('✅ Trabajo reportado por socio');
+          if(tabActual==='ordenes') renderOrdenes();
+        }
+      })
+      .on('postgres_changes',{ event:'*', schema:'public', table:'postulantes' }, ()=>{
+        alarmaAdmin('👷 Nuevo candidato');
+        if(tabActual==='candidatos') renderCandidatos();
+        initContadores();
+      })
+      .on('postgres_changes',{ event:'*', schema:'public', table:'quejas' }, payload=>{
+        const row = payload.new;
+        if(row && row.estado === 'pendiente'){
+          alarmaAdmin('💬 Nueva queja');
+          if(tabActual==='quejas') renderQuejas('pendiente');
+          initContadores();
+        }
+      })
+      .subscribe();
+  }catch(e){/* silencio */}
+
+  // polling respaldo (Cuba safe)
+  setInterval(async()=>{
+    const [{data:pend},{data:cand},{data:quej}] = await Promise.all([
+      sb.from('solicitudes').select('id,terminado_por_socio').eq('estado','pendiente'),
+      sb.from('postulantes').select('id'),
+      sb.from('quejas').select('id').eq('estado','pendiente')
+    ]);
+
+    const pendCount = pend?.length || 0;
+    const candCount = cand?.length || 0;
+    const quejCount = quej?.length || 0;
+
+    if(pendCount > _admLastPend){
+      alarmaAdmin('📋 Nueva orden detectada');
+      if(tabActual==='ordenes') renderOrdenes();
+    }
+    if(candCount > _admLastCand){
+      alarmaAdmin('👷 Nuevo candidato');
+      if(tabActual==='candidatos') renderCandidatos();
+    }
+    if(quejCount > _admLastQuejas){
+      alarmaAdmin('💬 Nueva queja');
+      if(tabActual==='quejas') renderQuejas('pendiente');
+    }
+
+    const terminadasNow = new Set(
+      (pend||[]).filter(x=>x.terminado_por_socio).map(x=>x.id)
+    );
+    terminadasNow.forEach(id=>{
+      if(!_admLastTerminadas.has(id)){
+        alarmaAdmin('✅ Trabajo listo para cerrar');
+      }
+    });
+
+    _admLastPend = pendCount;
+    _admLastCand = candCount;
+    _admLastQuejas = quejCount;
+    _admLastTerminadas = terminadasNow;
+
+    initContadores();
+  }, 12000);
+}
+
+/* ===================== LOGOUT + INICIO ===================== */
+function logout() {
   localStorage.removeItem('db_admin');
-  location.href='index.html';
+  window.location.href = 'index.html';
 }
 
 (async()=>{
   await initContadores();
-  await renderDash();
+  showTab('ordenes');     // PRIME: entra directo a operación
+  initAlarmasAdmin();     // realtime + polling
 })();
 </script>
+
 </body>
 </html>
